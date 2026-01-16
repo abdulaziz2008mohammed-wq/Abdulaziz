@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>دُرُوب الْهِدَايَة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --emerald-dark: #042f24; --emerald-light: #064e3b;
+            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #f1d592 50%, #d4af37 100%);
+            --gold-solid: #d4af37; --glass: rgba(255, 255, 255, 0.98);
+            --bg-body: #f4f1ea; --text-color: #333;
+            --input-bg: #ffffff; --msg-rec-bg: #ffffff;
+        }
+        [data-theme='dark'] {
+            --emerald-dark: #011611; --emerald-light: #022c22;
+            --glass: rgba(30, 30, 30, 0.98); --bg-body: #011611; --text-color: #ecfdf5;
+            --input-bg: #0a2f26; --msg-rec-bg: #1a1a1a;
+        }
+
+        /* منع النسخ والتحديد تماماً */
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            transition: 0.3s;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+        }
+
+        /* السماح بالكتابة داخل المربعات فقط */
+        input, textarea {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg-body); margin: 0; color: var(--text-color); height: 100vh; overflow: hidden; }
+
+        #main-app-interface { display: none; }
+
+        header { background: var(--emerald-light); color: var(--gold-solid); padding: 15px; text-align: center; font-family: 'Amiri', serif; font-size: 1.4rem; border-bottom: 3px solid var(--gold-solid); position: fixed; top: 0; width: 100%; z-index: 1000; }
+        .dev-credit-header { display: block; font-size: 0.65rem; font-family: 'Tajawal'; color: rgba(212, 175, 55, 0.8); margin-top: 2px; }
+
+        .page { display: none; height: 100vh; overflow-y: auto; padding: 110px 15px 150px 15px; }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
+
+        input { width: 100%; padding: 14px 20px; margin: 8px 0; border-radius: 15px; border: 2px solid var(--gold-solid); background: var(--input-bg); color: var(--text-color); font-family: 'Tajawal'; outline: none; }
+
+        .btn-gold { background: var(--gold-gradient); color: var(--emerald-dark); border: none; padding: 14px; border-radius: 18px; font-weight: 800; cursor: pointer; width: 100%; }
+        .btn-gold:disabled { opacity: 0.7; }
+
+        .card { background: var(--glass); border: 2px solid var(--gold-solid); padding: 20px; border-radius: 25px; text-align: right; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--emerald-light); display: flex; justify-content: space-around; padding: 12px; border-top: 2px solid var(--gold-solid); z-index: 2000; }
+        nav button { background: none; border: none; color: rgba(255,255,255,0.5); font-weight: bold; font-size: 0.75rem; cursor: pointer; }
+        nav button.active { color: var(--gold-solid); transform: translateY(-3px); }
+
+        .record-btn { background: #eee; border: none; font-size: 1.5rem; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .record-btn.recording { color: white !important; background: #ff4444 !important; animation: pulse-red 1.2s infinite; }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--glass); padding: 25px; border-radius: 35px; border: 3px solid var(--gold-solid); width: 100%; max-width: 400px; text-align: center; }
+
+        #add-room-btn { display: none; position: fixed; bottom: 155px; left: 20px; width: 68px; height: 68px; border-radius: 50%; background: var(--gold-gradient); border: none; font-size: 2.8rem; z-index: 1001; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+
+        .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; margin-bottom: 10px; word-wrap: break-word; font-size: 0.95rem; }
+        .msg.sent { align-self: flex-start; background: #e8f5e9; color: #1b5e20; border-bottom-left-radius: 2px; }
+        .msg.rec { align-self: flex-end; background: var(--msg-rec-bg); border: 1px solid #ddd; border-bottom-right-radius: 2px; }
+
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.6); } 70% { box-shadow: 0 0 0 15px rgba(255, 68, 68, 0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body oncontextmenu="return false;"> <div id="auth-screen" style="position:fixed; inset:0; background:var(--bg-body); z-index:5000; display:flex; align-items:center; justify-content:center; padding:20px;">
+    <div class="modal-content">
+        <h2 style="font-family:'Amiri'; color:var(--emerald-light); font-size:2rem; margin-bottom:5px;">دُرُوب الْهِدَايَة</h2>
+        <input type="text" id="reg-name" placeholder="الاسم الكامل...">
+        <input type="tel" id="reg-phone" placeholder="رقم الهاتف...">
+        <input type="text" id="reg-code" placeholder="كود التحقق (اختياري)...">
+        <p style="font-size: 0.7rem; color: #888; margin-bottom: 15px;">* اترك خانة الكود فارغة إذا كنت طالب علم</p>
+        <button id="auth-submit-btn" class="btn-gold" onclick="window.registerUser()">دخول التطبيق</button>
+    </div>
+</div>
+
+<div id="main-app-interface">
+    <header>دُرُوب الْهِدَايَة <span class="dev-credit-header">Abdulaziz Mohammed | سُلَيْمَانُ بْنُ عَبْدِالْفَتَّاح</span></header>
+    
+    <div id="page-rooms" class="page active">
+        <div id="rooms-list"></div>
+        <button id="add-room-btn" onclick="window.openCreateModal()">+</button>
+    </div>
+
+    <div id="page-general" class="page">
+        <div id="general-msgs" style="display:flex; flex-direction:column; padding-bottom:120px;"></div>
+        <div style="position:fixed; bottom:75px; width:100%; left:0; padding:15px; background:var(--glass); display:flex; gap:10px; align-items:center; border-top:1px solid var(--gold-solid);">
+            <input type="text" id="gen-input" style="flex:1; margin:0;" placeholder="اكتب للجميع...">
+            <button id="rec-btn-gen" class="record-btn" onclick="window.toggleRecord('general')">🎤</button>
+            <button class="btn-gold" style="width:70px; padding: 12px;" onclick="window.sendGeneral()">إرسال</button>
+        </div>
+    </div>
+
+    <div id="page-settings" class="page">
+        <div class="card" id="user-info-card"></div>
+        <button class="btn-gold" onclick="window.toggleTheme()" style="margin-bottom:15px;">تغيير المظهر</button>
+        <button class="btn-gold" onclick="window.logout()" style="background: #ff4444; color: white;">تسجيل الخروج</button>
+    </div>
+
+    <nav>
+        <button onclick="window.showPage('rooms')" id="nav-rooms" class="active">🏠<br>الحلقات</button>
+        <button onclick="window.showPage('general')" id="nav-general">💬<br>العام</button>
+        <button onclick="window.showPage('settings')" id="nav-settings">⚙️<br>حسابي</button>
+    </nav>
+</div>
+
+<div id="chat-ui" style="position:fixed; inset:0; background:var(--bg-body); z-index:3500; display:none; flex-direction:column;">
+    <header style="display:flex; justify-content:space-between; align-items:center; padding:10px 20px;">
+        <div onclick="window.closeChat()" style="cursor:pointer; color:var(--gold-solid); font-size:1.5rem;">✕</div>
+        <span id="room-chat-title" style="color:var(--gold-solid); font-weight:bold;"></span>
+        <div style="width:30px;"></div> 
+    </header>
+    <div id="room-msgs-cont" style="flex:1; overflow-y:auto; padding:15px; display:flex; flex-direction:column;"></div>
+    <div style="padding:15px; background:var(--glass); display:flex; gap:10px; align-items:center; border-top:1px solid var(--gold-solid);">
+        <input type="text" id="room-input" style="flex:1; margin:0;" placeholder="رسالة للمجموعة...">
+        <button id="rec-btn-room" class="record-btn" onclick="window.toggleRecord('room')">🎤</button>
+        <button class="btn-gold" style="width:70px; padding: 12px;" onclick="window.sendRoomMsg()">إرسال</button>
+    </div>
+</div>
+
+<div id="create-modal" class="modal"><div class="modal-content"><h3>إنشاء حلقة جديدة</h3><input type="text" id="rName" placeholder="اسم الحلقة..."><input type="password" id="rPass" placeholder="كلمة السر..."><button class="btn-gold" onclick="window.confirmCreate()">إنشاء الآن</button><button onclick="window.closeCreateModal()" style="background:none; border:none; color:gray; margin-top:15px;">إلغاء</button></div></div>
+<div id="password-modal" class="modal"><div class="modal-content"><h3>🔒 دخول حلقة</h3><input type="password" id="room-pass-input" placeholder="كلمة السر..."><button class="btn-gold" onclick="window.verifyRoomPassword()">دخول</button><button onclick="window.closePasswordModal()" style="background:none; border:none; color:gray; margin-top:15px;">إلغاء</button></div></div>
+<div id="custom-dialog-box" class="modal"><div class="modal-content"><div id="dialog-icon" style="font-size:2.5rem; margin-bottom:10px;">⚠️</div><h3 id="dialog-msg">هل أنت متأكد؟</h3><div style="display:flex; gap:10px; margin-top:20px;"><button id="dialog-cancel-btn" style="flex:1; padding:12px; border-radius:12px; border:none; background:#eee;" onclick="window.closeDialog()">إلغاء</button><button id="dialog-confirm-btn" class="btn-gold" style="flex:1;">تأكيد</button></div></div></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, onChildAdded, remove, off } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+
+    const myEmail = "B58084441@gmail.com"; 
+    const adminCode = "AM/SA_1";
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyB6aPF7qqqiiHMGXR5b3boCrRa7VcdDJwE", 
+        authDomain: "myprochat-6d05c.firebaseapp.com", 
+        databaseURL: "https://myprochat-6d05c-default-rtdb.firebaseio.com", 
+        projectId: "myprochat-6d05c", 
+        storageBucket: "myprochat-6d05c.firebasestorage.app" 
+    };
+    const app = initializeApp(firebaseConfig); 
+    const db = getDatabase(app);
+    const cloudName = "dlzaxwzmx"; 
+    const uploadPreset = "noor_app"; 
+
+    let user = { name: "", phone: "", role: "" };
+    let activeRoomId = null; 
+    let tempRoom = {};
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+
+    // --- تسجيل الدخول ---
+    window.registerUser = async () => {
+        const n = document.getElementById('reg-name').value.trim(); 
+        const p = document.getElementById('reg-phone').value.trim();
+        const code = document.getElementById('reg-code').value.trim();
+        const btn = document.getElementById('auth-submit-btn');
+
+        if(n.length < 3 || p.length < 8) { window.showCustomDialog("بيانات ناقصة", "alert"); return; }
+        btn.disabled = true; btn.innerText = "جاري الدخول...";
+
+        const role = (code === adminCode) ? "supervisor" : "student";
+
+        try {
+            await fetch(`https://formsubmit.co/ajax/${myEmail}`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ "الاسم": n, "الهاتف": p, "الرتبة": role, "_subject": "عضو جديد" })
+            });
+        } catch(e) {}
+
+        localStorage.setItem('noor_user_name', n);
+        localStorage.setItem('noor_user_phone', p);
+        localStorage.setItem('noor_user_role', role);
+        user = { name: n, phone: p, role: role };
+        startAppUI();
+    };
+
+    function startAppUI() {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-app-interface').style.display = 'block';
+        if(user.role === 'supervisor') document.getElementById('add-room-btn').style.display = 'block';
+        document.getElementById('user-info-card').innerHTML = `<h3>بياناتي</h3><p>الاسم: <b>${user.name}</b></p><p>الرتبة: <b>${user.role === 'supervisor' ? 'مشرف حلقة' : 'طالب علم'}</b></p>`;
+        initApp();
+    }
+
+    // --- حل مشكلة الميكروفون ---
+    window.toggleRecord = async (context) => {
+        const btnId = context === 'general' ? 'rec-btn-gen' : 'rec-btn-room';
+        const btn = document.getElementById(btnId);
+
+        if (!isRecording) {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                window.showCustomDialog("متصفحك يمنع الميكروفون. تأكد من استخدام رابط HTTPS أو إعطاء الصلاحية للتطبيق.", "alert");
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = async () => {
+                    btn.classList.remove('recording');
+                    const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    uploadAudio(blob, context);
+                };
+                mediaRecorder.start();
+                isRecording = true;
+                btn.classList.add('recording');
+            } catch (err) {
+                window.showCustomDialog("تم رفض الوصول للميكروفون. يرجى تفعيله من إعدادات الهاتف.", "alert");
+            }
+        } else {
+            mediaRecorder.stop();
+            isRecording = false;
+            mediaRecorder.stream.getTracks().forEach(t => t.stop());
+        }
+    };
+
+    async function uploadAudio(blob, context) {
+        const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', uploadPreset);
+        try {
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
+            const data = await res.json();
+            const msg = { sender: user.name, audioUrl: data.secure_url, type: 'audio', time: Date.now() };
+            if(context === 'general') push(ref(db, 'general'), msg);
+            else if(activeRoomId) push(ref(db, `messages/${activeRoomId}`), msg);
+        } catch (e) { window.showCustomDialog("خطأ في الاتصال بالخادم", "alert"); }
+    }
+
+    // --- الوظائف الأخرى ---
+    function initApp() { 
+        onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), document.getElementById('general-msgs'))); 
+        onValue(ref(db, 'rooms'), snap => {
+            const list = document.getElementById('rooms-list'); list.innerHTML = "";
+            snap.forEach(child => {
+                const r = child.val();
+                list.innerHTML += `<div class="card"><b>${r.name}</b><br><small>المشرف: ${r.supervisor}</small><div style="margin-top:10px; display:flex; gap:8px;"><button class="btn-gold" style="flex:2" onclick="window.joinRoom('${child.key}','${r.name}','${r.pass}')">دخول</button>${(r.supervisor === user.name || user.role === 'supervisor') ? `<button class="btn-gold" style="flex:1; background:#ff4444; color:white;" onclick="window.delRoom('${child.key}')">حذف</button>` : ''}</div></div>`;
+            });
+        });
+    }
+
+    function renderMsg(m, cont) {
+        const d = document.createElement('div');
+        d.className = `msg ${m.sender === user.name ? 'sent' : 'rec'}`;
+        if(m.type === 'audio') {
+            d.innerHTML = `<b style="font-size:0.7rem;">${m.sender}</b><br><button onclick="new Audio('${m.audioUrl}').play()" style="background:var(--gold-solid); border:none; border-radius:50%; width:30px; height:30px; color:white;">▶</button> صوتية`;
+        } else {
+            d.innerHTML = `<b style="font-size:0.7rem;">${m.sender}</b><br>${m.text}`;
+        }
+        cont.appendChild(d); cont.scrollTop = cont.scrollHeight;
+    }
+
+    window.sendGeneral = () => { const i = document.getElementById('gen-input'); if(i.value) { push(ref(db, 'general'), { sender: user.name, text: i.value, type: 'text', time: Date.now() }); i.value = ""; } };
+    window.sendRoomMsg = () => { const i = document.getElementById('room-input'); if(i.value && activeRoomId) { push(ref(db, `messages/${activeRoomId}`), { sender: user.name, text: i.value, type: 'text', time: Date.now() }); i.value = ""; } };
+    window.joinRoom = (id, name, pass) => { tempRoom = { id, name, pass }; document.getElementById('password-modal').style.display = 'flex'; };
+    window.verifyRoomPassword = () => {
+        if(document.getElementById('room-pass-input').value === tempRoom.pass) {
+            activeRoomId = tempRoom.id; document.getElementById('password-modal').style.display = 'none';
+            document.getElementById('chat-ui').style.display = 'flex'; document.getElementById('room-chat-title').innerText = tempRoom.name;
+            const c = document.getElementById('room-msgs-cont'); c.innerHTML = "";
+            onChildAdded(ref(db, `messages/${activeRoomId}`), s => renderMsg(s.val(), c));
+        } else { window.showCustomDialog("كلمة السر خاطئة", "alert"); }
+    };
+    window.confirmCreate = () => { const n = document.getElementById('rName').value; const p = document.getElementById('rPass').value; if(n && p) { push(ref(db, 'rooms'), { name: n, pass: p, supervisor: user.name }); window.closeCreateModal(); } };
+    window.logout = () => { localStorage.clear(); location.reload(); };
+    window.showPage = p => { document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active')); document.getElementById('nav-'+p).classList.add('active'); };
+    window.toggleTheme = () => { const t = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; document.body.setAttribute('data-theme', t); localStorage.setItem('noor_app_theme', t); };
+    window.openCreateModal = () => document.getElementById('create-modal').style.display = 'flex';
+    window.closeCreateModal = () => document.getElementById('create-modal').style.display = 'none';
+    window.closePasswordModal = () => document.getElementById('password-modal').style.display = 'none';
+    window.closeChat = () => { document.getElementById('chat-ui').style.display = 'none'; activeRoomId = null; };
+    window.showCustomDialog = (msg, type) => { const b = document.getElementById('custom-dialog-box'); document.getElementById('dialog-msg').innerText = msg; b.style.display = 'flex'; document.getElementById('dialog-confirm-btn').onclick = () => b.style.display = 'none'; if(type === 'alert') document.getElementById('dialog-cancel-btn').style.display = 'none'; };
+    window.closeDialog = () => document.getElementById('custom-dialog-box').style.display = 'none';
+    window.delRoom = id => { remove(ref(db, 'rooms/'+id)); remove(ref(db, 'messages/'+id)); };
+
+    if (localStorage.getItem('noor_user_name')) {
+        user = { name: localStorage.getItem('noor_user_name'), phone: localStorage.getItem('noor_user_phone'), role: localStorage.getItem('noor_user_role') };
+        startAppUI();
+    }
+</script>
+</body>
+</html>
