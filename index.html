@@ -69,9 +69,8 @@
             border: 1px solid rgba(212, 175, 55, 0.1);
         }
 
-        /* تعديلات الوضع الداكن المطلوبة */
-        [data-theme="dark"] #page-circles h3 { color: #f8fafc !important; } /* لون حلقات التحفيظ فاتح */
-        [data-theme="dark"] .room-title { color: #ffffff !important; } /* لون العنوان الذي يكتبه المشرف فاتح */
+        [data-theme="dark"] #page-circles h3 { color: #f8fafc !important; }
+        [data-theme="dark"] .room-title { color: #ffffff !important; }
 
         .btn {
             background: var(--gold-grad);
@@ -116,6 +115,7 @@
             font-size: 32px; color: var(--primary);
             box-shadow: 0 10px 25px rgba(179, 135, 40, 0.4);
             border: none; z-index: 999; cursor: pointer;
+            display: none; /* مخفي افتراضياً للطلاب */
         }
 
         .avatar-frame {
@@ -154,9 +154,6 @@
         }
         .reminder.active { top: 95px; }
 
-        .rec-active { background: #ef4444 !important; animation: pulse 1s infinite alternate; color: white !important; }
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
-
         #splash {
             position: fixed; inset: 0; background: var(--primary-dark);
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--accent);
@@ -172,7 +169,7 @@
     <div style="width:40px; height:40px; border:4px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite; margin-top:20px;"></div>
 </div>
 
-<!-- شاشة الدخول -->
+<!-- شاشة تسجيل الدخول -->
 <div id="auth-screen" class="screen active" style="padding-top:15vh;">
     <div class="card" style="max-width:420px; margin:auto; text-align:center;">
         <h2 style="font-family:'Amiri'; color:var(--primary); font-size:3rem; margin:0 0 20px;">دُرُوب الْهِدَايَةِ</h2>
@@ -183,7 +180,7 @@
     </div>
 </div>
 
-<!-- التطبيق الرئيسي -->
+<!-- الواجهة الرئيسية -->
 <div id="main-app" style="display:none;">
     <header>دُرُوب الْهِدَايَةِ</header>
 
@@ -250,7 +247,6 @@
     </div>
 </div>
 
-<!-- الدردشة -->
 <div id="room-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:4000; display:none; flex-direction:column;">
     <header style="background:var(--glass); padding:15px; border-bottom:2px solid var(--accent);">
         <button onclick="window.closeRoom()" style="background:none; border:none; color:var(--primary); font-size:2.2rem; position:absolute; right:15px; cursor:pointer;">✕</button>
@@ -308,7 +304,11 @@
         const phone = document.getElementById('reg-phone').value;
         const code = document.getElementById('reg-code').value;
         if(name.length < 3) return alert("يرجى كتابة الاسم الثلاثي");
-        currentUser = { name, phone, role: (code === "AM/SA_1") ? "supervisor" : "student", photo: "" };
+        
+        // التحقق من صلاحية المشرف
+        const role = (code.trim() === "AM/SA_1") ? "supervisor" : "student";
+        
+        currentUser = { name, phone, role: role, photo: "" };
         localStorage.setItem('duroob_user', JSON.stringify(currentUser));
         initApp();
     };
@@ -317,7 +317,14 @@
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('splash').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
-        if(currentUser.role === 'supervisor') document.getElementById('add-btn').style.display = 'flex';
+        
+        // إظهار زر الإضافة فقط للمشرف
+        if(currentUser.role === 'supervisor') {
+            document.getElementById('add-btn').style.display = 'flex';
+        } else {
+            document.getElementById('add-btn').style.display = 'none';
+        }
+        
         if(currentUser.photo) document.getElementById('profile-img-view').src = currentUser.photo;
 
         document.getElementById('profile-details').innerHTML = `
@@ -331,7 +338,6 @@
         startReminders();
     }
 
-    // --- إدارة الحلقات ---
     function loadCircles() {
         onValue(ref(db, 'rooms'), snap => {
             const list = document.getElementById('circles-list');
@@ -353,7 +359,7 @@
                     <div style="display:flex; gap:10px;">
                         <button class="btn" style="flex:2" onclick="window.enterRoom('${id}')">انضمام للحلقة</button>
                         ${r.whatsapp ? `<button class="btn btn-whatsapp" style="width:55px; padding:0;" onclick="window.openWhatsapp('${r.whatsapp}')">📞</button>` : ''}
-                        ${(r.supervisor === currentUser.name) ? `<button class="btn" style="width:55px; background:#ef4444; color:white; box-shadow:none;" onclick="window.deleteRoom('${id}')">🗑</button>` : ''}
+                        ${(currentUser.role === 'supervisor' && r.supervisor === currentUser.name) ? `<button class="btn" style="width:55px; background:#ef4444; color:white; box-shadow:none;" onclick="window.deleteRoom('${id}')">🗑</button>` : ''}
                     </div>
                 `;
                 list.appendChild(card);
@@ -362,6 +368,7 @@
     }
 
     window.createCircle = () => {
+        if(currentUser.role !== 'supervisor') return alert("عذراً، هذه الخاصية للمشرفين فقط");
         const name = prompt("اسم الحلقة الجديدة:");
         if(!name) return;
         const pass = prompt("كلمة سر الحلقة:");
@@ -369,9 +376,7 @@
         let wa = prompt("رقم واتساب المشرف (سيضاف +20 تلقائياً):");
         if(wa) {
             wa = wa.trim();
-            // حذف الصفر الأول إذا وجد
             if(wa.startsWith('0')) wa = wa.substring(1);
-            // التأكد من وجود 20 ثم إضافة +
             if(!wa.startsWith('20')) wa = '20' + wa;
             if(!wa.startsWith('+')) wa = '+' + wa;
         }
@@ -393,6 +398,7 @@
     };
 
     window.deleteRoom = (id) => {
+        if(currentUser.role !== 'supervisor') return;
         if(confirm("هل تريد حذف هذه الحلقة نهائياً؟")) {
             remove(ref(db, 'rooms/'+id));
             remove(ref(db, `messages/${id}`));
@@ -414,7 +420,6 @@
         window.open(url, '_blank');
     };
 
-    // --- الصوت والملف الشخصي ---
     window.updateProfilePic = async (input) => {
         if(!input.files[0]) return;
         const fd = new FormData();
@@ -478,7 +483,6 @@
         currentAudio.onended = () => { btn.innerHTML = "▶"; currentAudio = null; };
     };
 
-    // --- الرسائل ---
     function sendToDB(obj) {
         const msg = { sender: currentUser.name, photo: currentUser.photo || "", time: Date.now(), ...obj };
         push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), msg);
@@ -514,7 +518,6 @@
         cont.scrollTop = cont.scrollHeight;
     }
 
-    // --- الخدمات ---
     async function loadPrayers() {
         try {
             const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
