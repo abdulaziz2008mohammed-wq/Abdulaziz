@@ -58,9 +58,8 @@
         nav button.active { color: var(--gold-solid); transform: translateY(-5px); }
 
         .dev-badge {
-            background: var(--emerald-dark); color: var(--gold-solid); padding: 8px 15px; border-radius: 50px;
-            font-size: 0.9rem; border: 1px solid var(--gold-solid); margin: 5px; display: inline-block;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background: var(--emerald-dark); color: var(--gold-solid); padding: 5px 12px; border-radius: 50px;
+            font-size: 0.8rem; border: 1px solid var(--gold-solid); margin: 5px; display: inline-block;
         }
 
         .prayer-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(212,175,55,0.2); }
@@ -92,10 +91,7 @@
 <div id="main-app-interface" style="display:none;">
     <header>دُرُوب الْهِدَايَة</header>
     
-    <div id="page-rooms" class="page active">
-        <div id="rooms-list"></div>
-        <button id="add-room-btn" style="position:fixed; bottom:120px; left:20px; width:65px; height:65px; border-radius:50%; background:var(--gold-gradient); border:none; font-size:2.5rem; color:var(--emerald-dark); display:none; box-shadow:0 5px 15px rgba(0,0,0,0.3); z-index:100;" onclick="window.openCreateModal()">+</button>
-    </div>
+    <div id="page-rooms" class="page active"><div id="rooms-list"></div></div>
 
     <div id="page-prayer" class="page">
         <div class="card" style="text-align: center;">
@@ -117,12 +113,12 @@
         <div class="card" id="user-info-card"></div>
         
         <div class="card" style="background: linear-gradient(to bottom, #fff, #f9f9f9);">
-            <h4 style="color:var(--emerald-light); margin-top:0; font-family:'Amiri'; font-size:1.4rem;">👨‍💻 فريق التطوير</h4>
+            <h4 style="color:var(--emerald-light); margin-top:0;">👨‍💻 فريق التطوير</h4>
             <div id="developers-list">
-                <span class="dev-badge">الْمُطَوِّر: عَبْدُالْعَزِيز مُحَمَّد</span><br>
-                <span class="dev-badge">التَّصْمِيم: سُلَيْمَان بْن عَبْدِالْفَتَّاح</span>
+                <span class="dev-badge">المطور: [ضع اسمك هنا]</span>
+                <span class="dev-badge">تصميم: [ضع اسمك هنا]</span>
             </div>
-            <p style="font-size:0.85rem; color:#666; margin-top:15px; border-top:1px solid #eee; padding-top:10px;">تم التطوير بكل حب لخدمة طلاب العلم.</p>
+            <p style="font-size:0.8rem; color:#888; margin-bottom:0;">تم التطوير بكل حب لخدمة طلاب العلم.</p>
         </div>
 
         <button class="btn-gold" onclick="window.toggleTheme()" style="margin-bottom:15px;">تغيير المظهر</button>
@@ -154,6 +150,7 @@
 
     let user = { name: "", phone: "", role: "" };
 
+    // دالة تحويل الوقت إلى نظام 12 ساعة بالعربي
     function formatTime12(timeStr) {
         let [hours, minutes] = timeStr.split(':');
         hours = parseInt(hours);
@@ -169,6 +166,7 @@
             const t = d.data.timings;
             document.getElementById('current-date').innerText = `${d.data.date.hijri.day} ${d.data.date.hijri.month.ar} ${d.data.date.hijri.year} هـ`;
             
+            // تطبيق التحويل على كل وقت
             document.getElementById('prayer-times-cont').innerHTML = `
                 <div class="prayer-row"><span>الفجر</span> <b>${formatTime12(t.Fajr)}</b></div>
                 <div class="prayer-row"><span>الظهر</span> <b>${formatTime12(t.Dhuhr)}</b></div>
@@ -178,24 +176,6 @@
             `;
         } catch (e) { document.getElementById('prayer-times-cont').innerText = "خطأ في تحميل البيانات"; }
     }
-
-    // وظيفة إنشاء غرفة (تحفظ رقم هاتف المشرف)
-    window.openCreateModal = () => {
-        const name = prompt("اسم الحلقة الجديدة:");
-        if (!name) return;
-        const pass = prompt("كلمة سر دخول الحلقة:");
-        if (!pass) return;
-        const name = prompt("وقت بدء الحلقة  ");
-        if (!name) return;
-        const name = prompt("ا رقم الهاتف:");
-        if (!name) return;
-        push(ref(db, 'rooms'), { 
-            name: name, 
-            pass: pass, 
-            supervisor: user.name,
-            supervisorPhone: user.phone // حفظ الرقم هنا
-        });
-    };
 
     window.registerUser = () => {
         const n = document.getElementById('reg-name').value;
@@ -210,10 +190,6 @@
     function startAppUI() {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('main-app-interface').style.display = 'block';
-        
-        // إظهار زر الإضافة للمشرف
-        if(user.role === 'supervisor') document.getElementById('add-room-btn').style.display = 'block';
-        
         document.getElementById('user-info-card').innerHTML = `<h3>مرحباً ${user.name}</h3><p>الرتبة: ${user.role === 'supervisor' ? 'مشرف' : 'طالب علم'}</p>`;
         fetchPrayers();
         initData();
@@ -224,14 +200,7 @@
             const list = document.getElementById('rooms-list'); list.innerHTML = "";
             snap.forEach(child => {
                 const r = child.val();
-                // عرض اسم المشرف ورقم هاتفه بجانب الغرفة
-                list.innerHTML += `<div class="card" style="border-right: 5px solid var(--emerald-light);">
-                    <b style="font-size:1.2rem; color:var(--emerald-light);">${r.name}</b><br>
-                    <div style="margin-top:10px; font-size:0.9rem; color:#555;">
-                        <span>👤 المشرف: <b>${r.supervisor}</b></span><br>
-                        <span>📞 الهاتف: <a href="tel:${r.supervisorPhone}" style="color:var(--gold-solid); text-decoration:none; font-weight:bold;">${r.supervisorPhone || 'غير مسجل'}</a></span>
-                    </div>
-                </div>`;
+                list.innerHTML += `<div class="card"><b>${r.name}</b><br><small>المشرف: ${r.supervisor}</small></div>`;
             });
         });
     }
