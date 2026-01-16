@@ -47,7 +47,7 @@
             padding: 14px; border-radius: 15px; font-weight: 800; cursor: pointer; width: 100%; font-family: 'Tajawal';
         }
 
-        /* نافذة التأكيد المخصصة (تصحيح الشكل) */
+        /* نافذة التأكيد المخصصة المصلحة */
         #custom-confirm-overlay { 
             display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); 
             z-index:99999; align-items:center; justify-content:center; padding:20px;
@@ -67,6 +67,8 @@
         nav button { background: none; border: none; color: rgba(212, 175, 55, 0.4); font-size: 0.8rem; cursor: pointer; }
         nav button.active { color: var(--gold-solid); transform: translateY(-5px); }
 
+        .recording-pulse { background: #ff4444 !important; animation: pulse-effect 1s infinite alternate; color: white !important; }
+        @keyframes pulse-effect { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -75,15 +77,25 @@
 <div id="custom-confirm-overlay">
     <div class="confirm-card">
         <h3 style="font-family:'Amiri'; color:var(--gold-solid); margin:0 0 20px 0; font-size:1.5rem;">تأكيد الحذف</h3>
-        <p id="confirm-msg" style="margin-bottom:25px; line-height:1.6;">هل أنت متأكد من حذف هذه الغرفة؟</p>
+        <p id="confirm-msg" style="margin-bottom:25px; line-height:1.6;">هل أنت متأكد من حذف هذه الحلقة؟</p>
         <div style="display:flex; gap:10px;">
-            <button class="btn-gold" id="confirm-btn-yes" style="flex:1;">نعم، حذف</button>
+            <button class="btn-gold" id="confirm-btn-yes" style="flex:1;">تأكيد</button>
             <button class="btn-gold" id="confirm-btn-no" style="flex:1; background:#fff; color:#333; border:none;">إلغاء</button>
         </div>
     </div>
 </div>
 
-<div id="main-app-interface">
+<div id="auth-screen" style="position:fixed; inset:0; background:var(--emerald-dark); z-index:5000; display:flex; align-items:center; justify-content:center; padding:20px;">
+    <div class="card" style="width:100%; max-width:400px; text-align:center;">
+        <h2 style="font-family:'Amiri'; color:var(--emerald-light); font-size:2.2rem; margin-bottom:10px;">دُرُوب الْهِدَايَة</h2>
+        <input type="text" id="reg-name" placeholder="الاسم الكامل..." style="width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px solid var(--gold-solid);">
+        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px solid var(--gold-solid);">
+        <input type="text" id="reg-code" placeholder="كود التحقق (اختياري)..." style="width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px solid var(--gold-solid);">
+        <button id="auth-submit-btn" class="btn-gold" onclick="window.registerUser()">دخول الآمن</button>
+    </div>
+</div>
+
+<div id="main-app-interface" style="display:none;">
     <header>دُرُوب الْهِدَايَة</header>
     
     <div id="page-rooms" class="page active">
@@ -99,6 +111,21 @@
         </div>
     </div>
 
+    <div id="page-general" class="page">
+        <div id="general-msgs" style="display:flex; flex-direction:column; padding-bottom:120px;"></div>
+        <div style="position:fixed; bottom:80px; width:100%; left:0; padding:15px; background:var(--glass); display:flex; gap:10px; align-items:center; border-top:2px solid var(--gold-solid); z-index:10;">
+            <input type="text" id="gen-input" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--gold-solid);" placeholder="اكتب رسالتك هنا...">
+            <button id="rec-btn-general" class="btn-gold" style="width:50px; border-radius:50%;" onclick="window.toggleRecord('general')">🎤</button>
+            <button class="btn-gold" style="width:70px;" onclick="window.sendGeneral()">إرسال</button>
+        </div>
+    </div>
+
+    <div id="page-settings" class="page">
+        <div class="card" id="user-info-card"></div>
+        <button class="btn-gold" onclick="window.toggleTheme()" style="margin-bottom:15px;">تغيير المظهر (ليلي/نهاري)</button>
+        <button class="btn-gold" onclick="window.logout()" style="background: #e74c3c; color: white; border:none;">تسجيل الخروج</button>
+    </div>
+
     <nav>
         <button onclick="window.showPage('rooms')" id="nav-rooms" class="active">🏠<br>الحلقات</button>
         <button onclick="window.showPage('prayer')" id="nav-prayer">🕌<br>المواقيت</button>
@@ -109,7 +136,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue, remove, push } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+    import { getDatabase, ref, onValue, remove, push, onChildAdded } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyB6aPF7qqqiiHMGXR5b3boCrRa7VcdDJwE", 
@@ -122,8 +149,11 @@
     const app = initializeApp(firebaseConfig); 
     const db = getDatabase(app);
 
-    // --- 1. تصحيح الوقت ليصبح 12 ساعة ---
-    const convertTo12Hr = (timeStr) => {
+    let user = { name: "", phone: "", role: "" };
+
+    // --- 1. إصلاح تحويل الوقت (ص/م) ---
+    const format12Hr = (timeStr) => {
+        if (!timeStr) return "--:--";
         let [hour, minute] = timeStr.split(':');
         hour = parseInt(hour);
         const suffix = hour >= 12 ? " م" : " ص";
@@ -131,7 +161,7 @@
         return `${hour}:${minute}${suffix}`;
     };
 
-    // --- 2. تصحيح نافذة الحذف (Custom UI) ---
+    // --- 2. إصلاح نافذة الحذف المخصصة ---
     window.delRoom = (id) => {
         const overlay = document.getElementById('custom-confirm-overlay');
         overlay.style.display = 'flex';
@@ -147,7 +177,6 @@
         };
     };
 
-    // جلب المواقيت
     async function fetchPrayers() {
         try {
             const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
@@ -155,18 +184,37 @@
             const t = data.data.timings;
             document.getElementById('current-date').innerText = data.data.date.hijri.date + " " + data.data.date.hijri.month.ar;
             
-            // تطبيق التحويل لـ 12 ساعة هنا
+            // إصلاح شامل لعرض الوقت (تم تصحيح الأقواس هنا)
             document.getElementById('prayer-times-cont').innerHTML = `
-                <div class="prayer-row"><span>الفجر</span> <b>${convertTo12Hr(t.Fajr)}</b></div>
-                <div class="prayer-row"><span>الظهر</span> <b>${convertTo12Hr(t.Dhuhr)}</b></div>
-                <div class="prayer-row"><span>العصر</span> <b>${convertTo12Hr(t.Asr)}</b></div>
-                <div class="prayer-row"><span>المغرب</span> <b>${convertTo12Hr(t.Maghrib}</b></div>
-                <div class="prayer-row"><span>العشاء</span> <b>${convertTo12Hr(t.Isha)}</b></div>
+                <div class="prayer-row"><span>الفجر</span> <b>${format12Hr(t.Fajr)}</b></div>
+                <div class="prayer-row"><span>الظهر</span> <b>${format12Hr(t.Dhuhr)}</b></div>
+                <div class="prayer-row"><span>العصر</span> <b>${format12Hr(t.Asr)}</b></div>
+                <div class="prayer-row"><span>المغرب</span> <b>${format12Hr(t.Maghrib)}</b></div>
+                <div class="prayer-row"><span>العشاء</span> <b>${format12Hr(t.Isha)}</b></div>
             `;
         } catch (e) { document.getElementById('prayer-times-cont').innerText = "خطأ في تحميل المواقيت"; }
     }
 
-    // عرض الغرف
+    // بقية دوال التطبيق الأساسية
+    window.registerUser = () => {
+        const n = document.getElementById('reg-name').value;
+        const p = document.getElementById('reg-phone').value;
+        const code = document.getElementById('reg-code').value;
+        if (n.length < 3) return;
+        user = { name: n, phone: p, role: (code === "AM/SA_1") ? "supervisor" : "student" };
+        localStorage.setItem('noor_user', JSON.stringify(user));
+        startAppUI();
+    };
+
+    function startAppUI() {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-app-interface').style.display = 'block';
+        if(user.role === 'supervisor') document.getElementById('add-room-btn').style.display = 'block';
+        document.getElementById('user-info-card').innerHTML = `<h3>مرحباً: ${user.name}</h3><p>الرتبة: ${user.role === 'supervisor' ? 'مشرف' : 'طالب علم'}</p>`;
+        initRooms(); 
+        fetchPrayers();
+    }
+
     function initRooms() {
         onValue(ref(db, 'rooms'), snap => {
             const list = document.getElementById('rooms-list'); list.innerHTML = "";
@@ -175,8 +223,8 @@
                 list.innerHTML += `<div class="card">
                     <b>${r.name}</b><br><small>المشرف: ${r.supervisor}</small>
                     <div style="margin-top:10px; display:flex; gap:10px;">
-                        <button class="btn-gold" style="flex:2">دخول</button>
-                        <button class="btn-gold" style="flex:1; background:#e74c3c; border:none; color:white;" onclick="window.delRoom('${child.key}')">حذف</button>
+                        <button class="btn-gold" style="flex:2" onclick="alert('جاري الدخول...')">دخول</button>
+                        ${(r.supervisor === user.name || user.role === 'supervisor') ? `<button class="btn-gold" style="flex:1; background:#e74c3c; border:none; color:white;" onclick="window.delRoom('${child.key}')">حذف</button>` : ''}
                     </div>
                 </div>`;
             });
@@ -188,8 +236,10 @@
         document.getElementById('page-'+p).classList.add('active'); 
     };
 
-    fetchPrayers();
-    initRooms();
+    window.toggleTheme = () => { const t = document.body.getAttribute('data-theme'); document.body.setAttribute('data-theme', t === 'dark' ? 'light' : 'dark'); };
+    window.logout = () => { localStorage.clear(); location.reload(); };
+
+    const saved = localStorage.getItem('noor_user'); if(saved) { user = JSON.parse(saved); startAppUI(); }
 </script>
 </body>
 </html>
