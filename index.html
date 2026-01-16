@@ -21,7 +21,7 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.3s; user-select: none !important; }
-        input { user-select: text !important; }
+        input, textarea { user-select: text !important; }
 
         body { 
             font-family: 'Tajawal', sans-serif; background: var(--bg-body); margin: 0; color: var(--text-color); 
@@ -44,7 +44,7 @@
 
         .btn-gold { 
             background: var(--gold-gradient); color: var(--emerald-dark); border: 1px solid var(--gold-solid);
-            padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%;
+            padding: 14px; border-radius: 15px; font-weight: 800; cursor: pointer; width: 100%;
         }
 
         nav { 
@@ -54,46 +54,30 @@
         nav button { background: none; border: none; color: rgba(212, 175, 55, 0.4); font-size: 0.8rem; cursor: pointer; }
         nav button.active { color: var(--gold-solid); transform: translateY(-5px); }
 
-        /* تأثير النبض عند التسجيل */
-        .recording { 
-            background: #e74c3c !important; 
-            box-shadow: 0 0 20px #e74c3c;
-            animation: pulse-red 1s infinite alternate;
+        /* نبض الميكروفون المطور */
+        .recording-pulse { 
+            background: #ff4444 !important; 
+            animation: pulse-effect 1s infinite alternate;
+            color: white !important;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
         }
-        @keyframes pulse-red { from { transform: scale(1); } to { transform: scale(1.2); } }
+        @keyframes pulse-effect {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
 
-        /* شريط الصوت المتحرك */
-        .audio-wave { display: inline-flex; align-items: flex-end; gap: 2px; height: 15px; margin-right: 10px; }
-        .audio-wave span { width: 3px; background: var(--gold-solid); border-radius: 5px; animation: wave 1s infinite ease-in-out; display: none; }
-        .is-playing .audio-wave span { display: block; }
-        .audio-wave span:nth-child(2) { animation-delay: 0.2s; }
-        .audio-wave span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes wave { 0%, 100% { height: 5px; } 50% { height: 15px; } }
+        .dev-tag { font-size: 0.9rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; margin-bottom: 5px; }
 
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center; padding:20px; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div id="prophet-reminder" class="modal">
-    <div class="card" style="width:100%; max-width:300px; text-align:center; background: var(--emerald-dark); border:3px solid var(--gold-solid);">
+<div id="prophet-reminder" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:10000; align-items:center; justify-content:center; padding:20px;">
+    <div class="card" style="width:100%; max-width:300px; text-align:center; border: 3px solid #d4af37; background: var(--emerald-dark); color: #fff;">
         <h2 style="font-family:'Amiri'; color:var(--gold-solid); font-size: 3rem; margin: 0;">ﷺ</h2>
-        <p style="color:white; font-size:1.3rem; font-family:'Amiri';">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ</p>
-        <button class="btn-gold" onclick="document.getElementById('prophet-reminder').style.display='none'">عليه الصلاة والسلام</button>
-    </div>
-</div>
-
-<div id="password-modal" class="modal">
-    <div class="card" style="width:100%; max-width:320px; text-align:center;">
-        <h3 style="color:var(--emerald-light);">قفل الحلقة</h3>
-        <p>الرجاء إدخال كلمة السر للدخول</p>
-        <input type="password" id="room-pass-input" placeholder="****" style="width:100%; padding:12px; text-align:center; border-radius:10px; border:1px solid var(--gold-solid); margin-bottom:15px;">
-        <div style="display:flex; gap:10px;">
-            <button class="btn-gold" id="confirm-pass-btn">دخول</button>
-            <button class="btn-gold" style="background:#888; color:white; border:none;" onclick="document.getElementById('password-modal').style.display='none'">إلغاء</button>
-        </div>
+        <p style="font-size:1.4rem; font-family:'Amiri'; margin: 15px 0;">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ</p>
+        <button class="btn-gold" onclick="document.getElementById('prophet-reminder').style.display='none'">عليه أفضل الصلاة والسلام</button>
     </div>
 </div>
 
@@ -112,21 +96,21 @@
     
     <div id="page-rooms" class="page active">
         <div id="rooms-list"></div>
-        <button id="add-room-btn" style="position:fixed; bottom:150px; left:20px; width:60px; height:60px; border-radius:50%; background:var(--gold-gradient); border:none; font-size:2rem; color:var(--emerald-dark); display:none; box-shadow: 0 4px 15px rgba(0,0,0,0.3);" onclick="window.openCreateModal()">+</button>
+        <button id="add-room-btn" style="position:fixed; bottom:150px; left:20px; width:60px; height:60px; border-radius:50%; background:var(--gold-gradient); border:none; font-size:2rem; color:var(--emerald-dark); display:none;" onclick="window.openCreateModal()">+</button>
     </div>
 
     <div id="page-prayer" class="page">
         <div class="card" style="text-align: center;">
-            <h3 style="font-family:'Amiri'; color:var(--emerald-light);">🕋 مَواقيتُ الصَّلاةِ</h3>
+            <h3 style="font-family:'Amiri'; color:var(--emerald-light);">🕋 مَواقيتُ الصَّلاةِ (القاهرة)</h3>
             <p id="current-date" style="color:var(--gold-solid); font-weight:bold;"></p>
-            <div id="prayer-times-cont">جاري التحميل...</div>
+            <div id="prayer-times-cont">جاري تحميل المواقيت...</div>
         </div>
     </div>
 
     <div id="page-general" class="page">
         <div id="general-msgs" style="display:flex; flex-direction:column; padding-bottom:120px;"></div>
-        <div style="position:fixed; bottom:80px; width:100%; left:0; padding:15px; background:var(--glass); display:flex; gap:10px; align-items:center; border-top:2px solid var(--gold-solid); z-index: 100;">
-            <input type="text" id="gen-input" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--gold-solid);" placeholder="اكتب رسالتك...">
+        <div style="position:fixed; bottom:80px; width:100%; left:0; padding:15px; background:var(--glass); display:flex; gap:10px; align-items:center; border-top:2px solid var(--gold-solid);">
+            <input type="text" id="gen-input" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--gold-solid);" placeholder="اكتب رسالتك هنا...">
             <button id="rec-btn-gen" class="btn-gold" style="width:50px; border-radius:50%;" onclick="window.toggleRecord('general')">🎤</button>
             <button class="btn-gold" style="width:70px;" onclick="window.sendGeneral()">إرسال</button>
         </div>
@@ -134,6 +118,13 @@
 
     <div id="page-settings" class="page">
         <div class="card" id="user-info-card"></div>
+        <div class="card">
+            <h4 style="margin-top:0; color:var(--emerald-light);">👨‍💻 فَرِيقُ التَّطْوِيرِ</h4>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <div class="dev-tag">● عَبْدُ الْعَزِيزِ مُحَمَّد (Abdulaziz Mohammed)</div>
+                <div class="dev-tag">● سُلَيْمَانُ بْنُ عَبْدِ الْفَتَّاحِ</div>
+            </div>
+        </div>
         <button class="btn-gold" onclick="window.toggleTheme()" style="margin-bottom:15px;">تغيير الوضع (ليلي/نهاري)</button>
         <button class="btn-gold" onclick="window.logout()" style="background: #e74c3c; color: white; border:none;">تسجيل الخروج</button>
     </div>
@@ -185,7 +176,6 @@
     // تذكير كل 10 دقائق
     setInterval(() => { document.getElementById('prophet-reminder').style.display = 'flex'; }, 600000);
 
-    // تسجيل الصوت بنبض
     window.toggleRecord = async (context) => {
         const btnId = context === 'general' ? 'rec-btn-gen' : 'rec-btn-room';
         const btn = document.getElementById(btnId);
@@ -196,16 +186,16 @@
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
                 mediaRecorder.start();
-                btn.classList.add('recording');
+                btn.classList.add('recording-pulse');
                 
                 mediaRecorder.onstop = async () => {
-                    btn.classList.remove('recording');
+                    btn.classList.remove('recording-pulse');
                     const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
                     uploadAudio(audioBlob, context);
                     stream.getTracks().forEach(t => t.stop());
                 };
                 mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-            } catch (err) { alert("فشل الوصول للميكروفون"); }
+            } catch (err) { alert("يجب تفعيل الميكروفون"); }
         } else {
             mediaRecorder.stop();
         }
@@ -220,83 +210,15 @@
             const data = await res.json();
             const msg = { sender: user.name, audioUrl: data.secure_url, type: 'audio', time: Date.now() };
             push(ref(db, context === 'general' ? 'general' : `messages/${activeRoomId}`), msg);
-        } catch (e) { alert("خطأ في الرفع"); }
+        } catch (e) { alert("خطأ في رفع الصوت"); }
     }
-
-    // دخول الغرفة بكلمة سر احترافية
-    window.enterRoom = (id, name, pass) => {
-        const modal = document.getElementById('password-modal');
-        const input = document.getElementById('room-pass-input');
-        const btn = document.getElementById('confirm-pass-btn');
-        
-        modal.style.display = 'flex';
-        input.value = "";
-        
-        btn.onclick = () => {
-            if(input.value === pass) {
-                modal.style.display = 'none';
-                activeRoomId = id;
-                document.getElementById('chat-ui').style.display = 'flex';
-                document.getElementById('room-chat-title').innerText = name;
-                const c = document.getElementById('room-msgs-cont'); c.innerHTML = "";
-                onChildAdded(ref(db, `messages/${id}`), s => renderMsg(s.val(), c));
-            } else {
-                alert("كلمة السر خاطئة!");
-            }
-        };
-    };
-
-    function renderMsg(m, cont) {
-        if(!cont) return;
-        const d = document.createElement('div');
-        const isMe = m.sender === user.name;
-        d.style = `padding:12px; border-radius:15px; margin:8px 0; max-width:85%; position:relative; ${isMe ? 'align-self:flex-start; background:#dcf8c6;' : 'align-self:flex-end; background:white; border:1px solid #ddd;'}`;
-        
-        if(m.type === 'audio') {
-            d.innerHTML = `
-                <small style="color:var(--emerald-light)">${m.sender}</small><br>
-                <div class="audio-msg-ui" style="display:flex; align-items:center;">
-                    <button class="play-btn" style="background:var(--gold-solid); border:none; border-radius:50%; width:35px; height:35px; color:white;">▶</button>
-                    <div class="audio-wave"><span></span><span></span><span></span></div>
-                </div>`;
-            
-            const btn = d.querySelector('.play-btn');
-            const audio = new Audio(m.audioUrl);
-            btn.onclick = () => {
-                if(audio.paused) {
-                    audio.play();
-                    btn.innerText = "⏸";
-                    d.classList.add('is-playing');
-                } else {
-                    audio.pause();
-                    btn.innerText = "▶";
-                    d.classList.remove('is-playing');
-                }
-            };
-            audio.onended = () => { btn.innerText = "▶"; d.classList.remove('is-playing'); };
-        } else {
-            d.innerHTML = `<small style="color:var(--emerald-light)">${m.sender}</small><br>${m.text}`;
-        }
-        cont.appendChild(d);
-        cont.scrollTop = cont.scrollHeight;
-    }
-
-    // إرسال الرسائل
-    window.sendGeneral = () => {
-        const i = document.getElementById('gen-input');
-        if(i.value.trim()){ push(ref(db, 'general'), {sender: user.name, text: i.value, type:'text'}); i.value=""; }
-    };
-    window.sendRoomMsg = () => {
-        const i = document.getElementById('room-input');
-        if(i.value.trim() && activeRoomId){ push(ref(db, `messages/${activeRoomId}`), {sender: user.name, text: i.value, type:'text'}); i.value=""; }
-    };
 
     window.registerUser = () => {
         const n = document.getElementById('reg-name').value;
         const p = document.getElementById('reg-phone').value;
         const code = document.getElementById('reg-code').value;
-        if(n.length < 3) return alert("الاسم قصير");
-        user = { name: n, phone: p, role: (code === "AM/SA_1" ? "supervisor" : "student") };
+        if (n.length < 3) return;
+        user = { name: n, phone: p, role: (code === "AM/SA_1") ? "supervisor" : "student" };
         localStorage.setItem('noor_user', JSON.stringify(user));
         startAppUI();
     };
@@ -305,7 +227,7 @@
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('main-app-interface').style.display = 'block';
         if(user.role === 'supervisor') document.getElementById('add-room-btn').style.display = 'block';
-        document.getElementById('user-info-card').innerHTML = `<h3>${user.name}</h3><p>الرتبة: ${user.role === 'supervisor' ? 'مشرف' : 'طالب علم'}</p>`;
+        document.getElementById('user-info-card').innerHTML = `<h3>مرحباً: ${user.name}</h3><p>الرتبة: ${user.role === 'supervisor' ? 'مشرف' : 'طالب علم'}</p>`;
         initData();
     }
 
@@ -314,11 +236,10 @@
             const list = document.getElementById('rooms-list'); list.innerHTML = "";
             snap.forEach(child => {
                 const r = child.val();
-                list.innerHTML += `
-                <div class="card">
+                list.innerHTML += `<div class="card">
                     <b>${r.name}</b><br><small>المشرف: ${r.supervisor}</small>
                     <div style="margin-top:10px; display:flex; gap:10px;">
-                        <button class="btn-gold" style="flex:3" onclick="window.enterRoom('${child.key}','${r.name}','${r.pass}')">دخول</button>
+                        <button class="btn-gold" style="flex:2" onclick="window.enterRoom('${child.key}','${r.name}','${r.pass}')">دخول</button>
                         ${(r.supervisor === user.name || user.role === 'supervisor') ? `<button class="btn-gold" style="flex:1; background:#e74c3c; border:none; color:white;" onclick="window.delRoom('${child.key}')">حذف</button>` : ''}
                     </div>
                 </div>`;
@@ -328,7 +249,32 @@
         onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), gCont));
     }
 
-    window.delRoom = (id) => { if(confirm("هل تريد حذف هذه الحلقة؟")) { remove(ref(db, `rooms/${id}`)); remove(ref(db, `messages/${id}`)); } };
+    function renderMsg(m, cont) {
+        if(!cont) return;
+        const d = document.createElement('div');
+        d.style = `padding:10px; border-radius:15px; margin:5px 0; max-width:80%; ${m.sender === user.name ? 'align-self:flex-start; background:#dcf8c6;' : 'align-self:flex-end; background:white; border:1px solid #ddd;'}`;
+        if(m.type === 'audio') {
+            d.innerHTML = `<small>${m.sender}</small><br><button onclick="new Audio('${m.audioUrl}').play()" style="background:var(--gold-solid); border:none; border-radius:50%; width:30px; height:30px; color:white; cursor:pointer;">▶</button> رسالة صوتية`;
+        } else {
+            d.innerHTML = `<small>${m.sender}</small><br>${m.text}`;
+        }
+        cont.appendChild(d); cont.scrollTop = cont.scrollHeight;
+    }
+
+    window.enterRoom = (id, name, pass) => {
+        const input = prompt("أدخل كلمة السر:");
+        if(input === pass) {
+            activeRoomId = id;
+            document.getElementById('chat-ui').style.display = 'flex';
+            document.getElementById('room-chat-title').innerText = name;
+            const c = document.getElementById('room-msgs-cont'); c.innerHTML = "";
+            onChildAdded(ref(db, `messages/${id}`), s => renderMsg(s.val(), c));
+        } else { alert("خطأ!"); }
+    };
+
+    window.sendGeneral = () => { const i = document.getElementById('gen-input'); if(i.value){ push(ref(db, 'general'), {sender:user.name, text:i.value, type:'text'}); i.value=""; } };
+    window.sendRoomMsg = () => { const i = document.getElementById('room-input'); if(i.value && activeRoomId){ push(ref(db, `messages/${activeRoomId}`), {sender:user.name, text:i.value, type:'text'}); i.value=""; } };
+    window.delRoom = id => { if(confirm("حذف الغرفة؟")) { remove(ref(db, 'rooms/'+id)); remove(ref(db, 'messages/'+id)); } };
     window.showPage = p => { document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); };
     window.closeChat = () => { document.getElementById('chat-ui').style.display = 'none'; activeRoomId = null; };
     window.logout = () => { localStorage.clear(); location.reload(); };
