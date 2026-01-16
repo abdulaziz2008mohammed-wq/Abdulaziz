@@ -113,6 +113,14 @@
 </head>
 <body oncontextmenu="return false;">
 
+<div id="prophet-reminder" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:10000; align-items:center; justify-content:center; padding:20px;">
+    <div class="card" style="width:100%; max-width:300px; text-align:center; border: 3px solid #d4af37; background: var(--emerald-dark); color: #fff;">
+        <h2 style="font-family:'Amiri'; color:var(--gold-solid); font-size: 3rem; margin: 0;">ﷺ</h2>
+        <p style="font-size:1.4rem; font-family:'Amiri'; margin: 15px 0; line-height: 1.6;">اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى نَبِيِّنَا مُحَمَّدٍ</p>
+        <button class="btn-gold" onclick="document.getElementById('prophet-reminder').style.display='none'">عليه أفضل الصلاة والسلام</button>
+    </div>
+</div>
+
 <div id="auth-screen" style="position:fixed; inset:0; background:var(--emerald-dark); z-index:5000; display:flex; align-items:center; justify-content:center; padding:20px;">
     <div class="card" style="width:100%; max-width:400px; text-align:center;">
         <h2 style="font-family:'Amiri'; color:var(--emerald-light); font-size:2.2rem; margin-bottom:10px;">دُرُوب الْهِدَايَة</h2>
@@ -143,7 +151,7 @@
 
     <div id="page-general" class="page">
         <div id="general-msgs" style="display:flex; flex-direction:column; padding-bottom:120px;"></div>
-        <div style="position:fixed; bottom:80px; width:100%; left:0; padding:15px; background:var(--glass); display:flex; gap:10px; align-items:center; border-top:2px solid var(--gold-solid);">
+        <div style="position:fixed; bottom:80px; width:100%; left:0; padding:15px; background:var(--glass); display:flex; gap:10px; align-items:center; border-top:2px solid var(--gold-solid); z-index: 100;">
             <input type="text" id="gen-input" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--gold-solid);" placeholder="اكتب رسالتك هنا...">
             <button id="rec-btn-gen" class="btn-gold" style="width:50px; border-radius:50%;" onclick="window.toggleRecord('general')">🎤</button>
             <button class="btn-gold" style="width:70px;" onclick="window.sendGeneral()">إرسال</button>
@@ -227,6 +235,12 @@
     let audioChunks = [];
     let prayerTimesData = null;
 
+    // تذكير كل 10 دقائق
+    setInterval(() => {
+        const reminder = document.getElementById('prophet-reminder');
+        if (reminder) reminder.style.display = 'flex';
+    }, 600000); // 10 دقائق
+
     // --- وظائف الصلاة ---
     async function getPrayerTimes() {
         try {
@@ -250,10 +264,12 @@
         const cont = document.getElementById('prayer-times-cont');
         const prayers = { "Fajr": "الفجر", "Sunrise": "الشروق", "Dhuhr": "الظهر", "Asr": "العصر", "Maghrib": "المغرب", "Isha": "العشاء" };
         let html = "";
-        for (const [key, name] of Object.entries(prayers)) {
-            html += `<div class="prayer-item"><span>${name}</span><span>${convertTo12h(prayerTimesData[key])}</span></div>`;
+        if (prayerTimesData) {
+            for (const [key, name] of Object.entries(prayers)) {
+                html += `<div class="prayer-item"><span>${name}</span><span>${convertTo12h(prayerTimesData[key])}</span></div>`;
+            }
+            cont.innerHTML = html;
         }
-        cont.innerHTML = html;
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('ar-EG', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
     }
 
@@ -264,6 +280,7 @@
         setInterval(() => {
             const now = new Date();
             const currentTime = now.getHours() * 60 + now.getMinutes();
+            if(!prayerTimesData) return;
 
             const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
             prayers.forEach(p => {
@@ -342,7 +359,8 @@
 
     function initData() {
         onValue(ref(db, 'rooms'), snap => {
-            const list = document.getElementById('rooms-list'); list.innerHTML = "";
+            const list = document.getElementById('rooms-list'); if(!list) return;
+            list.innerHTML = "";
             snap.forEach(child => {
                 const r = child.val();
                 list.innerHTML += `<div class="card">
@@ -355,6 +373,10 @@
                 </div>`;
             });
         });
+        
+        // منع التكرار عند التحميل
+        const genCont = document.getElementById('general-msgs');
+        if(genCont) genCont.innerHTML = "";
         onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), document.getElementById('general-msgs')));
     }
 
@@ -370,6 +392,7 @@
     };
 
     function renderMsg(m, cont) {
+        if(!cont) return;
         const d = document.createElement('div');
         d.style = `padding:10px; border-radius:15px; margin:5px 0; max-width:80%; ${m.sender === user.name ? 'align-self:flex-start; background:#dcf8c6;' : 'align-self:flex-end; background:white; border:1px solid #ddd;'}`;
         if(m.type === 'audio') {
@@ -380,14 +403,36 @@
         cont.appendChild(d); cont.scrollTop = cont.scrollHeight;
     }
 
-    window.sendGeneral = () => { const i = document.getElementById('gen-input'); if(i.value) { push(ref(db, 'general'), { sender: user.name, text: i.value, type: 'text', time: Date.now() }); i.value = ""; } };
-    window.sendRoomMsg = () => { const i = document.getElementById('room-input'); if(i.value && activeRoomId) { push(ref(db, `messages/${activeRoomId}`), { sender: user.name, text: i.value, type: 'text', time: Date.now() }); i.value = ""; } };
+    window.sendGeneral = () => { 
+        const i = document.getElementById('gen-input'); 
+        if(i && i.value.trim() !== "") { 
+            push(ref(db, 'general'), { sender: user.name, text: i.value, type: 'text', time: Date.now() }); 
+            i.value = ""; 
+        } 
+    };
+
+    window.sendRoomMsg = () => { 
+        const i = document.getElementById('room-input'); 
+        if(i && i.value.trim() !== "" && activeRoomId) { 
+            push(ref(db, `messages/${activeRoomId}`), { sender: user.name, text: i.value, type: 'text', time: Date.now() }); 
+            i.value = ""; 
+        } 
+    };
+
     window.showPage = p => { 
         document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active')); 
-        document.getElementById('page-'+p).classList.add('active'); 
+        const target = document.getElementById('page-'+p);
+        if(target) target.classList.add('active'); 
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById('nav-'+p).classList.add('active');
+        const navBtn = document.getElementById('nav-'+p);
+        if(navBtn) navBtn.classList.add('active');
     };
+
+    window.toggleTheme = () => {
+        const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', theme);
+    };
+
     window.logout = () => { localStorage.clear(); location.reload(); };
     window.closeChat = () => { document.getElementById('chat-ui').style.display = 'none'; activeRoomId = null; };
     window.showCustomDialog = (msg) => { document.getElementById('dialog-msg').innerText = msg; document.getElementById('custom-dialog-box').style.display = 'flex'; };
