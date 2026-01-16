@@ -55,43 +55,47 @@
         nav button.active { color: var(--gold-solid); transform: translateY(-5px); }
 
         /* تأثير النبض عند التسجيل */
-        .recording-active { 
+        .recording { 
             background: #e74c3c !important; 
             box-shadow: 0 0 20px #e74c3c;
-            animation: pulse-red 0.8s infinite alternate !important;
+            animation: pulse-red 1s infinite alternate;
         }
-        @keyframes pulse-red { 
-            from { transform: scale(1); box-shadow: 0 0 10px #e74c3c; } 
-            to { transform: scale(1.15); box-shadow: 0 0 25px #ff0000; } 
-        }
+        @keyframes pulse-red { from { transform: scale(1); } to { transform: scale(1.2); } }
 
         /* شريط الصوت المتحرك */
-        .audio-wave { display: none; align-items: flex-end; gap: 3px; height: 20px; margin: 0 10px; }
-        .is-playing .audio-wave { display: inline-flex; }
-        .audio-wave span { 
-            width: 4px; background: var(--gold-solid); border-radius: 2px; 
-            animation: wave-anim 1s infinite ease-in-out; 
-        }
-        .audio-wave span:nth-child(2) { animation-delay: 0.2s; height: 12px; }
-        .audio-wave span:nth-child(3) { animation-delay: 0.4s; height: 8px; }
-        
-        @keyframes wave-anim { 0%, 100% { height: 5px; } 50% { height: 20px; } }
-
-        .kick-btn {
-            background: #ff4757; color: white; border: none; padding: 2px 8px; 
-            border-radius: 5px; font-size: 0.7rem; margin-right: 10px; cursor: pointer;
-        }
-
-        .dev-names {
-            margin-top: 30px; text-align: center; color: white; font-family: 'Amiri', serif;
-            font-size: 1.2rem; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px;
-        }
+        .audio-wave { display: inline-flex; align-items: flex-end; gap: 2px; height: 15px; margin-right: 10px; }
+        .audio-wave span { width: 3px; background: var(--gold-solid); border-radius: 5px; animation: wave 1s infinite ease-in-out; display: none; }
+        .is-playing .audio-wave span { display: block; }
+        .audio-wave span:nth-child(2) { animation-delay: 0.2s; }
+        .audio-wave span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes wave { 0%, 100% { height: 5px; } 50% { height: 15px; } }
 
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center; padding:20px; }
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
 <body oncontextmenu="return false;">
+
+<div id="prophet-reminder" class="modal">
+    <div class="card" style="width:100%; max-width:300px; text-align:center; background: var(--emerald-dark); border:3px solid var(--gold-solid);">
+        <h2 style="font-family:'Amiri'; color:var(--gold-solid); font-size: 3rem; margin: 0;">ﷺ</h2>
+        <p style="color:white; font-size:1.3rem; font-family:'Amiri';">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ</p>
+        <button class="btn-gold" onclick="document.getElementById('prophet-reminder').style.display='none'">عليه الصلاة والسلام</button>
+    </div>
+</div>
+
+<div id="password-modal" class="modal">
+    <div class="card" style="width:100%; max-width:320px; text-align:center;">
+        <h3 style="color:var(--emerald-light);">قفل الحلقة</h3>
+        <p>الرجاء إدخال كلمة السر للدخول</p>
+        <input type="password" id="room-pass-input" placeholder="****" style="width:100%; padding:12px; text-align:center; border-radius:10px; border:1px solid var(--gold-solid); margin-bottom:15px;">
+        <div style="display:flex; gap:10px;">
+            <button class="btn-gold" id="confirm-pass-btn">دخول</button>
+            <button class="btn-gold" style="background:#888; color:white; border:none;" onclick="document.getElementById('password-modal').style.display='none'">إلغاء</button>
+        </div>
+    </div>
+</div>
 
 <div id="auth-screen" style="position:fixed; inset:0; background:var(--emerald-dark); z-index:5000; display:flex; align-items:center; justify-content:center; padding:20px;">
     <div class="card" style="width:100%; max-width:400px; text-align:center;">
@@ -111,20 +115,33 @@
         <button id="add-room-btn" style="position:fixed; bottom:150px; left:20px; width:60px; height:60px; border-radius:50%; background:var(--gold-gradient); border:none; font-size:2rem; color:var(--emerald-dark); display:none; box-shadow: 0 4px 15px rgba(0,0,0,0.3);" onclick="window.openCreateModal()">+</button>
     </div>
 
+    <div id="page-prayer" class="page">
+        <div class="card" style="text-align: center;">
+            <h3 style="font-family:'Amiri'; color:var(--emerald-light);">🕋 مَواقيتُ الصَّلاةِ</h3>
+            <p id="current-date" style="color:var(--gold-solid); font-weight:bold;"></p>
+            <div id="prayer-times-cont">جاري التحميل...</div>
+        </div>
+    </div>
+
+    <div id="page-general" class="page">
+        <div id="general-msgs" style="display:flex; flex-direction:column; padding-bottom:120px;"></div>
+        <div style="position:fixed; bottom:80px; width:100%; left:0; padding:15px; background:var(--glass); display:flex; gap:10px; align-items:center; border-top:2px solid var(--gold-solid); z-index: 100;">
+            <input type="text" id="gen-input" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--gold-solid);" placeholder="اكتب رسالتك...">
+            <button id="rec-btn-gen" class="btn-gold" style="width:50px; border-radius:50%;" onclick="window.toggleRecord('general')">🎤</button>
+            <button class="btn-gold" style="width:70px;" onclick="window.sendGeneral()">إرسال</button>
+        </div>
+    </div>
+
     <div id="page-settings" class="page">
         <div class="card" id="user-info-card"></div>
         <button class="btn-gold" onclick="window.toggleTheme()" style="margin-bottom:15px;">تغيير الوضع (ليلي/نهاري)</button>
         <button class="btn-gold" onclick="window.logout()" style="background: #e74c3c; color: white; border:none;">تسجيل الخروج</button>
-        
-        <div class="dev-names">
-            <p style="margin:5px 0; font-weight:bold; color: var(--gold-solid);">بِإِشْرَافِ وَتَطْوِيرِ:</p>
-            <p style="margin:2px 0;">أَحْمَدُ الْمُطَوِّرُ</p>
-            <p style="margin:2px 0;">عَبْدُ الرَّحْمَنِ الْمُبَرْمِجُ</p>
-        </div>
     </div>
 
     <nav>
         <button onclick="window.showPage('rooms')" id="nav-rooms" class="active">🏠<br>الحلقات</button>
+        <button onclick="window.showPage('prayer')" id="nav-prayer">🕌<br>المواقيت</button>
+        <button onclick="window.showPage('general')" id="nav-general">💬<br>العام</button>
         <button onclick="window.showPage('settings')" id="nav-settings">⚙️<br>حسابي</button>
     </nav>
 </div>
@@ -162,13 +179,16 @@
 
     let user = { name: "", phone: "", role: "" };
     let activeRoomId = null; 
-    let currentRoomSupervisor = "";
     let mediaRecorder;
     let audioChunks = [];
 
-    // وظيفة تسجيل الصوت مع النبض
+    // تذكير كل 10 دقائق
+    setInterval(() => { document.getElementById('prophet-reminder').style.display = 'flex'; }, 600000);
+
+    // تسجيل الصوت بنبض
     window.toggleRecord = async (context) => {
-        const btn = document.getElementById('rec-btn-room');
+        const btnId = context === 'general' ? 'rec-btn-gen' : 'rec-btn-room';
+        const btn = document.getElementById(btnId);
 
         if (!mediaRecorder || mediaRecorder.state === "inactive") {
             try {
@@ -176,10 +196,10 @@
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
                 mediaRecorder.start();
-                btn.classList.add('recording-active'); // تفعيل النبض
+                btn.classList.add('recording');
                 
                 mediaRecorder.onstop = async () => {
-                    btn.classList.remove('recording-active'); // إيقاف النبض
+                    btn.classList.remove('recording');
                     const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
                     uploadAudio(audioBlob, context);
                     stream.getTracks().forEach(t => t.stop());
@@ -199,100 +219,76 @@
             const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
             const data = await res.json();
             const msg = { sender: user.name, audioUrl: data.secure_url, type: 'audio', time: Date.now() };
-            push(ref(db, `messages/${activeRoomId}`), msg);
+            push(ref(db, context === 'general' ? 'general' : `messages/${activeRoomId}`), msg);
         } catch (e) { alert("خطأ في الرفع"); }
     }
 
-    // عرض الرسائل مع ميزة الاستماع والطرد
-    function renderMsg(m, cont, msgKey) {
+    // دخول الغرفة بكلمة سر احترافية
+    window.enterRoom = (id, name, pass) => {
+        const modal = document.getElementById('password-modal');
+        const input = document.getElementById('room-pass-input');
+        const btn = document.getElementById('confirm-pass-btn');
+        
+        modal.style.display = 'flex';
+        input.value = "";
+        
+        btn.onclick = () => {
+            if(input.value === pass) {
+                modal.style.display = 'none';
+                activeRoomId = id;
+                document.getElementById('chat-ui').style.display = 'flex';
+                document.getElementById('room-chat-title').innerText = name;
+                const c = document.getElementById('room-msgs-cont'); c.innerHTML = "";
+                onChildAdded(ref(db, `messages/${id}`), s => renderMsg(s.val(), c));
+            } else {
+                alert("كلمة السر خاطئة!");
+            }
+        };
+    };
+
+    function renderMsg(m, cont) {
         if(!cont) return;
         const d = document.createElement('div');
         const isMe = m.sender === user.name;
-        const isSupervisor = user.name === currentRoomSupervisor;
-
-        d.className = "msg-card";
         d.style = `padding:12px; border-radius:15px; margin:8px 0; max-width:85%; position:relative; ${isMe ? 'align-self:flex-start; background:#dcf8c6;' : 'align-self:flex-end; background:white; border:1px solid #ddd;'}`;
         
-        let kickHtml = (isSupervisor && !isMe) ? `<button class="kick-btn" onclick="window.kickUser('${msgKey}')">طرد 🚫</button>` : '';
-
         if(m.type === 'audio') {
             d.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <small style="color:var(--emerald-light)">${m.sender}</small>
-                    ${kickHtml}
-                </div>
-                <div class="audio-msg-ui" style="display:flex; align-items:center; margin-top:5px;">
+                <small style="color:var(--emerald-light)">${m.sender}</small><br>
+                <div class="audio-msg-ui" style="display:flex; align-items:center;">
                     <button class="play-btn" style="background:var(--gold-solid); border:none; border-radius:50%; width:35px; height:35px; color:white;">▶</button>
                     <div class="audio-wave"><span></span><span></span><span></span></div>
-                    <small style="font-size:0.7rem; color:#666; margin-right:5px;" class="status-txt">اضغط للاستماع</small>
                 </div>`;
             
             const btn = d.querySelector('.play-btn');
-            const statusTxt = d.querySelector('.status-txt');
             const audio = new Audio(m.audioUrl);
-
             btn.onclick = () => {
                 if(audio.paused) {
                     audio.play();
                     btn.innerText = "⏸";
                     d.classList.add('is-playing');
-                    statusTxt.innerText = "جاري الاستماع...";
                 } else {
                     audio.pause();
                     btn.innerText = "▶";
                     d.classList.remove('is-playing');
-                    statusTxt.innerText = "تم الإيقاف";
                 }
             };
-            audio.onended = () => { 
-                btn.innerText = "▶"; 
-                d.classList.remove('is-playing'); 
-                statusTxt.innerText = "انتهى المقطع";
-            };
+            audio.onended = () => { btn.innerText = "▶"; d.classList.remove('is-playing'); };
         } else {
-            d.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <small style="color:var(--emerald-light)">${m.sender}</small>
-                    ${kickHtml}
-                </div>
-                <div>${m.text}</div>`;
+            d.innerHTML = `<small style="color:var(--emerald-light)">${m.sender}</small><br>${m.text}`;
         }
         cont.appendChild(d);
         cont.scrollTop = cont.scrollHeight;
     }
 
-    // وظيفة "الطرد" (حذف رسالة الشخص كإجراء إشرافي)
-    window.kickUser = (msgId) => {
-        if(confirm("هل تريد حذف رسالة هذا الشخص وتنبيهه؟")) {
-            remove(ref(db, `messages/${activeRoomId}/${msgId}`));
-        }
+    // إرسال الرسائل
+    window.sendGeneral = () => {
+        const i = document.getElementById('gen-input');
+        if(i.value.trim()){ push(ref(db, 'general'), {sender: user.name, text: i.value, type:'text'}); i.value=""; }
     };
-
-    window.enterRoom = (id, name, pass, supervisor) => {
-        activeRoomId = id;
-        currentRoomSupervisor = supervisor;
-        document.getElementById('chat-ui').style.display = 'flex';
-        document.getElementById('room-chat-title').innerText = name;
-        const c = document.getElementById('room-msgs-cont'); 
-        c.innerHTML = "";
-        onChildAdded(ref(db, `messages/${id}`), s => renderMsg(s.val(), c, s.key));
-    };
-
-    window.initData = () => {
-        onValue(ref(db, 'rooms'), snap => {
-            const list = document.getElementById('rooms-list'); list.innerHTML = "";
-            snap.forEach(child => {
-                const r = child.val();
-                list.innerHTML += `
-                <div class="card">
-                    <b>${r.name}</b><br><small>المشرف: ${r.supervisor}</small>
-                    <div style="margin-top:10px; display:flex; gap:10px;">
-                        <button class="btn-gold" style="flex:3" onclick="window.enterRoom('${child.key}','${r.name}','${r.pass}', '${r.supervisor}')">دخول</button>
-                        ${(r.supervisor === user.name || user.role === 'supervisor') ? `<button class="btn-gold" style="flex:1; background:#e74c3c; border:none; color:white;" onclick="window.delRoom('${child.key}')">حذف</button>` : ''}
-                    </div>
-                </div>`;
-            });
-        });
+    window.sendRoomMsg = () => {
+        const i = document.getElementById('room-input');
+        if(i.value.trim() && activeRoomId){ push(ref(db, `messages/${activeRoomId}`), {sender: user.name, text: i.value, type:'text'}); i.value=""; }
     };
 
     window.registerUser = () => {
@@ -302,28 +298,43 @@
         if(n.length < 3) return alert("الاسم قصير");
         user = { name: n, phone: p, role: (code === "AM/SA_1" ? "supervisor" : "student") };
         localStorage.setItem('noor_user', JSON.stringify(user));
-        location.reload();
+        startAppUI();
     };
 
-    // وظائف التنقل الأساسية
-    window.showPage = p => { 
-        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active')); 
-        document.getElementById('page-'+p).classList.add('active'); 
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById('nav-'+p).classList.add('active');
-    };
-    window.closeChat = () => { document.getElementById('chat-ui').style.display = 'none'; activeRoomId = null; };
-    window.logout = () => { localStorage.clear(); location.reload(); };
-
-    const saved = localStorage.getItem('noor_user');
-    if(saved) { 
-        user = JSON.parse(saved); 
+    function startAppUI() {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('main-app-interface').style.display = 'block';
         if(user.role === 'supervisor') document.getElementById('add-room-btn').style.display = 'block';
         document.getElementById('user-info-card').innerHTML = `<h3>${user.name}</h3><p>الرتبة: ${user.role === 'supervisor' ? 'مشرف' : 'طالب علم'}</p>`;
-        window.initData(); 
+        initData();
     }
+
+    function initData() {
+        onValue(ref(db, 'rooms'), snap => {
+            const list = document.getElementById('rooms-list'); list.innerHTML = "";
+            snap.forEach(child => {
+                const r = child.val();
+                list.innerHTML += `
+                <div class="card">
+                    <b>${r.name}</b><br><small>المشرف: ${r.supervisor}</small>
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button class="btn-gold" style="flex:3" onclick="window.enterRoom('${child.key}','${r.name}','${r.pass}')">دخول</button>
+                        ${(r.supervisor === user.name || user.role === 'supervisor') ? `<button class="btn-gold" style="flex:1; background:#e74c3c; border:none; color:white;" onclick="window.delRoom('${child.key}')">حذف</button>` : ''}
+                    </div>
+                </div>`;
+            });
+        });
+        const gCont = document.getElementById('general-msgs'); gCont.innerHTML = "";
+        onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), gCont));
+    }
+
+    window.delRoom = (id) => { if(confirm("هل تريد حذف هذه الحلقة؟")) { remove(ref(db, `rooms/${id}`)); remove(ref(db, `messages/${id}`)); } };
+    window.showPage = p => { document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); };
+    window.closeChat = () => { document.getElementById('chat-ui').style.display = 'none'; activeRoomId = null; };
+    window.logout = () => { localStorage.clear(); location.reload(); };
+
+    const saved = localStorage.getItem('noor_user');
+    if(saved) { user = JSON.parse(saved); startAppUI(); }
 </script>
 </body>
 </html>
