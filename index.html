@@ -8,234 +8,251 @@
     <style>
         :root {
             --primary: #064e3b;
-            --primary-dark: #022c22;
+            --primary-light: #0d7a5d;
             --accent: #d4af37;
-            --bg: #f8f9fa;
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --text-main: #1a1a1a;
-            --text-muted: #666;
+            --bg: #f0f2f5;
+            --glass: rgba(255, 255, 255, 0.95);
+            --text: #1e293b;
             --gold-grad: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #aa771c);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         }
 
         [data-theme="dark"] {
-            --primary: #022c22;
-            --primary-dark: #011611;
-            --bg: #011611;
-            --card-bg: rgba(30, 30, 30, 0.95);
-            --text-main: #ffffff; /* تم تفتيح النص الأساسي */
-            --text-muted: #cccccc;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --primary: #011611;
+            --primary-light: #022c22;
+            --bg: #010c0a;
+            --glass: rgba(15, 23, 42, 0.98);
+            --text: #f8fafc;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; transition: background 0.3s, color 0.3s; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: background 0.3s, color 0.3s; }
 
         body {
             font-family: 'Tajawal', sans-serif;
             background: var(--bg);
             margin: 0;
-            color: var(--text-main);
+            color: var(--text);
             height: 100vh;
             overflow: hidden;
             background-image: url('https://www.transparenttextures.com/patterns/islamic-exercise.png');
         }
 
+        /* Modern Header */
         header {
-            background: var(--primary-dark);
-            color: var(--accent);
-            padding: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            color: var(--primary);
+            padding: 15px 20px;
             text-align: center;
             font-family: 'Amiri', serif;
             font-size: 1.8rem;
-            border-bottom: 3px solid var(--accent);
             position: fixed; top: 0; width: 100%; z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            border-bottom: 2px solid var(--accent);
+            box-shadow: var(--shadow);
         }
 
         .screen {
-            display: none;
-            height: 100vh;
-            overflow-y: auto;
-            padding: 100px 15px 120px 15px;
+            display: none; height: 100vh; overflow-y: auto;
+            padding: 90px 20px 120px 20px;
             animation: fadeIn 0.4s ease-out;
         }
         .screen.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
+            background: var(--glass);
+            border-radius: 24px;
+            padding: 22px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow);
-        }
-
-        /* تحسين ألوان العناوين في الوضع الداكن */
-        [data-theme="dark"] .card h3, 
-        [data-theme="dark"] .card h4,
-        [data-theme="dark"] .prayer-row span {
-            color: #ffffff !important;
+            border: 1px solid rgba(212, 175, 55, 0.1);
         }
 
         .btn {
             background: var(--gold-grad);
-            color: var(--primary-dark);
+            color: var(--primary);
             border: none;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 14px;
+            border-radius: 16px;
             font-weight: 800;
             cursor: pointer;
             width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
             font-family: 'Tajawal';
+            box-shadow: 0 4px 15px rgba(179, 135, 40, 0.2);
         }
+        .btn:active { transform: scale(0.96); }
 
-        .btn-whatsapp { background: #25D366 !important; color: white !important; font-size: 0.85rem; }
-
-        .fab {
-            position: fixed; bottom: 100px; left: 25px;
-            width: 60px; height: 60px;
-            background: var(--gold-grad);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 30px; color: var(--primary-dark);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: none; z-index: 999;
-        }
+        .btn-whatsapp { background: #22c55e !important; color: white !important; font-size: 0.9rem; }
 
         nav {
             position: fixed; bottom: 0; width: 100%;
-            background: var(--primary-dark);
+            background: var(--glass);
+            backdrop-filter: blur(20px);
             display: flex; justify-content: space-around;
             padding: 12px 0 25px 0;
-            border-top: 2px solid var(--accent);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
             z-index: 1000;
         }
 
-        nav button { background: none; border: none; color: rgba(212, 175, 55, 0.4); font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        nav button {
+            background: none; border: none; color: #94a3b8;
+            font-size: 0.75rem; display: flex; flex-direction: column;
+            align-items: center; gap: 5px; cursor: pointer;
+        }
+
         nav button.active { color: var(--accent); }
-        nav svg { width: 22px; height: 22px; fill: currentColor; }
+        nav svg { width: 24px; height: 24px; fill: currentColor; }
 
-        .reminder-overlay {
-            position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
-            background: var(--gold-grad); color: var(--primary-dark);
-            padding: 15px 30px; border-radius: 50px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            font-family: 'Amiri', serif; font-size: 1.4rem; font-weight: bold;
-            z-index: 10000; display: none; animation: slideDown 0.5s forwards;
+        .fab {
+            position: fixed; bottom: 105px; left: 25px;
+            width: 65px; height: 65px;
+            background: var(--gold-grad);
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; color: var(--primary);
+            box-shadow: 0 10px 25px rgba(179, 135, 40, 0.4);
+            border: none; z-index: 999; cursor: pointer;
         }
 
-        @keyframes slideDown { 0% { top: -100px; } 100% { top: 100px; } }
-
-        /* Recording visual */
-        .rec-pulse {
-            background: #ff4757 !important;
-            animation: rec-blink 1s infinite alternate;
-            color: white !important;
+        .avatar-frame {
+            position: relative; width: 110px; height: 110px; margin: 0 auto 15px;
         }
-        @keyframes rec-blink { from { opacity: 1; transform: scale(1); } to { opacity: 0.7; transform: scale(1.1); } }
+        .avatar-main {
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 4px solid var(--accent); object-fit: cover;
+            background: #eee;
+        }
 
-        /* Message Bubbles with Avatar */
-        .msg-row { display: flex; gap: 10px; margin: 10px 0; align-items: flex-end; }
+        .msg-row { display: flex; gap: 12px; margin: 15px 0; align-items: flex-end; }
         .msg-row.me { flex-direction: row-reverse; }
-        .avatar { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; background: #eee; }
-        .message-bubble { padding: 10px 15px; border-radius: 18px; max-width: 75%; position: relative; }
-        .msg-me { background: var(--primary); color: white; border-bottom-right-radius: 2px; }
-        .msg-them { background: white; color: black; border: 1px solid #ddd; border-bottom-left-radius: 2px; }
+        .avatar-sm { width: 42px; height: 42px; border-radius: 14px; border: 2px solid var(--accent); }
+        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 78%; line-height: 1.6; font-size: 0.95rem; }
+        .bubble-me { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .bubble-them { background: var(--glass); color: var(--text); border: 1px solid rgba(0,0,0,0.05); border-bottom-left-radius: 4px; }
 
-        #splash-screen {
+        .dev-name {
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            font-size: 1.4rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .reminder {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: var(--gold-grad); color: var(--primary);
+            padding: 15px 35px; border-radius: 50px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            font-family: 'Amiri', serif; font-size: 1.5rem; font-weight: bold;
+            z-index: 10001; transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .reminder.active { top: 95px; }
+
+        .rec-active { background: #ef4444 !important; animation: pulse 1s infinite alternate; color: white !important; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        #splash {
             position: fixed; inset: 0; background: var(--primary-dark);
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--accent);
         }
-        .dev-name { background: var(--gold-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 1.1rem; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div id="reminder-box" class="reminder-overlay">صَلِّ عَلَى النَّبِيِّ</div>
+<div id="reminder-box" class="reminder">صَلِّ عَلَى النَّبِيِّ</div>
 
-<div id="splash-screen">
-    <h1 style="font-family:'Amiri'; font-size: 3.2rem; margin:0;">دُرُوب الْهِدَايَةِ</h1>
-    <div style="width:30px; height:30px; border:3px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite; margin-top:20px;"></div>
+<div id="splash">
+    <h1 style="font-family:'Amiri'; font-size: 3.5rem; margin:0;">دُرُوب الْهِدَايَةِ</h1>
+    <div style="width:40px; height:40px; border:4px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite; margin-top:20px;"></div>
 </div>
 
-<!-- Auth Screen -->
+<!-- Auth -->
 <div id="auth-screen" class="screen active" style="padding-top:15vh;">
-    <div class="card" style="max-width:400px; margin:auto; text-align:center;">
-        <h2 style="font-family:'Amiri'; color:var(--primary); font-size:2.5rem;">دُرُوب الْهِدَايَةِ</h2>
-        <input type="text" id="reg-name" placeholder="الاسم الكريم..." style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
-        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:15px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd;">
-        <input type="text" id="reg-code" placeholder="كود المشرف (اختياري)..." style="width:100%; padding:15px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd;">
+    <div class="card" style="max-width:420px; margin:auto; text-align:center;">
+        <h2 style="font-family:'Amiri'; color:var(--primary); font-size:3rem; margin:0 0 20px;">دُرُوب الْهِدَايَةِ</h2>
+        <input type="text" id="reg-name" placeholder="الاسم الكريم..." style="width:100%; padding:16px; margin-bottom:12px; border-radius:15px; border:1px solid #e2e8f0; font-size:1rem;">
+        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:16px; margin-bottom:12px; border-radius:15px; border:1px solid #e2e8f0; font-size:1rem;">
+        <input type="text" id="reg-code" placeholder="كود المشرف (اختياري)..." style="width:100%; padding:16px; margin-bottom:25px; border-radius:15px; border:1px solid #e2e8f0; font-size:1rem;">
         <button class="btn" onclick="window.registerUser()">دخول آمن</button>
     </div>
 </div>
 
-<!-- App -->
+<!-- Main App -->
 <div id="main-app" style="display:none;">
     <header>دُرُوب الْهِدَايَةِ</header>
 
     <div id="page-circles" class="screen">
-        <h3 style="color:var(--primary);">📖 حلقات التحفيظ</h3>
+        <h3 style="color:var(--primary); margin-bottom:15px;">📖 حلقات التحفيظ النشطة</h3>
         <div id="circles-list"></div>
-        <button id="add-circle-btn" class="fab" onclick="window.createCircle()" style="display:none;">+</button>
+        <button id="add-btn" class="fab" onclick="window.createCircle()">+</button>
     </div>
 
     <div id="page-prayer" class="screen">
         <div class="card" style="text-align: center;">
-            <h3 style="font-family:'Amiri'; color:var(--primary);">🕌 مواقيت الصلاة</h3>
-            <p id="hijri-date" style="color:var(--accent); font-weight:800;"></p>
-            <div id="prayer-list" style="margin-top:15px;"></div>
+            <h3 style="font-family:'Amiri'; color:var(--primary); font-size:2rem;">🕌 مواقيت الصلاة</h3>
+            <p id="hijri-date" style="color:var(--accent); font-weight:800; font-size:1.3rem;"></p>
+            <div id="prayer-list" style="margin-top:20px;"></div>
         </div>
     </div>
 
     <div id="page-community" class="screen">
         <div id="community-msgs" style="display:flex; flex-direction:column;"></div>
-        <div style="height:100px;"></div>
+        <div style="height:110px;"></div>
     </div>
 
     <div id="page-profile" class="screen">
         <div class="card" style="text-align:center;">
-            <div style="position:relative; width:100px; height:100px; margin:0 auto 15px auto;">
-                <img id="profile-img-preview" src="https://via.placeholder.com/100" class="avatar" style="width:100px; height:100px; border:3px solid var(--accent);">
-                <label for="pfp-input" style="position:absolute; bottom:0; right:0; background:var(--gold-grad); padding:5px; border-radius:50%; cursor:pointer; width:30px; height:30px; display:flex; align-items:center; justify-content:center;">📸</label>
-                <input type="file" id="pfp-input" accept="image/*" style="display:none;" onchange="window.updateProfilePic(this)">
+            <div class="avatar-frame">
+                <img id="profile-img-view" src="https://via.placeholder.com/110" class="avatar-main">
+                <label for="pfp-upload" style="position:absolute; bottom:5px; right:5px; background:var(--gold-grad); padding:8px; border-radius:50%; cursor:pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">📸</label>
+                <input type="file" id="pfp-upload" accept="image/*" style="display:none;" onchange="window.updateProfilePic(this)">
             </div>
-            <div id="user-info-card"></div>
+            <div id="profile-details"></div>
         </div>
         
         <div class="card">
-            <h4 style="margin-top:0; color:var(--primary);">فَرِيقُ التَّطْوِيرِ</h4>
-            <div style="line-height: 2;">
-                ● <span class="dev-name">عَبْدُ الْعَزِيزِ مُحَمَّد</span><br>
-                ● <span class="dev-name">سُلَيْمَانُ بْنُ عَبْدِ الْفَتَّاحِ</span>
+            <h4 style="margin-top:0; color:var(--primary); font-family:'Amiri'; font-size:1.6rem;">فَرِيقُ التَّطْوِيرِ</h4>
+            <div style="padding-top:10px;">
+                <span class="dev-name">عَبْدُ الْعَزِيزِ مُحَمَّد</span>
+                <span class="dev-name">سُلَيْمَانُ بْنُ عَبْدِ الْفَتَّاحِ</span>
             </div>
         </div>
 
-        <button class="btn" style="margin-bottom:10px;" onclick="window.toggleTheme()">🌓 المظهر (فاتح/داكن)</button>
-        <button class="btn" style="background:#ff4757; color:white;" onclick="window.logout()">خروج</button>
+        <button class="btn" style="margin-bottom:12px;" onclick="window.toggleTheme()">🌓 تبديل المظهر (فاتح / داكن)</button>
+        <button class="btn" style="background:#ef4444; color:white; box-shadow:none;" onclick="window.logout()">خروج نهائي</button>
     </div>
 
     <nav>
-        <button onclick="window.showPage('circles', this)" class="active"><svg viewBox="0 0 24 24"><path d="M12 3L4 9V21H20V9L12 3Z"/></svg>الحلقات</button>
-        <button onclick="window.showPage('prayer', this)"><svg viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/></svg>المواقيت</button>
-        <button onclick="window.showPage('community', this)"><svg viewBox="0 0 24 24"><path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"/></svg>العام</button>
-        <button onclick="window.showPage('profile', this)"><svg viewBox="0 0 24 24"><path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/></svg>حسابي</button>
+        <button onclick="window.showPage('circles', this)" class="active">
+            <svg viewBox="0 0 24 24"><path d="M12 3L4 9V21H20V9L12 3Z"/></svg>الحلقات
+        </button>
+        <button onclick="window.showPage('prayer', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/></svg>المواقيت
+        </button>
+        <button onclick="window.showPage('community', this)">
+            <svg viewBox="0 0 24 24"><path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"/></svg>العام
+        </button>
+        <button onclick="window.showPage('profile', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/></svg>حسابي
+        </button>
     </nav>
 
-    <div id="input-bar" style="position:fixed; bottom:85px; width:100%; background:var(--card-bg); padding:10px; display:none; gap:10px; border-top:1px solid rgba(212,175,55,0.3); z-index:900;">
-        <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ddd; background:var(--bg); color:var(--text-main);">
-        <button id="rec-btn" class="btn" style="width:45px; border-radius:50%; font-size:1.2rem;" onclick="window.handleRecording()">🎤</button>
-        <button class="btn" style="width:60px;" onclick="window.sendMessage()">إرسال</button>
+    <div id="input-bar" style="position:fixed; bottom:85px; width:100%; background:var(--glass); padding:15px; display:none; gap:12px; border-top:1px solid rgba(212,175,55,0.2); z-index:900; backdrop-filter:blur(20px);">
+        <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:14px; border-radius:20px; border:1px solid #e2e8f0; background:var(--bg); color:var(--text);">
+        <button id="rec-btn" class="btn" style="width:55px; border-radius:50%; font-size:1.4rem; padding:0;" onclick="window.handleRecording()">🎤</button>
+        <button class="btn" style="width:80px; border-radius:20px;" onclick="window.sendMessage()">إرسال</button>
     </div>
 </div>
 
 <div id="room-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:4000; display:none; flex-direction:column;">
-    <header style="background:var(--primary-dark); padding:15px; display:flex; justify-content:space-between; align-items:center;">
-        <button onclick="window.closeRoom()" style="background:none; border:none; color:var(--accent); font-size:1.5rem;">✕</button>
-        <span id="active-room-name" style="font-size:1.2rem;"></span>
-        <div style="width:30px;"></div>
+    <header style="background:var(--glass); padding:15px; border-bottom:2px solid var(--accent);">
+        <button onclick="window.closeRoom()" style="background:none; border:none; color:var(--primary); font-size:2.2rem; position:absolute; right:15px; cursor:pointer;">✕</button>
+        <span id="active-room-name" style="font-weight:800; font-size:1.4rem;">اسم الحلقة</span>
     </header>
     <div id="room-msgs" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column;"></div>
 </div>
@@ -263,21 +280,23 @@
     let audioChunks = [];
     let isRecording = false;
     let currentAudio = null;
+    let roomsMap = {}; 
 
+    // --- Helpers ---
     const toArDigits = s => s.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
     const format12h = (t24) => {
-        let [h, m] = t24.split(':');
-        h = parseInt(h);
+        let [h, m] = t24.split(':'); h = parseInt(h);
         const ampm = h >= 12 ? 'م' : 'ص';
         h = h % 12 || 12;
         return `${toArDigits(h)}:${toArDigits(m)} ${ampm}`;
     };
-    const reminders = ["صَلِّ عَلَى النَّبِيِّ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "لَا إِلَهَ إِلَّا اللَّهُ", "اللَّهُ أَكْبَرُ", "أَسْتَغْفِرُ اللَّهَ"];
+    const remindersList = ["صَلِّ عَلَى النَّبِيِّ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "لَا إِلَهَ إِلَّا اللَّهُ", "اللَّهُ أَكْبَرُ", "أَسْتَغْفِرُ اللَّهَ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ"];
 
-    // --- Global Actions ---
+    // --- Navigation ---
     window.showPage = (id, btn) => {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('page-' + id).classList.add('active');
+        const target = document.getElementById('page-' + id);
+        if(target) target.classList.add('active');
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
         document.getElementById('input-bar').style.display = (id === 'community') ? 'flex' : 'none';
@@ -287,7 +306,7 @@
         const name = document.getElementById('reg-name').value;
         const phone = document.getElementById('reg-phone').value;
         const code = document.getElementById('reg-code').value;
-        if(name.length < 3) return alert("يرجى كتابة اسم صحيح");
+        if(name.length < 3) return alert("يرجى كتابة الاسم الثلاثي");
         currentUser = { name, phone, role: (code === "AM/SA_1") ? "supervisor" : "student", photo: "" };
         localStorage.setItem('duroob_user', JSON.stringify(currentUser));
         initApp();
@@ -295,15 +314,14 @@
 
     function initApp() {
         document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('splash-screen').style.display = 'none';
+        document.getElementById('splash').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
-        if(currentUser.role === 'supervisor') document.getElementById('add-circle-btn').style.display = 'flex';
-        
-        if(currentUser.photo) document.getElementById('profile-img-preview').src = currentUser.photo;
+        if(currentUser.role === 'supervisor') document.getElementById('add-btn').style.display = 'flex';
+        if(currentUser.photo) document.getElementById('profile-img-view').src = currentUser.photo;
 
-        document.getElementById('user-info-card').innerHTML = `
-            <h3 style="margin:0; font-family:'Amiri';">${currentUser.name}</h3>
-            <p style="margin:5px 0; color:var(--text-muted);">${currentUser.role === 'supervisor' ? 'مُشرف حلقة' : 'طالب علم'}</p>
+        document.getElementById('profile-details').innerHTML = `
+            <h3 style="margin:0; font-family:'Amiri'; font-size:1.8rem;">${currentUser.name}</h3>
+            <p style="margin:5px 0; font-weight:700; opacity:0.7;">${currentUser.role === 'supervisor' ? 'مُشرف حلقة' : 'طالب علم'}</p>
         `;
         
         loadCircles();
@@ -312,22 +330,28 @@
         startReminders();
     }
 
-    // --- Circles Management ---
+    // --- Circles Logic ---
     function loadCircles() {
         onValue(ref(db, 'rooms'), snap => {
             const list = document.getElementById('circles-list');
-            list.innerHTML = "";
+            list.innerHTML = ""; roomsMap = {};
+            if(!snap.exists()) {
+                list.innerHTML = "<p style='text-align:center; padding:30px; opacity:0.5;'>لا يوجد حلقات متاحة حالياً</p>";
+                return;
+            }
             snap.forEach(child => {
                 const r = child.val();
+                const id = child.key;
+                roomsMap[id] = r;
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-                    <div style="font-weight:800; color:var(--primary); font-size:1.1rem; margin-bottom:10px;">💎 حلقة ${r.name}</div>
-                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">المشرف: الشيخ ${r.supervisor}</p>
-                    <div style="display:flex; gap:8px;">
-                        <button class="btn btn-enter" style="flex:2" onclick="window.enterRoom('${child.key}', '${r.name}', '${r.pass}')">انضمام</button>
-                        ${r.whatsapp ? `<button class="btn btn-whatsapp" style="flex:1" onclick="window.openWhatsapp('${r.whatsapp}')">واتساب</button>` : ''}
-                        ${(r.supervisor === currentUser.name) ? `<button class="btn" style="width:45px; background:#ff4757; color:white;" onclick="window.deleteRoom('${child.key}')">🗑</button>` : ''}
+                    <div style="font-weight:900; color:var(--primary); font-size:1.3rem; margin-bottom:10px;">💎 حلقة ${r.name}</div>
+                    <p style="font-size:0.95rem; opacity:0.8; margin-bottom:18px;">المشرف: الشيخ ${r.supervisor}</p>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn" style="flex:2" onclick="window.enterRoom('${id}')">انضمام للحلقة</button>
+                        ${r.whatsapp ? `<button class="btn btn-whatsapp" style="width:55px; padding:0;" onclick="window.openWhatsapp('${r.whatsapp}')">📞</button>` : ''}
+                        ${(r.supervisor === currentUser.name) ? `<button class="btn" style="width:55px; background:#ef4444; color:white; box-shadow:none;" onclick="window.deleteRoom('${id}')">🗑</button>` : ''}
                     </div>
                 `;
                 list.appendChild(card);
@@ -339,56 +363,67 @@
         const name = prompt("اسم الحلقة الجديدة:");
         if(!name) return;
         const pass = prompt("كلمة سر الحلقة:");
-        const whatsapp = prompt("رقم واتساب المشرف (بصيغة دولية مثال 2010xxxxxxxx):");
-        push(ref(db, 'rooms'), { name, pass, whatsapp, supervisor: currentUser.name });
+        let wa = prompt("رقم واتساب المشرف (سيضاف الكود تلقائياً):");
+        if(wa) {
+            wa = wa.trim();
+            if(wa.startsWith('0')) wa = '20' + wa.substring(1);
+            else if(!wa.startsWith('20')) wa = '20' + wa;
+        }
+        push(ref(db, 'rooms'), { name, pass: pass || "", whatsapp: wa || "", supervisor: currentUser.name });
     };
 
-    window.enterRoom = (id, name, pass) => {
+    window.enterRoom = (id) => {
+        const room = roomsMap[id];
         const input = prompt("أدخل كلمة السر:");
-        if(input === pass) {
+        if(input === room.pass) {
             activeRoomId = id;
-            document.getElementById('active-room-name').innerText = name;
+            document.getElementById('active-room-name').innerText = "حلقة " + room.name;
             document.getElementById('room-overlay').style.display = 'flex';
             document.getElementById('room-msgs').innerHTML = "";
             document.getElementById('room-overlay').appendChild(document.getElementById('input-bar'));
             document.getElementById('input-bar').style.display = 'flex';
             onChildAdded(ref(db, `messages/${id}`), s => renderMsg(s.val(), document.getElementById('room-msgs')));
-        } else { alert("عذراً، كلمة السر غير صحيحة"); }
+        } else { alert("عذراً، كلمة السر غير صحيحة!"); }
     };
 
     window.deleteRoom = (id) => {
-        if(confirm("هل تريد حذف الحلقة نهائياً؟")) {
+        if(confirm("هل تريد حذف هذه الحلقة نهائياً؟")) {
             remove(ref(db, 'rooms/'+id));
-            remove(ref(db, 'messages/'+id));
+            remove(ref(db, `messages/${id}`));
         }
     };
 
     window.closeRoom = () => {
         document.getElementById('room-overlay').style.display = 'none';
         activeRoomId = null;
-        const pageCircles = document.getElementById('page-circles');
-        if (pageCircles) pageCircles.appendChild(document.getElementById('input-bar'));
+        document.getElementById('main-app').appendChild(document.getElementById('input-bar'));
         document.getElementById('input-bar').style.display = 'none';
     };
 
-    window.openWhatsapp = (num) => window.open(`https://wa.me/${num}`, '_blank');
+    // --- WhatsApp Auto-Message Logic ---
+    window.openWhatsapp = (num) => {
+        if (!currentUser) return;
+        const text = `السلام عليكم، أريد الانضمام إلى غرفة حضرتك للتسميع، أريد رمز الدخول. 
+اسمي: ${currentUser.name}
+رقم هاتفي: ${currentUser.phone}`;
+        const url = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+    };
 
-    // --- Media Handlers ---
+    // --- Media & Profile ---
     window.updateProfilePic = async (input) => {
         if(!input.files[0]) return;
-        const file = input.files[0];
         const fd = new FormData();
-        fd.append('file', file);
+        fd.append('file', input.files[0]);
         fd.append('upload_preset', uploadPreset);
-        
         try {
             const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
             const data = await res.json();
             currentUser.photo = data.secure_url;
             localStorage.setItem('duroob_user', JSON.stringify(currentUser));
-            document.getElementById('profile-img-preview').src = data.secure_url;
-            alert("تم تحديث الصورة الشخصية بنجاح");
-        } catch(e) { alert("خطأ في رفع الصورة"); }
+            document.getElementById('profile-img-view').src = data.secure_url;
+            alert("تم تحديث الصورة الشخصية");
+        } catch(e) { alert("خطأ في رفع الملف"); }
     };
 
     window.handleRecording = async () => {
@@ -400,7 +435,7 @@
                 audioChunks = [];
                 mediaRecorder.start();
                 isRecording = true;
-                btn.classList.add('rec-pulse');
+                btn.classList.add('rec-active');
                 btn.innerHTML = "⏹";
                 mediaRecorder.onstop = () => {
                     const blob = new Blob(audioChunks, { type: 'audio/mpeg' });
@@ -412,7 +447,7 @@
         } else {
             mediaRecorder.stop();
             isRecording = false;
-            btn.classList.remove('rec-pulse');
+            btn.classList.remove('rec-active');
             btn.innerHTML = "🎤";
         }
     };
@@ -425,13 +460,13 @@
             const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
             const data = await res.json();
             sendToDB({ audioUrl: data.secure_url, type: 'audio' });
-        } catch(e) { alert("فشل رفع التسجيل"); }
+        } catch(e) { alert("خطأ في رفع الصوت"); }
     }
 
     window.playAudio = (url, btn) => {
         if(currentAudio) {
             currentAudio.pause();
-            document.querySelectorAll('.play-btn').forEach(b => b.innerHTML = "▶");
+            document.querySelectorAll('.p-btn').forEach(b => b.innerHTML = "▶");
             if(currentAudio.src === url) { currentAudio = null; return; }
         }
         currentAudio = new Audio(url);
@@ -440,23 +475,22 @@
         currentAudio.onended = () => { btn.innerHTML = "▶"; currentAudio = null; };
     };
 
-    // --- Messaging ---
+    // --- Messages ---
     function sendToDB(obj) {
         const msg = { sender: currentUser.name, photo: currentUser.photo || "", time: Date.now(), ...obj };
-        const path = activeRoomId ? `messages/${activeRoomId}` : 'general';
-        push(ref(db, path), msg);
+        push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), msg);
     }
 
     window.sendMessage = () => {
-        const input = document.getElementById('msg-input');
-        if(!input.value.trim()) return;
-        sendToDB({ text: input.value, type: 'text' });
-        input.value = "";
+        const i = document.getElementById('msg-input');
+        if(!i.value.trim()) return;
+        sendToDB({ text: i.value, type: 'text' });
+        i.value = "";
     };
 
     function listenGeneral() {
-        const cont = document.getElementById('community-msgs');
-        onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), cont));
+        const c = document.getElementById('community-msgs');
+        onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), c));
     }
 
     function renderMsg(m, cont) {
@@ -464,21 +498,20 @@
         const isMe = m.sender === currentUser.name;
         const row = document.createElement('div');
         row.className = `msg-row ${isMe ? 'me' : ''}`;
-        
         row.innerHTML = `
-            <img src="${m.photo || 'https://via.placeholder.com/35'}" class="avatar">
-            <div class="message-bubble ${isMe ? 'msg-me' : 'msg-them'}">
-                <div style="font-size:0.65rem; opacity:0.7; margin-bottom:3px;">${m.sender}</div>
+            <img src="${m.photo || 'https://via.placeholder.com/40'}" class="avatar-sm">
+            <div class="bubble ${isMe ? 'bubble-me' : 'bubble-them'}">
+                <div style="font-size:0.75rem; font-weight:900; margin-bottom:4px; opacity:0.8;">${m.sender}</div>
                 ${m.type === 'audio' ? 
-                    `<div style="display:flex; align-items:center; gap:10px;"><button class="btn play-btn" style="width:35px; height:35px; border-radius:50%;" onclick="window.playAudio('${m.audioUrl}', this)">▶</button> تسجيل تسميع</div>` 
-                    : m.text}
+                    `<div style="display:flex; align-items:center; gap:12px;"><button class="btn p-btn" style="width:38px; height:38px; border-radius:50%; box-shadow:none; padding:0;" onclick="window.playAudio('${m.audioUrl}', this)">▶</button> <span style="font-size:0.9rem;">تسميع صَوْتي</span></div>` 
+                    : `<div style="word-break:break-word;">${m.text}</div>`}
             </div>
         `;
         cont.appendChild(row);
         cont.scrollTop = cont.scrollHeight;
     }
 
-    // --- Other ---
+    // --- Helpers ---
     async function loadPrayers() {
         try {
             const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
@@ -487,36 +520,37 @@
             document.getElementById('hijri-date').innerText = toArDigits(data.data.date.hijri.date) + " " + data.data.date.hijri.month.ar;
             const ps = [['الفجر', t.Fajr], ['الظهر', t.Dhuhr], ['العصر', t.Asr], ['المغرب', t.Maghrib], ['العشاء', t.Isha]];
             document.getElementById('prayer-list').innerHTML = ps.map(p => `
-                <div class="prayer-row" style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid rgba(0,0,0,0.05);">
-                    <span style="font-weight:500;">${p[0]}</span><span style="color:var(--accent); font-weight:bold;">${format12h(p[1])}</span>
+                <div style="display:flex; justify-content:space-between; padding:18px; border-bottom:1px solid rgba(0,0,0,0.06);">
+                    <span style="font-weight:700; font-size:1.1rem;">${p[0]}</span><span style="color:var(--accent); font-weight:900; font-size:1.2rem;">${format12h(p[1])}</span>
                 </div>`).join('');
-        } catch(e) {}
+        } catch(e) { }
     }
 
     function startReminders() {
         let i = 0;
         setInterval(() => {
             const box = document.getElementById('reminder-box');
-            box.innerText = reminders[i % reminders.length];
-            box.style.display = 'block';
-            setTimeout(() => { box.style.display = 'none'; }, 6000);
+            box.innerText = remindersList[i % remindersList.length];
+            box.classList.add('active');
+            setTimeout(() => box.classList.remove('active'), 8000);
             i++;
-        }, 300000); // 5 min
+        }, 300000); 
     }
 
     window.toggleTheme = () => {
-        const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.body.setAttribute('data-theme', theme);
-        localStorage.setItem('duroob_theme', theme);
+        const t = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', t);
+        localStorage.setItem('duroob_theme', t);
     };
 
     window.logout = () => { localStorage.clear(); location.reload(); };
 
-    const savedUser = localStorage.getItem('duroob_user');
-    const savedTheme = localStorage.getItem('duroob_theme');
-    if(savedTheme) document.body.setAttribute('data-theme', savedTheme);
-    if(savedUser) { currentUser = JSON.parse(savedUser); setTimeout(initApp, 1500); }
-    else { setTimeout(() => { document.getElementById('splash-screen').style.display = 'none'; }, 1500); }
+    const u = localStorage.getItem('duroob_user');
+    const th = localStorage.getItem('duroob_theme');
+    if(th) document.body.setAttribute('data-theme', th);
+    if(u) { currentUser = JSON.parse(u); setTimeout(initApp, 1500); }
+    else { setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 1500); }
+
 </script>
 
 <style> @keyframes spin { 100% { transform: rotate(360deg); } } </style>
