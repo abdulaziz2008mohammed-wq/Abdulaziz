@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>دُرُوب الْهِدَايَة | إصدار المطورين</title>
+    <title>دُرُوب الْهِدَايَة | إدارة الحلقات</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --emerald-dark: #01261c; 
-            --emerald-light: #064e3b;
+            --emerald-dark: #01261c; --emerald-light: #064e3b;
             --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #aa771c);
-            --gold-solid: #d4af37; 
-            --glass: rgba(255, 255, 255, 0.95);
-            --bg-body: #f4f1ea; 
-            --text-color: #2c2c2c;
+            --gold-solid: #d4af37; --glass: rgba(255, 255, 255, 0.95);
+            --bg-body: #f4f1ea; --text-color: #2c2c2c;
         }
 
         [data-theme='dark'] {
@@ -23,204 +20,246 @@
             --glass: rgba(30, 30, 30, 0.98); --bg-body: #011611; --text-color: #ecfdf5;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.3s; user-select: none; }
-        input, textarea { user-select: text; }
-
-        body { 
-            font-family: 'Tajawal', sans-serif; background: var(--bg-body); margin: 0; color: var(--text-color); 
-            height: 100vh; overflow: hidden; background-image: url('https://www.transparenttextures.com/patterns/islamic-exercise.png'); 
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.3s; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg-body); margin: 0; color: var(--text-color); height: 100vh; overflow: hidden; }
 
         header { 
-            background: var(--emerald-dark); color: var(--gold-solid); padding: 20px 15px; text-align: center; 
-            font-family: 'Amiri', serif; font-size: 1.6rem; border-bottom: 4px solid #d4af37; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: var(--emerald-dark); color: var(--gold-solid); padding: 20px; text-align: center; 
+            font-family: 'Amiri', serif; font-size: 1.6rem; border-bottom: 4px solid var(--gold-solid); position: fixed; top: 0; width: 100%; z-index: 1000;
         }
 
-        .page { display: none; height: 100vh; overflow-y: auto; padding: 120px 20px 150px 20px; }
+        .page { display: none; height: 100vh; overflow-y: auto; padding: 100px 20px 150px 20px; }
         .page.active { display: block; animation: fadeIn 0.4s ease; }
 
-        .card { 
-            background: var(--glass); border: 2px solid var(--gold-solid); padding: 20px; border-radius: 20px; 
-            text-align: right; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative;
+        .card { background: var(--glass); border: 2px solid var(--gold-solid); padding: 15px; border-radius: 15px; margin-bottom: 15px; }
+        .btn-gold { background: var(--gold-gradient); color: var(--emerald-dark); border: 1px solid var(--gold-solid); padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; }
+
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--emerald-dark); display: flex; justify-content: space-around; padding: 10px; border-top: 3px solid var(--gold-solid); z-index: 2000; }
+        nav button { background: none; border: none; color: rgba(212, 175, 55, 0.4); font-size: 0.8rem; text-align: center; }
+        nav button.active { color: var(--gold-solid); }
+
+        /* نافذة الأعضاء */
+        #members-list-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px;
         }
 
-        .btn-gold { 
-            background: var(--gold-gradient); color: var(--emerald-dark); border: 1px solid var(--gold-solid);
-            padding: 14px; border-radius: 15px; font-weight: 800; cursor: pointer; width: 100%; font-family: 'Tajawal';
-        }
-
-        nav { 
-            position: fixed; bottom: 0; width: 100%; background: var(--emerald-dark); 
-            display: flex; justify-content: space-around; padding: 10px; border-top: 3px solid var(--gold-solid); z-index: 2000; 
-        }
-        nav button { background: none; border: none; color: rgba(212, 175, 55, 0.4); font-size: 0.8rem; cursor: pointer; text-align: center; }
-        nav button.active { color: var(--gold-solid); transform: translateY(-5px); }
-
-        .dev-badge {
-            background: var(--emerald-dark); color: var(--gold-solid); padding: 5px 12px; border-radius: 50px;
-            font-size: 0.8rem; border: 1px solid var(--gold-solid); margin: 5px; display: inline-block;
-        }
-
-        .prayer-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(212,175,55,0.2); }
-        .prayer-row b { color: var(--emerald-light); font-size: 1.1rem; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body oncontextmenu="return false;">
-
-<div id="prophet-reminder" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:10000; align-items:center; justify-content:center; padding:20px;">
-    <div class="card" style="width:100%; max-width:320px; text-align:center; background: var(--emerald-dark); color: #fff;">
-        <h2 style="font-family:'Amiri'; color:var(--gold-solid); font-size: 4rem; margin: 0;">ﷺ</h2>
-        <p style="font-size:1.5rem; font-family:'Amiri'; margin: 20px 0;">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ</p>
-        <button class="btn-gold" onclick="document.getElementById('prophet-reminder').style.display='none'">عليه أفضل الصلاة والسلام</button>
-    </div>
-</div>
+<body>
 
 <div id="auth-screen" style="position:fixed; inset:0; background:var(--emerald-dark); z-index:5000; display:flex; align-items:center; justify-content:center; padding:20px;">
     <div class="card" style="width:100%; max-width:400px; text-align:center;">
-        <h2 style="font-family:'Amiri'; color:var(--emerald-light); font-size:2.5rem; margin-bottom:10px;">دُرُوب الْهِدَايَة</h2>
-        <input type="text" id="reg-name" placeholder="الاسم الكامل..." style="width:100%; padding:14px; margin:10px 0; border-radius:12px; border:1px solid var(--gold-solid);">
-        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:14px; margin:10px 0; border-radius:12px; border:1px solid var(--gold-solid);">
-        <input type="text" id="reg-code" placeholder="كود التحقق (اختياري)..." style="width:100%; padding:14px; margin:10px 0; border-radius:12px; border:1px solid var(--gold-solid);">
-        <button class="btn-gold" onclick="window.registerUser()">دخول آمن</button>
+        <h2 style="font-family:'Amiri'; color:var(--emerald-light);">دُرُوب الْهِدَايَة</h2>
+        <input type="text" id="reg-name" placeholder="الاسم الكامل" style="width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #ccc;">
+        <input type="tel" id="reg-phone" placeholder="رقم الهاتف" style="width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #ccc;">
+        <input type="text" id="reg-code" placeholder="كود المشرف (اختياري)" style="width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #ccc;">
+        <button class="btn-gold" onclick="window.registerUser()">دخول</button>
     </div>
 </div>
 
 <div id="main-app-interface" style="display:none;">
-    <header>دُرُوب الْهِدَايَة</header>
+    <header id="app-header">دُرُوب الْهِدَايَة</header>
     
     <div id="page-rooms" class="page active"><div id="rooms-list"></div></div>
 
     <div id="page-prayer" class="page">
         <div class="card" style="text-align: center;">
-            <h3 style="font-family:'Amiri'; color:var(--emerald-light); font-size:1.8rem;">🕋 مَواقيتُ الصَّلاةِ</h3>
-            <p id="current-date" style="color:var(--gold-solid); font-weight:bold;"></p>
-            <div id="prayer-times-cont">جاري جلب البيانات...</div>
-        </div>
-    </div>
-
-    <div id="page-general" class="page">
-        <div id="general-msgs" style="display:flex; flex-direction:column; padding-bottom:100px;"></div>
-        <div style="position:fixed; bottom:80px; width:100%; left:0; padding:15px; background:var(--glass); display:flex; gap:10px; border-top:2px solid var(--gold-solid); z-index:1001;">
-            <input type="text" id="gen-input" style="flex:1; padding:12px; border-radius:12px; border:1px solid var(--gold-solid);" placeholder="اكتب رسالتك...">
-            <button class="btn-gold" style="width:70px;" onclick="window.sendGeneral()">إرسال</button>
+            <h3 style="font-family:'Amiri';">🕋 مواقيت الصلاة</h3>
+            <div id="prayer-times-cont">جاري التحميل...</div>
         </div>
     </div>
 
     <div id="page-settings" class="page">
         <div class="card" id="user-info-card"></div>
-        
-        <div class="card" style="background: linear-gradient(to bottom, #fff, #f9f9f9);">
-            <h4 style="color:var(--emerald-light); margin-top:0;">👨‍💻 فريق التطوير</h4>
-            <div id="developers-list">
-                <span class="dev-badge">المطور: [ضع اسمك هنا]</span>
-                <span class="dev-badge">تصميم: [ضع اسمك هنا]</span>
-            </div>
-            <p style="font-size:0.8rem; color:#888; margin-bottom:0;">تم التطوير بكل حب لخدمة طلاب العلم.</p>
+        <div class="card">
+            <h4>👨‍💻 المطورون</h4>
+            <div style="font-size: 0.9rem; color: var(--emerald-light);">تصميم وبرمجة: فريق دروب الهداية</div>
         </div>
-
-        <button class="btn-gold" onclick="window.toggleTheme()" style="margin-bottom:15px;">تغيير المظهر</button>
-        <button class="btn-gold" onclick="window.logout()" style="background:#e74c3c; color:white; border:none;">تسجيل الخروج</button>
+        <button class="btn-gold" onclick="window.logout()" style="background:#e74c3c; color:white;">تسجيل الخروج</button>
     </div>
 
     <nav>
         <button onclick="window.showPage('rooms')" id="nav-rooms" class="active">🏠<br>الحلقات</button>
         <button onclick="window.showPage('prayer')" id="nav-prayer">🕌<br>المواقيت</button>
-        <button onclick="window.showPage('general')" id="nav-general">💬<br>العام</button>
         <button onclick="window.showPage('settings')" id="nav-settings">⚙️<br>الإعدادات</button>
     </nav>
 </div>
 
+<div id="chat-ui" style="position:fixed; inset:0; background:var(--bg-body); z-index:3500; display:none; flex-direction:column;">
+    <header style="display:flex; justify-content:space-between; align-items:center; padding:15px 20px;">
+        <div onclick="window.closeChat()" style="cursor:pointer; font-size:1.5rem;">✕</div>
+        <span id="room-chat-title"></span>
+        <div id="admin-tools" style="display:none;" onclick="window.openMembersModal()">👥</div>
+    </header>
+    <div id="room-msgs-cont" style="flex:1; overflow-y:auto; padding:15px;"></div>
+    <div style="padding:15px; background:#fff; display:flex; gap:10px; border-top:1px solid var(--gold-solid);">
+        <input type="text" id="room-input" style="flex:1; padding:10px; border-radius:10px; border:1px solid #ccc;" placeholder="رسالة...">
+        <button class="btn-gold" style="width:70px;" onclick="window.sendRoomMsg()">إرسال</button>
+    </div>
+</div>
+
+<div id="members-list-modal">
+    <div class="card" style="width:100%; max-width:350px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+            <b>أعضاء الحلقة حالياً</b>
+            <span onclick="document.getElementById('members-list-modal').style.display='none'" style="cursor:pointer;">✕</span>
+        </div>
+        <div id="members-render-area" style="max-height:300px; overflow-y:auto;"></div>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, set, remove, onChildAdded, get } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyB6aPF7qqqiiHMGXR5b3boCrRa7VcdDJwE", 
-        authDomain: "myprochat-6d05c.firebaseapp.com", 
-        databaseURL: "https://myprochat-6d05c-default-rtdb.firebaseio.com", 
-        projectId: "myprochat-6d05c", 
-        storageBucket: "myprochat-6d05c.firebasestorage.app" 
+        databaseURL: "https://myprochat-6d05c-default-rtdb.firebaseio.com"
     };
     
     const app = initializeApp(firebaseConfig); 
     const db = getDatabase(app);
-
     let user = { name: "", phone: "", role: "" };
+    let activeRoomId = null;
 
-    // دالة تحويل الوقت إلى نظام 12 ساعة بالعربي
-    function formatTime12(timeStr) {
-        let [hours, minutes] = timeStr.split(':');
-        hours = parseInt(hours);
-        let period = hours >= 12 ? 'م' : 'ص';
-        hours = hours % 12 || 12; 
-        return `${hours}:${minutes} ${period}`;
-    }
+    // --- وظائف نظام الطرد ---
 
-    async function fetchPrayers() {
-        try {
-            const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
-            const d = await res.json();
-            const t = d.data.timings;
-            document.getElementById('current-date').innerText = `${d.data.date.hijri.day} ${d.data.date.hijri.month.ar} ${d.data.date.hijri.year} هـ`;
+    // 1. الدخول للغرفة مع التحقق من الحظر
+    window.enterRoom = async (id, name, pass) => {
+        // التحقق إذا كان العضو محظوراً
+        const kickCheck = await get(ref(db, `rooms/${id}/kicked/${user.phone.replace(/\D/g,'')}`));
+        if (kickCheck.exists()) {
+            alert("⚠️ عذراً، لقد تم استبعادك من هذه الحلقة من قبل المشرف.");
+            return;
+        }
+
+        const input = prompt("كلمة سر الحلقة:");
+        if (input === pass) {
+            activeRoomId = id;
+            document.getElementById('chat-ui').style.display = 'flex';
+            document.getElementById('room-chat-title').innerText = name;
             
-            // تطبيق التحويل على كل وقت
-            document.getElementById('prayer-times-cont').innerHTML = `
-                <div class="prayer-row"><span>الفجر</span> <b>${formatTime12(t.Fajr)}</b></div>
-                <div class="prayer-row"><span>الظهر</span> <b>${formatTime12(t.Dhuhr)}</b></div>
-                <div class="prayer-row"><span>العصر</span> <b>${formatTime12(t.Asr)}</b></div>
-                <div class="prayer-row"><span>المغرب</span> <b>${formatTime12(t.Maghrib)}</b></div>
-                <div class="prayer-row"><span>العشاء</span> <b>${formatTime12(t.Isha)}</b></div>
-            `;
-        } catch (e) { document.getElementById('prayer-times-cont').innerText = "خطأ في تحميل البيانات"; }
-    }
+            // إظهار أدوات المشرف
+            if(user.role === 'supervisor') document.getElementById('admin-tools').style.display = 'block';
+
+            // تسجيل وجود العضو في الغرفة حالياً
+            const memberRef = ref(db, `rooms/${id}/active_members/${user.phone.replace(/\D/g,'')}`);
+            set(memberRef, { name: user.name, phone: user.phone });
+
+            // الاستماع لحالة الطرد اللحظي
+            onValue(ref(db, `rooms/${id}/kicked/${user.phone.replace(/\D/g,'')}`), (snap) => {
+                if(snap.exists()) {
+                    alert("لقد قام المشرف بطردك الآن.");
+                    window.closeChat();
+                }
+            });
+
+            loadMessages(id);
+        } else { alert("كلمة السر خاطئة"); }
+    };
+
+    // 2. فتح قائمة الأعضاء (للمشرف)
+    window.openMembersModal = () => {
+        const area = document.getElementById('members-render-area');
+        area.innerHTML = "جاري التحميل...";
+        document.getElementById('members-list-modal').style.display = 'flex';
+
+        onValue(ref(db, `rooms/${activeRoomId}/active_members`), (snap) => {
+            area.innerHTML = "";
+            snap.forEach(child => {
+                const m = child.val();
+                const cleanPhone = m.phone.replace(/\D/g,'');
+                if (m.name !== user.name) {
+                    area.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;">
+                            <span>${m.name}</span>
+                            <button onclick="window.kickUser('${cleanPhone}', '${m.name}')" style="background:#ff4444; color:#fff; border:none; padding:5px 10px; border-radius:5px;">طرد</button>
+                        </div>`;
+                }
+            });
+            if(area.innerHTML === "") area.innerHTML = "لا يوجد أعضاء آخرون حالياً.";
+        });
+    };
+
+    // 3. تنفيذ عملية الطرد
+    window.kickUser = (phoneId, name) => {
+        if (confirm(`هل أنت متأكد من طرد "${name}" نهائياً من هذه الحلقة؟`)) {
+            // إضافة للقائمة السوداء في الغرفة
+            set(ref(db, `rooms/${activeRoomId}/kicked/${phoneId}`), true);
+            // إزالته من قائمة النشطين
+            remove(ref(db, `rooms/${activeRoomId}/active_members/${phoneId}`));
+        }
+    };
+
+    // --- الوظائف الأساسية المحدثة ---
 
     window.registerUser = () => {
         const n = document.getElementById('reg-name').value;
         const p = document.getElementById('reg-phone').value;
-        const code = document.getElementById('reg-code').value;
-        if (n.length < 3) return alert("الاسم مطلوب");
-        user = { name: n, phone: p, role: (code === "AM/SA_1") ? "supervisor" : "student" };
+        const c = document.getElementById('reg-code').value;
+        if (!n || !p) return alert("يرجى ملء البيانات");
+        user = { name: n, phone: p, role: (c === "AM/SA_1") ? "supervisor" : "student" };
         localStorage.setItem('noor_user', JSON.stringify(user));
-        startAppUI();
+        location.reload();
     };
 
-    function startAppUI() {
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-app-interface').style.display = 'block';
-        document.getElementById('user-info-card').innerHTML = `<h3>مرحباً ${user.name}</h3><p>الرتبة: ${user.role === 'supervisor' ? 'مشرف' : 'طالب علم'}</p>`;
-        fetchPrayers();
-        initData();
+    function loadMessages(id) {
+        const cont = document.getElementById('room-msgs-cont');
+        cont.innerHTML = "";
+        onChildAdded(ref(db, `messages/${id}`), (snap) => {
+            const m = snap.val();
+            const d = document.createElement('div');
+            d.style = `padding:10px; margin:5px 0; border-radius:10px; background:${m.sender === user.name ? '#dcf8c6' : '#fff'}; align-self:${m.sender === user.name ? 'flex-end' : 'flex-start'}`;
+            d.innerHTML = `<small style="color:gray">${m.sender}</small><br>${m.text}`;
+            cont.appendChild(d);
+            cont.scrollTop = cont.scrollHeight;
+        });
     }
 
-    function initData() {
+    window.closeChat = () => {
+        if(activeRoomId) remove(ref(db, `rooms/${activeRoomId}/active_members/${user.phone.replace(/\D/g,'')}`));
+        document.getElementById('chat-ui').style.display = 'none';
+        activeRoomId = null;
+    };
+
+    window.sendRoomMsg = () => {
+        const i = document.getElementById('room-input');
+        if(i.value && activeRoomId) {
+            push(ref(db, `messages/${activeRoomId}`), { sender: user.name, text: i.value });
+            i.value = "";
+        }
+    };
+
+    // تهيئة التطبيق
+    const saved = localStorage.getItem('noor_user');
+    if(saved) {
+        user = JSON.parse(saved);
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-app-interface').style.display = 'block';
+        document.getElementById('user-info-card').innerHTML = `<b>${user.name}</b> (${user.role === 'supervisor' ? 'مشرف' : 'طالب'})`;
+        
         onValue(ref(db, 'rooms'), snap => {
             const list = document.getElementById('rooms-list'); list.innerHTML = "";
             snap.forEach(child => {
                 const r = child.val();
-                list.innerHTML += `<div class="card"><b>${r.name}</b><br><small>المشرف: ${r.supervisor}</small></div>`;
+                list.innerHTML += `<div class="card">
+                    <b>${r.name}</b><br>
+                    <button class="btn-gold" style="margin-top:10px" onclick="window.enterRoom('${child.key}','${r.name}','${r.pass}')">دخول الحلقة</button>
+                </div>`;
             });
         });
     }
 
-    window.showPage = p => { 
-        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active')); 
-        document.getElementById('page-'+p).classList.add('active'); 
+    window.showPage = p => {
+        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+        document.getElementById('page-'+p).classList.add('active');
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById('nav-'+p).classList.add('active');
     };
 
-    window.toggleTheme = () => { 
-        const t = document.body.getAttribute('data-theme'); 
-        document.body.setAttribute('data-theme', t === 'dark' ? 'light' : 'dark'); 
-    };
-
     window.logout = () => { localStorage.clear(); location.reload(); };
 
-    const saved = localStorage.getItem('noor_user');
-    if(saved) { user = JSON.parse(saved); startAppUI(); }
 </script>
 </body>
 </html>
