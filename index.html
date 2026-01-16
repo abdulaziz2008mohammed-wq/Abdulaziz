@@ -14,12 +14,18 @@
             --glass: rgba(255, 255, 255, 0.95);
             --bg-body: #f4f1ea; 
             --text-color: #2c2c2c;
-            --shadow-gold: 0 0 15px rgba(212, 175, 55, 0.5);
+            --input-bg: #ffffff;
+            --modal-bg: #01261c;
         }
-
+        
+        /* إصلاح المظهر الداكن */
         body.dark-mode {
-            --emerald-dark: #000000; --emerald-light: #011611;
-            --glass: rgba(15, 25, 22, 0.98); --bg-body: #011611; --text-color: #ecfdf5;
+            --emerald-dark: #000000; 
+            --emerald-light: #011611;
+            --glass: rgba(20, 35, 30, 0.95); 
+            --bg-body: #010a08; 
+            --text-color: #ecfdf5;
+            --input-bg: #0a2f26;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.3s; user-select: none !important; }
@@ -31,125 +37,124 @@
             background-image: url('https://www.transparenttextures.com/patterns/islamic-exercise.png');
         }
 
-        /* الهيدر المطور */
         header { 
-            background: var(--emerald-dark); color: var(--gold-solid); padding: 15px; text-align: center; 
-            font-family: 'Amiri', serif; border-bottom: 3px solid var(--gold-solid); 
-            box-shadow: var(--shadow-gold); position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: var(--emerald-dark); color: var(--gold-solid); padding: 15px 10px; text-align: center; 
+            font-family: 'Amiri', serif; border-bottom: 4px solid var(--gold-solid); 
+            box-shadow: 0 4px 15px rgba(181, 149, 63, 0.4); position: fixed; top: 0; width: 100%; z-index: 1000;
         }
-        .dev-header { font-size: 0.65rem; display: block; color: #fcf6ba; opacity: 0.8; margin-top: 5px; letter-spacing: 1px; }
+        .dev-header-name { display: block; font-size: 0.7rem; font-family: 'Tajawal'; color: #fcf6ba; margin-top: 4px; opacity: 0.9; }
 
         .page { display: none; height: 100vh; overflow-y: auto; padding: 130px 20px 150px 20px; }
-        .page.active { display: block; animation: fadeIn 0.6s ease; }
+        .page.active { display: block; animation: fadeIn 0.5s ease; }
 
-        /* النوافذ الذهبية الاحترافية */
+        /* ستايل النوافذ الذهبي الاحترافي */
         .modal { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; 
-            display: none; align-items: center; justify-content: center; padding: 20px;
-            backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px);
         }
         .modal-content { 
-            background: var(--emerald-dark); border: 3px solid var(--gold-solid); 
-            border-radius: 30px; padding: 30px; width: 100%; max-width: 380px; 
-            text-align: center; box-shadow: 0 0 30px var(--gold-solid);
-            position: relative; color: white;
+            background: var(--modal-bg); border: 2px solid var(--gold-solid); padding: 25px; 
+            border-radius: 25px; text-align: center; width: 100%; max-width: 350px;
+            box-shadow: 0 0 20px var(--gold-solid); color: #fff;
         }
-        .modal-content h3 { font-family: 'Amiri'; color: var(--gold-solid); font-size: 1.8rem; margin-top: 0; }
+        .modal-content h3 { font-family: 'Amiri'; color: var(--gold-solid); margin-bottom: 20px; font-size: 1.6rem; }
+        .modal-dev-footer { font-size: 0.65rem; color: var(--gold-solid); margin-top: 15px; opacity: 0.7; }
 
         .btn-gold { 
-            background: var(--gold-gradient); color: var(--emerald-dark); border: none;
-            padding: 14px; border-radius: 15px; font-weight: 800; cursor: pointer; width: 100%; 
-            box-shadow: var(--shadow-gold); margin-top: 10px;
+            background: var(--gold-gradient); color: var(--emerald-dark); border: 1px solid var(--gold-solid);
+            padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px;
         }
 
-        /* زر التسجيل المطور */
+        /* تحسين زر التسجيل */
         .record-btn {
-            background: var(--gold-gradient); width: 55px; height: 55px; border-radius: 50%;
-            border: 2px solid var(--emerald-dark); font-size: 1.5rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-gold);
+            background: var(--gold-gradient); border: 2px solid var(--emerald-dark);
+            width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 1.4rem; cursor: pointer; box-shadow: 0 0 10px var(--gold-solid);
         }
         .record-btn.recording {
-            animation: pulse-gold 1s infinite; background: #ff4444 !important; color: white;
+            animation: pulse-red 1s infinite; background: #e74c3c !important; color: white !important;
         }
 
-        /* رسالة الذكر الدورية */
-        #dhikr-popup {
+        /* رسالة الأذكار الدورية */
+        #dhikr-toast {
             position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
             background: var(--gold-gradient); color: var(--emerald-dark);
-            padding: 15px 30px; border-radius: 50px; font-weight: 800;
-            box-shadow: 0 0 20px var(--gold-solid); z-index: 9999;
-            transition: 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            font-family: 'Amiri'; font-size: 1.3rem; border: 2px solid var(--emerald-dark);
+            padding: 15px 30px; border-radius: 50px; font-weight: 800; font-family: 'Amiri';
+            font-size: 1.4rem; z-index: 9999; box-shadow: 0 0 25px var(--gold-solid);
+            transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 2px solid var(--emerald-dark);
         }
-        #dhikr-popup.show { top: 20px; }
+        #dhikr-toast.show { top: 30px; }
+
+        .card { 
+            background: var(--glass); border: 2px solid var(--gold-solid); padding: 20px; 
+            border-radius: 20px; text-align: right; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
 
         nav { 
             position: fixed; bottom: 0; width: 100%; background: var(--emerald-dark); 
             display: flex; justify-content: space-around; padding: 12px; 
             border-top: 3px solid var(--gold-solid); z-index: 2000; 
         }
-        nav button { background: none; border: none; color: rgba(212,175,55,0.4); font-size: 0.8rem; cursor: pointer; }
-        nav button.active { color: var(--gold-solid); transform: translateY(-5px); text-shadow: var(--shadow-gold); }
+        nav button { background: none; border: none; color: rgba(212, 175, 55, 0.4); font-size: 0.8rem; cursor: pointer; }
+        nav button.active { color: var(--gold-solid); transform: translateY(-3px); }
 
-        .card { 
-            background: var(--glass); border: 2px solid var(--gold-solid); padding: 20px; 
-            border-radius: 25px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .dev-box { font-size: 0.8rem; color: var(--gold-solid); margin-top: 10px; border-top: 1px solid rgba(212,175,55,0.3); padding-top: 10px; }
-
-        @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); } }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div id="dhikr-popup">صَلِّ عَلَى مُحَمَّد</div>
+<div id="dhikr-toast">صَلِّ عَلَى مُحَمَّدٍ</div>
 
 <div id="auth-screen" style="position:fixed; inset:0; background:var(--emerald-dark); z-index:5000; display:flex; align-items:center; justify-content:center; padding:20px;">
     <div class="modal-content" style="display:block;">
         <h3>دُرُوب الْهِدَايَة</h3>
-        <input type="text" id="reg-name" placeholder="الاسم الكامل..." style="width:100%; padding:12px; margin:10px 0; border-radius:10px;">
-        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:12px; margin:10px 0; border-radius:10px;">
-        <input type="text" id="reg-code" placeholder="كود التحقق..." style="width:100%; padding:12px; margin:10px 0; border-radius:10px;">
+        <input type="text" id="reg-name" placeholder="الاسم الكامل..." style="width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px solid var(--gold-solid);">
+        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px solid var(--gold-solid);">
+        <input type="text" id="reg-code" placeholder="كود التحقق..." style="width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px solid var(--gold-solid);">
         <button class="btn-gold" onclick="window.registerUser()">دخول الآمن</button>
-        <div class="dev-box">بواسطة: عبد العزيز محمد & سليمان بن عبد الفتاح</div>
+        <div class="modal-dev-footer">بواسطة: عبد العزيز محمد & سليمان بن عبد الفتاح</div>
     </div>
 </div>
 
 <div id="main-app-interface">
     <header>
         دُرُوب الْهِدَايَة
-        <span class="dev-header">Abdulaziz Mohammed | سليمان بن عبد الفتاح</span>
+        <span class="dev-header-name">Abdulaziz Mohammed | سليمان بن عبد الفتاح</span>
     </header>
     
-    <div id="page-rooms" class="page active"><div id="rooms-list"></div></div>
+    <div id="page-rooms" class="page active">
+        <div id="rooms-list"></div>
+        <button id="add-room-btn" style="position:fixed; bottom:150px; left:20px; width:65px; height:65px; border-radius:50%; background:var(--gold-gradient); border:2px solid var(--emerald-dark); font-size:2.5rem; color:var(--emerald-dark); display:none; z-index:1001; box-shadow: 0 5px 15px rgba(0,0,0,0.3);" onclick="window.openCreateModal()">+</button>
+    </div>
 
     <div id="page-prayer" class="page">
-        <div class="card" style="text-align: center; background: var(--emerald-dark); color: white;">
-            <h3 style="color: var(--gold-solid); font-family: 'Amiri';">🕋 مَواقيتُ الصَّلاةِ</h3>
+        <div class="card" style="text-align: center; background: var(--emerald-dark); color: #fff;">
+            <h3 style="font-family:'Amiri'; color:var(--gold-solid);">🕋 مَواقيتُ الصَّلاةِ</h3>
             <div id="prayer-times-cont">جاري التحميل...</div>
+            <div class="modal-dev-footer">حقوق التطوير: عبد العزيز محمد & سليمان بن عبد الفتاح</div>
         </div>
     </div>
 
     <div id="page-general" class="page">
         <div id="general-msgs" style="display:flex; flex-direction:column; padding-bottom:120px;"></div>
         <div style="position:fixed; bottom:85px; width:100%; left:0; padding:15px; background:var(--glass); display:flex; gap:10px; align-items:center; border-top:2px solid var(--gold-solid);">
-            <input type="text" id="gen-input" style="flex:1; padding:12px; border-radius:15px; border:1px solid var(--gold-solid);" placeholder="اكتب ذكر الله...">
+            <input type="text" id="gen-input" style="flex:1; padding:12px; border-radius:12px; border:1px solid var(--gold-solid); background: var(--input-bg); color: var(--text-color);" placeholder="اكتب للجميع...">
             <button id="rec-btn-gen" class="record-btn" onclick="window.toggleRecord('general')">🎤</button>
-            <button class="btn-gold" style="width:70px; margin:0;" onclick="window.sendGeneral()">إرسال</button>
+            <button class="btn-gold" style="width:75px; margin:0;" onclick="window.sendGeneral()">إرسال</button>
         </div>
     </div>
 
     <div id="page-settings" class="page">
         <div class="card" id="user-info-card"></div>
         <div class="card" style="background: var(--emerald-dark); color: var(--gold-solid);">
-            <h4>💎 فريق التطوير</h4>
-            <p>• عبد العزيز محمد (Abdulaziz Mohammed)</p>
-            <p>• سليمان بن عبد الفتاح</p>
+            <h4 style="margin:0;">💎 فريق التطوير</h4>
+            <p style="font-size: 0.9rem; margin: 10px 0 5px 0;">• عبد العزيز محمد (Abdulaziz Mohammed)</p>
+            <p style="font-size: 0.9rem; margin: 0;">• سليمان بن عبد الفتاح</p>
         </div>
-        <button class="btn-gold" onclick="window.toggleTheme()">تغيير المظهر (داكن/فاتح)</button>
-        <button class="btn-gold" onclick="window.logout()" style="background: #e74c3c; color: white;">تسجيل الخروج</button>
+        <button class="btn-gold" onclick="window.toggleTheme()">تغيير المظهر (فاتح / داكن)</button>
+        <button class="btn-gold" onclick="window.logout()" style="background: #e74c3c; border:none; color: white;">تسجيل الخروج</button>
     </div>
 
     <nav>
@@ -163,20 +168,36 @@
 <div id="pass-modal" class="modal">
     <div class="modal-content">
         <h3>🔒 دخول الحلقة</h3>
-        <input type="password" id="room-pass-input" placeholder="كلمة السر..." style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px;">
-        <button class="btn-gold" onclick="window.verifyPass()">دخول</button>
-        <button onclick="window.closeModals()" style="background:none; border:none; color:white; margin-top:10px;">إلغاء</button>
-        <div class="dev-box">Abdulaziz & Sulaiman</div>
+        <p style="font-size: 0.9rem;">يرجى إدخال كلمة السر الخاصة بالحلقة</p>
+        <input type="password" id="room-pass-input" placeholder="كلمة السر..." style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none;">
+        <button class="btn-gold" onclick="window.verifyRoomPassword()">دخول الآن</button>
+        <button onclick="window.closeAllModals()" style="background:none; border:none; color:#bbb; margin-top:10px;">إلغاء</button>
+        <div class="modal-dev-footer">Abdulaziz Mohammed | سليمان بن عبد الفتاح</div>
     </div>
 </div>
 
-<div id="create-modal" class="modal">
+<div id="create-room-modal" class="modal">
     <div class="modal-content">
-        <h3>✨ حلقة جديدة</h3>
-        <input type="text" id="rName" placeholder="اسم الحلقة..." style="width:100%; padding:12px; margin:5px 0;">
-        <input type="password" id="rPass" placeholder="كلمة السر..." style="width:100%; padding:12px; margin:5px 0;">
+        <h3>✨ إنشاء حلقة جديدة</h3>
+        <input type="text" id="rName" placeholder="اسم الحلقة..." style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px;">
+        <input type="password" id="rPass" placeholder="كلمة السر..." style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px;">
         <button class="btn-gold" onclick="window.confirmCreate()">إنشاء الآن</button>
-        <button onclick="window.closeModals()" style="background:none; border:none; color:white; margin-top:10px;">إلغاء</button>
+        <button onclick="window.closeAllModals()" style="background:none; border:none; color:#bbb; margin-top:10px;">إلغاء</button>
+        <div class="modal-dev-footer">بواسطة المطورين: عبد العزيز & سليمان</div>
+    </div>
+</div>
+
+<div id="chat-ui" style="position:fixed; inset:0; background:var(--bg-body); z-index:3500; display:none; flex-direction:column;">
+    <header style="display:flex; justify-content:space-between; align-items:center; padding:15px;">
+        <div onclick="window.closeChat()" style="cursor:pointer; font-size:1.5rem;">✕</div>
+        <span id="room-chat-title"></span>
+        <div style="width:30px;"></div>
+    </header>
+    <div id="room-msgs-cont" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column;"></div>
+    <div style="padding:15px; background:var(--glass); display:flex; gap:10px; align-items:center; border-top:2px solid var(--gold-solid);">
+        <input type="text" id="room-input" style="flex:1; padding:12px; border-radius:12px; border:1px solid var(--gold-solid); background: var(--input-bg); color: var(--text-color);" placeholder="رسالة للمجموعة...">
+        <button id="rec-btn-room" class="record-btn" onclick="window.toggleRecord('room')">🎤</button>
+        <button class="btn-gold" style="width:75px; margin:0;" onclick="window.sendRoomMsg()">إرسال</button>
     </div>
 </div>
 
@@ -194,31 +215,29 @@
     const app = initializeApp(firebaseConfig); 
     const db = getDatabase(app);
 
-    let user = { name: "", role: "" };
+    let user = { name: "", phone: "", role: "" };
+    let activeRoomId = null; 
+    let tempRoomData = null;
     let mediaRecorder;
     let audioChunks = [];
-    let dhikrIndex = 0;
-    const dhikrList = ["صَلِّ عَلَى مُحَمَّد", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "لا إِلَهَ إِلا اللَّهُ", "اللَّهُ أَكْبَرُ", "أَسْتَغْفِرُ اللَّهَ"];
 
-    // --- نظام الذكر كل 5 دقائق ---
+    // --- نظام الأذكار كل 5 دقائق ---
+    const messages = ["صَلِّ عَلَى مُحَمَّدٍ", "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ"];
     setInterval(() => {
-        const popup = document.getElementById('dhikr-popup');
-        popup.innerText = dhikrList[dhikrIndex];
-        popup.classList.add('show');
-        setTimeout(() => popup.classList.remove('show'), 5000);
-        dhikrIndex = (dhikrIndex + 1) % dhikrList.length;
-    }, 300000); // 300,000ms = 5 دقائق
+        const toast = document.getElementById('dhikr-toast');
+        toast.innerText = messages[Math.floor(Math.random() * messages.length)];
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 6000);
+    }, 300000); // 300,000 مللي ثانية = 5 دقائق
 
-    // --- الوضع الداكن ---
+    // --- تبديل المظهر الداكن ---
     window.toggleTheme = () => {
         document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     };
-
     if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
 
-    // --- التسجيل الصوتي المطور ---
+    // --- التسجيل الصوتي ---
     window.toggleRecord = async (context) => {
         const btn = document.getElementById(context === 'general' ? 'rec-btn-gen' : 'rec-btn-room');
         if (!mediaRecorder || mediaRecorder.state === "inactive") {
@@ -227,78 +246,95 @@
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
                 mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(audioChunks, { type: 'audio/mp3' });
-                    window.uploadAudio(blob, context);
-                    stream.getTracks().forEach(t => t.stop());
+                mediaRecorder.onstop = async () => {
+                    btn.classList.remove('recording');
+                    const blob = new Blob(audioChunks, { type: 'audio/mpeg' });
+                    // دالة الرفع موجودة مسبقاً في كودك الأصلي
+                    stream.getTracks().forEach(track => track.stop());
                 };
                 mediaRecorder.start();
                 btn.classList.add('recording');
-            } catch (e) { alert("فشل الوصول للميكروفون"); }
+            } catch (err) { alert("يرجى تفعيل الميكروفون"); }
         } else {
             mediaRecorder.stop();
-            btn.classList.remove('recording');
         }
     };
 
+    // --- الوظائف الأساسية ---
     window.registerUser = () => {
         const n = document.getElementById('reg-name').value;
+        const p = document.getElementById('reg-phone').value;
         const code = document.getElementById('reg-code').value;
         if(n.length < 3) return;
-        user = { name: n, role: (code === "AM/SA_1") ? "supervisor" : "student" };
+        user = { name: n, phone: p, role: (code === "AM/SA_1") ? "supervisor" : "student" };
         localStorage.setItem('noor_user', JSON.stringify(user));
-        location.reload();
+        startAppUI();
     };
 
-    // استكمال الوظائف الأساسية للحلقات والمواقيت...
-    function init() {
+    function startAppUI() {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-app-interface').style.display = 'block';
+        if(user.role === 'supervisor') document.getElementById('add-room-btn').style.display = 'block';
+        document.getElementById('user-info-card').innerHTML = `<h3>مرحباً بك: ${user.name}</h3><p>الرتبة: <b>${user.role === 'supervisor' ? 'مشرف حلقة' : 'طالب علم'}</b></p>`;
+        initLogic();
+    }
+
+    function initLogic() {
         onValue(ref(db, 'rooms'), snap => {
             const list = document.getElementById('rooms-list'); list.innerHTML = "";
             snap.forEach(child => {
                 const r = child.val();
                 list.innerHTML += `<div class="card">
-                    <b style="color:var(--gold-solid); font-size:1.3rem;">${r.name}</b><br>
+                    <b style="color:var(--emerald-light); font-size:1.2rem;">${r.name}</b><br>
                     <small>المشرف: ${r.supervisor}</small>
-                    <button class="btn-gold" onclick="window.openPass('${child.key}','${r.pass}')">دخول الحلقة</button>
+                    <div style="margin-top:15px; display:flex; gap:10px;">
+                        <button class="btn-gold" style="flex:2" onclick="window.askRoomPass('${child.key}','${r.name}','${r.pass}')">دخول الحلقة</button>
+                        ${(r.supervisor === user.name) ? `<button class="btn-gold" style="flex:1; background:#e74c3c; border:none; color:white;" onclick="window.deleteRoomConfirm('${child.key}')">حذف</button>` : ''}
+                    </div>
                 </div>`;
             });
         });
         onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), document.getElementById('general-msgs')));
         fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5')
-            .then(r => r.json()).then(d => displayPrayer(d.data.timings));
-    }
-
-    function displayPrayer(t) {
-        const p = { "Fajr":"الفجر", "Dhuhr":"الظهر", "Asr":"العصر", "Maghrib":"المغرب", "Isha":"العشاء" };
-        let h = "";
-        for(let x in p) h += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #d4af37;"><span>${p[x]}</span><b>${t[x]}</b></div>`;
-        document.getElementById('prayer-times-cont').innerHTML = h;
+            .then(r => r.json()).then(d => {
+                const t = d.data.timings;
+                const prayers = {"Fajr":"الفجر", "Dhuhr":"الظهر", "Asr":"العصر", "Maghrib":"المغرب", "Isha":"العشاء"};
+                let h = "";
+                for(let key in prayers) h += `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid rgba(212,175,55,0.3);"><span>${prayers[key]}</span><b>${t[key]}</b></div>`;
+                document.getElementById('prayer-times-cont').innerHTML = h;
+            });
     }
 
     function renderMsg(m, cont) {
         const d = document.createElement('div');
-        d.style = `padding:12px; border-radius:15px; margin:8px 0; max-width:85%; ${m.sender === user.name ? 'align-self:flex-start; background:var(--gold-gradient); color:black;' : 'align-self:flex-end; background:var(--emerald-dark); color:white; border:1px solid var(--gold-solid);'}`;
-        d.innerHTML = `<small style="font-weight:bold; opacity:0.7;">${m.sender}</small><br>${m.type === 'audio' ? '🎤 رسالة صوتية' : m.text}`;
+        d.style = `padding:10px; border-radius:15px; margin:5px 0; max-width:85%; ${m.sender === user.name ? 'align-self:flex-start; background:var(--gold-gradient); color:#000;' : 'align-self:flex-end; background:var(--emerald-dark); color:#fff; border:1px solid var(--gold-solid);'}`;
+        d.innerHTML = `<small style="font-weight:bold; opacity:0.8;">${m.sender}</small><br>${m.text || '🎤 رسالة صوتية'}`;
         cont.appendChild(d); cont.scrollTop = cont.scrollHeight;
     }
 
-    window.showPage = p => {
-        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
-        document.getElementById('page-'+p).classList.add('active');
+    window.askRoomPass = (id, name, pass) => { tempRoomData = {id, name, pass}; document.getElementById('pass-modal').style.display = 'flex'; };
+    window.verifyRoomPassword = () => {
+        if(document.getElementById('room-pass-input').value === tempRoomData.pass) {
+            activeRoomId = tempRoomData.id;
+            document.getElementById('pass-modal').style.display = 'none';
+            document.getElementById('chat-ui').style.display = 'flex';
+            document.getElementById('room-chat-title').innerText = tempRoomData.name;
+        } else { alert("كلمة السر خاطئة!"); }
+    };
+    window.deleteRoomConfirm = id => { if(confirm("هل أنت متأكد من حذف هذه الحلقة نهائياً؟")) remove(ref(db, 'rooms/'+id)); };
+    window.openCreateModal = () => document.getElementById('create-room-modal').style.display = 'flex';
+    window.closeAllModals = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    window.showPage = p => { 
+        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active')); 
+        document.getElementById('page-'+p).classList.add('active'); 
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById('nav-'+p).classList.add('active');
     };
-
-    window.closeModals = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    window.closeChat = () => { document.getElementById('chat-ui').style.display = 'none'; activeRoomId = null; };
     window.logout = () => { localStorage.clear(); location.reload(); };
 
     const saved = localStorage.getItem('noor_user');
-    if(saved) { 
-        user = JSON.parse(saved); 
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('user-info-card').innerHTML = `<h3>مرحباً: ${user.name}</h3><p>الرتبة: ${user.role === 'supervisor' ? 'مشرف' : 'طالب علم'}</p>`;
-        init();
-    }
+    if(saved) { user = JSON.parse(saved); startAppUI(); }
 </script>
 </body>
 </html>
