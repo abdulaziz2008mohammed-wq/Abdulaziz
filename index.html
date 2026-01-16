@@ -54,7 +54,6 @@
         nav button { background: none; border: none; color: rgba(212, 175, 55, 0.4); font-size: 0.8rem; cursor: pointer; }
         nav button.active { color: var(--gold-solid); transform: translateY(-5px); }
 
-        /* نبض الميكروفون المطور */
         .recording-pulse { 
             background: #ff4444 !important; 
             animation: pulse-effect 1s infinite alternate;
@@ -67,6 +66,9 @@
         }
 
         .dev-tag { font-size: 0.9rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; margin-bottom: 5px; }
+
+        .prayer-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(212,175,55,0.2); }
+        .prayer-row:last-child { border: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -172,24 +174,38 @@
     let activeRoomId = null; 
     let mediaRecorder;
     let audioChunks = [];
+    let isRecording = false; // لمنع تسجيلين معاً
+    let currentAudio = null; // لمنع تشغيل صوتين معاً
+    let activePlayBtn = null;
 
-    // تذكير كل 10 دقائق
     setInterval(() => { document.getElementById('prophet-reminder').style.display = 'flex'; }, 600000);
+
+    window.openCreateModal = () => {
+        const roomName = prompt("أدخل اسم الحلقة الجديدة:");
+        if (!roomName) return;
+        const roomPass = prompt("أدخل كلمة السر لهذه الحلقة:");
+        if (!roomPass) return;
+        push(ref(db, 'rooms'), { name: roomName, pass: roomPass, supervisor: user.name });
+    };
 
     window.toggleRecord = async (context) => {
         const btnId = context === 'general' ? 'rec-btn-gen' : 'rec-btn-room';
         const btn = document.getElementById(btnId);
 
-        if (!mediaRecorder || mediaRecorder.state === "inactive") {
+        if (!isRecording) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
                 mediaRecorder.start();
+                isRecording = true;
                 btn.classList.add('recording-pulse');
+                btn.innerHTML = "⏹"; // تغيير الشكل ليعرف أنه يسجل
                 
                 mediaRecorder.onstop = async () => {
                     btn.classList.remove('recording-pulse');
+                    btn.innerHTML = "🎤";
+                    isRecording = false;
                     const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
                     uploadAudio(audioBlob, context);
                     stream.getTracks().forEach(t => t.stop());
@@ -199,6 +215,28 @@
         } else {
             mediaRecorder.stop();
         }
+    };
+
+    // دالة تشغيل الصوت المحسنة (منع التداخل)
+    window.playVoice = (url, btn) => {
+        if (currentAudio) {
+            currentAudio.pause();
+            if (activePlayBtn) activePlayBtn.innerHTML = "▶";
+            if (activePlayBtn === btn) { // إذا ضغط نفس الزر مرتين يغلق الصوت
+                currentAudio = null;
+                activePlayBtn = null;
+                return;
+            }
+        }
+        currentAudio = new Audio(url);
+        activePlayBtn = btn;
+        btn.innerHTML = "⏸";
+        currentAudio.play();
+        currentAudio.onended = () => {
+            btn.innerHTML = "▶";
+            currentAudio = null;
+            activePlayBtn = null;
+        };
     };
 
     async function uploadAudio(blob, context) {
@@ -211,6 +249,22 @@
             const msg = { sender: user.name, audioUrl: data.secure_url, type: 'audio', time: Date.now() };
             push(ref(db, context === 'general' ? 'general' : `messages/${activeRoomId}`), msg);
         } catch (e) { alert("خطأ في رفع الصوت"); }
+    }
+
+    async function fetchPrayers() {
+        try {
+            const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
+            const data = await res.json();
+            const t = data.data.timings;
+            document.getElementById('current-date').innerText = data.data.date.hijri.date + " " + data.data.date.hijri.month.ar;
+            document.getElementById('prayer-times-cont').innerHTML = `
+                <div class="prayer-row"><span>الفجر</span> <b>${t.Fajr}</b></div>
+                <div class="prayer-row"><span>الظهر</span> <b>${t.Dhuhr}</b></div>
+                <div class="prayer-row"><span>العصر</span> <b>${t.Asr}</b></div>
+                <div class="prayer-row"><span>المغرب</span> <b>${t.Maghrib}</b></div>
+                <div class="prayer-row"><span>العشاء</span> <b>${t.Isha}</b></div>
+            `;
+        } catch (e) { document.getElementById('prayer-times-cont').innerText = "خطأ في الاتصال بالمواقيت"; }
     }
 
     window.registerUser = () => {
@@ -229,6 +283,7 @@
         if(user.role === 'supervisor') document.getElementById('add-room-btn').style.display = 'block';
         document.getElementById('user-info-card').innerHTML = `<h3>مرحباً: ${user.name}</h3><p>الرتبة: ${user.role === 'supervisor' ? 'مشرف' : 'طالب علم'}</p>`;
         initData();
+        fetchPrayers();
     }
 
     function initData() {
@@ -254,7 +309,7 @@
         const d = document.createElement('div');
         d.style = `padding:10px; border-radius:15px; margin:5px 0; max-width:80%; ${m.sender === user.name ? 'align-self:flex-start; background:#dcf8c6;' : 'align-self:flex-end; background:white; border:1px solid #ddd;'}`;
         if(m.type === 'audio') {
-            d.innerHTML = `<small>${m.sender}</small><br><button onclick="new Audio('${m.audioUrl}').play()" style="background:var(--gold-solid); border:none; border-radius:50%; width:30px; height:30px; color:white; cursor:pointer;">▶</button> رسالة صوتية`;
+            d.innerHTML = `<small>${m.sender}</small><br><button onclick="window.playVoice('${m.audioUrl}', this)" style="background:var(--gold-solid); border:none; border-radius:50%; width:35px; height:35px; color:white; cursor:pointer; font-size:1rem;">▶</button> رسالة صوتية`;
         } else {
             d.innerHTML = `<small>${m.sender}</small><br>${m.text}`;
         }
@@ -276,7 +331,7 @@
     window.sendRoomMsg = () => { const i = document.getElementById('room-input'); if(i.value && activeRoomId){ push(ref(db, `messages/${activeRoomId}`), {sender:user.name, text:i.value, type:'text'}); i.value=""; } };
     window.delRoom = id => { if(confirm("حذف الغرفة؟")) { remove(ref(db, 'rooms/'+id)); remove(ref(db, 'messages/'+id)); } };
     window.showPage = p => { document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); };
-    window.closeChat = () => { document.getElementById('chat-ui').style.display = 'none'; activeRoomId = null; };
+    window.closeChat = () => { document.getElementById('chat-ui').style.display = 'none'; activeRoomId = null; if(currentAudio){currentAudio.pause(); currentAudio=null;} };
     window.logout = () => { localStorage.clear(); location.reload(); };
 
     const saved = localStorage.getItem('noor_user');
