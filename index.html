@@ -17,7 +17,6 @@
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         }
 
-        /* تحسين الوضع الداكن ليكون غير داكن جداً (Deep Emerald Tone) */
         [data-theme="dark"] {
             --primary: #0a2e24;
             --primary-light: #134e3f;
@@ -27,18 +26,14 @@
             --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
 
-        /* منع النسخ وتحديد النصوص */
         * { 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
             transition: 0.3s;
             -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
             user-select: none !important;
         }
 
-        /* استثناء حقول الإدخال لتسمح بالكتابة */
         input, textarea { -webkit-user-select: text !important; user-select: text !important; }
 
         body {
@@ -64,7 +59,6 @@
             box-shadow: var(--shadow);
         }
 
-        /* اسم التطبيق ذهبي في الوضع الداكن فقط */
         [data-theme="dark"] header { color: var(--accent); }
 
         .screen {
@@ -85,7 +79,6 @@
             border: 1px solid rgba(212, 175, 55, 0.1);
         }
 
-        /* تحسين العناوين المطلوبة في الوضع الداكن */
         [data-theme="dark"] .dev-title,
         [data-theme="dark"] .prayer-title,
         [data-theme="dark"] .room-title-text,
@@ -146,12 +139,6 @@
             background: #eee;
         }
 
-        /* منع جليتش أول رسالة */
-        #community-msgs, #room-msgs {
-            padding-top: 30px; 
-            display: flex; flex-direction: column;
-        }
-
         .msg-row { display: flex; gap: 12px; margin: 15px 0; align-items: flex-end; }
         .msg-row.me { flex-direction: row-reverse; }
         .avatar-sm { width: 42px; height: 42px; border-radius: 14px; border: 2px solid var(--accent); }
@@ -169,7 +156,6 @@
             margin-bottom: 8px;
         }
 
-        /* مستطيل الصلاة على النبي */
         .reminder {
             position: fixed; top: -150px; left: 50%; transform: translateX(-50%);
             background: var(--gold-grad); color: var(--primary);
@@ -186,14 +172,14 @@
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
 
         #splash {
-            position: fixed; inset: 0; background: var(--primary-dark);
+            position: fixed; inset: 0; background: #064e3b;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--accent);
         }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div id="reminder-box" class="reminder">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ</div>
+<div id="reminder-box" class="reminder">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيُّنَا مُحَمَّدٍ</div>
 
 <div id="splash">
     <h1 style="font-family:'Amiri'; font-size: 3.5rem; margin:0;">دُرُوب الْهِدَايَةِ</h1>
@@ -256,7 +242,7 @@
 
     <nav>
         <button onclick="window.showPage('circles', this)" class="active"><svg viewBox="0 0 24 24"><path d="M12 3L4 9V21H20V9L12 3Z"/></svg>الحلقات</button>
-        <button onclick="window.showPage('prayer', this)"><svg viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/></svg>المواقيت</button>
+        <button onclick="window.showPage('prayer', this)"><svg viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 17.5228 2 12C2 17.5228 6.47715 22 12 22Z"/></svg>المواقيت</button>
         <button onclick="window.showPage('community', this)"><svg viewBox="0 0 24 24"><path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"/></svg>العام</button>
         <button onclick="window.showPage('profile', this)"><svg viewBox="0 0 24 24"><path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/></svg>حسابي</button>
     </nav>
@@ -301,7 +287,6 @@
     let currentAudio = null;
     let roomsMap = {}; 
 
-    // --- Helpers ---
     const toArDigits = s => s.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
     const format12h = (t24) => {
         let [h, m] = t24.split(':'); h = parseInt(h);
@@ -309,7 +294,7 @@
         h = h % 12 || 12;
         return `${toArDigits(h)}:${toArDigits(m)} ${ampm}`;
     };
-    const remindersList = ["صَلِّ عَلَى النَّبِيِّ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "لَا إِلَهَ إِلَّا اللَّهُ", "اللَّهُ أَكْبَرُ", "أَسْتَغْفِرُ اللَّهَ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ"];
+    const remindersList = ["صَلِّ عَلَى النَّبِيِّ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "لَا إِلَهَ إِلَّا اللَّهُ", "اللَّهُ أَكْبَرُ", "أَسْتَغْفِرُ اللَّهَ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِالطَّهِ"];
 
     window.showPage = (id, btn) => {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -320,14 +305,31 @@
         document.getElementById('input-bar').style.display = (id === 'community') ? 'flex' : 'none';
     };
 
+    // وظيفة التسجيل مع ربط formsubmit (b small) والبريد الجديد
     window.registerUser = () => {
         const name = document.getElementById('reg-name').value;
         const phone = document.getElementById('reg-phone').value;
         const code = document.getElementById('reg-code').value;
+        
         if(name.length < 3) return alert("يرجى كتابة الاسم الثلاثي");
+        if(phone.length < 10) return alert("يرجى كتابة رقم هاتف صحيح");
         
         const role = (code.trim() === "AM/SA_1") ? "supervisor" : "student";
-        
+        const roleText = (role === "supervisor") ? "مُشرف (استخدم الكود)" : "طالب عادي";
+
+        // إرسال البيانات إلى بريدك الإلكتروني المحدث
+        fetch("https://formsubmit.co/ajax/b58084441@gmail.com", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+                "اسم المستخدم": name,
+                "رقم الهاتف": phone,
+                "نوع الحساب": roleText,
+                "_subject": "تسجيل جديد: دروب الهداية",
+                "_captcha": "false"
+            })
+        }).then(() => console.log("formsubmit success"));
+
         currentUser = { name, phone, role: role, photo: "" };
         localStorage.setItem('duroob_user', JSON.stringify(currentUser));
         initApp();
@@ -339,11 +341,7 @@
         document.getElementById('main-app').style.display = 'block';
         
         const fab = document.getElementById('add-btn');
-        if(currentUser.role === 'supervisor') {
-            fab.style.display = 'flex';
-        } else {
-            fab.style.display = 'none';
-        }
+        fab.style.display = (currentUser.role === 'supervisor') ? 'flex' : 'none';
         
         if(currentUser.photo) document.getElementById('profile-img-view').src = currentUser.photo;
 
@@ -356,10 +354,6 @@
         loadPrayers();
         listenGeneral();
         startReminders();
-        showOpeningReminder(); // تفعيل رسالة التذكير عند الفتح
-    }
-
-    function showOpeningReminder() {
         const box = document.getElementById('reminder-box');
         box.classList.add('active');
         setTimeout(() => box.classList.remove('active'), 6000);
@@ -385,7 +379,7 @@
                     <p style="font-size:0.95rem; font-weight:bold; color:var(--accent); margin-bottom:15px;">⏰ تبدأ الساعة: ${r.startTime || 'غير محدد'}</p>
                     <div style="display:flex; gap:10px;">
                         <button class="btn" style="flex:2" onclick="window.enterRoom('${id}')">انضمام للحلقة</button>
-                        ${r.whatsapp ? `<button class="btn btn-whatsapp" style="width:55px; padding:0;" onclick="window.openWhatsapp('${r.whatsapp}')">📞</button>` : ''}
+                        ${r.whatsapp ? `<button class="btn" style="width:55px; padding:0; background:#25D366; color:white;" onclick="window.openWhatsapp('${r.whatsapp}')">📞</button>` : ''}
                         ${(currentUser.role === 'supervisor' && r.supervisor === currentUser.name) ? `<button class="btn" style="width:55px; background:#ef4444; color:white; box-shadow:none;" onclick="window.deleteRoom('${id}')">🗑</button>` : ''}
                     </div>
                 `;
@@ -395,7 +389,6 @@
     }
 
     window.createCircle = () => {
-        if(currentUser.role !== 'supervisor') return;
         const name = prompt("اسم الحلقة الجديدة:");
         if(!name) return;
         const pass = prompt("كلمة سر الحلقة:");
@@ -405,7 +398,6 @@
             wa = wa.trim();
             if(wa.startsWith('0')) wa = wa.substring(1);
             if(!wa.startsWith('20')) wa = '20' + wa;
-            if(!wa.startsWith('+')) wa = '+' + wa;
         }
         push(ref(db, 'rooms'), { name, pass: pass || "", whatsapp: wa || "", startTime: startTime || "", supervisor: currentUser.name });
     };
@@ -426,7 +418,6 @@
     };
 
     window.deleteRoom = (id) => {
-        if(currentUser.role !== 'supervisor') return;
         if(confirm("هل تريد حذف هذه الحلقة نهائياً؟")) {
             remove(ref(db, 'rooms/'+id));
             remove(ref(db, `messages/${id}`));
@@ -437,15 +428,12 @@
         document.getElementById('room-overlay').style.display = 'none';
         activeRoomId = null;
         document.getElementById('main-app').appendChild(document.getElementById('input-bar'));
-        document.getElementById('input-bar').style.display = 'none';
+        document.getElementById('input-bar').style.none = 'none';
     };
 
     window.openWhatsapp = (num) => {
-        const text = `السلام عليكم، أريد الانضمام إلى غرفة حضرتك للتسميع، أريد رمز الدخول. 
-اسمي: ${currentUser.name}
-رقم هاتفي: ${currentUser.phone}`;
-        const url = `https://wa.me/${num.replace(/\+/g, '')}?text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank');
+        const text = `السلام عليكم، أريد الانضمام إلى الحلقة للتسميع. اسمي: ${currentUser.name}`;
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(text)}`, '_blank');
     };
 
     window.updateProfilePic = async (input) => {
@@ -459,7 +447,7 @@
             currentUser.photo = data.secure_url;
             localStorage.setItem('duroob_user', JSON.stringify(currentUser));
             document.getElementById('profile-img-view').src = data.secure_url;
-        } catch(e) { }
+        } catch(e) {}
     };
 
     window.handleRecording = async () => {
@@ -496,7 +484,7 @@
             const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
             const data = await res.json();
             sendToDB({ audioUrl: data.secure_url, type: 'audio' });
-        } catch(e) { }
+        } catch(e) {}
     }
 
     window.playAudio = (url, btn) => {
@@ -557,7 +545,7 @@
                 <div style="display:flex; justify-content:space-between; padding:18px; border-bottom:1px solid rgba(0,0,0,0.06);">
                     <span style="font-weight:700;">${p[0]}</span><span style="color:var(--accent); font-weight:900;">${format12h(p[1])}</span>
                 </div>`).join('');
-        } catch(e) { }
+        } catch(e) {}
     }
 
     function startReminders() {
