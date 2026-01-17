@@ -193,16 +193,13 @@
 </head>
 <body oncontextmenu="return false;">
 
-<!-- مستطيل التذكير -->
 <div id="reminder-box" class="reminder">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ</div>
 
-<!-- Splash Screen -->
 <div id="splash">
     <h1 style="font-family:'Amiri'; font-size: 3.5rem; margin:0;">دُرُوب الْهِدَايَةِ</h1>
     <div style="width:40px; height:40px; border:4px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite; margin-top:20px;"></div>
 </div>
 
-<!-- شاشة الدخول -->
 <div id="auth-screen" class="screen active" style="padding-top:15vh;">
     <div class="card" style="max-width:420px; margin:auto; text-align:center;">
         <h2 style="font-family:'Amiri'; color:var(--primary); font-size:3rem; margin:0 0 20px;">دُرُوب الْهِدَايَةِ</h2>
@@ -213,7 +210,6 @@
     </div>
 </div>
 
-<!-- التطبيق -->
 <div id="main-app" style="display:none;">
     <header>دُرُوب الْهِدَايَةِ</header>
 
@@ -265,7 +261,6 @@
         <button onclick="window.showPage('profile', this)"><svg viewBox="0 0 24 24"><path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/></svg>حسابي</button>
     </nav>
 
-    <!-- بار الإدخال -->
     <div id="input-bar" style="position:fixed; bottom:85px; width:100%; background:var(--glass); padding:15px; display:none; gap:12px; border-top:1px solid rgba(212,175,55,0.2); z-index:900; backdrop-filter:blur(20px);">
         <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:14px; border-radius:20px; border:1px solid #e2e8f0; background:var(--bg); color:var(--text);">
         <button id="rec-btn" class="btn" style="width:55px; border-radius:50%; font-size:1.4rem; padding:0;" onclick="window.handleRecording()">🎤</button>
@@ -273,7 +268,6 @@
     </div>
 </div>
 
-<!-- واجهة الدردشة -->
 <div id="room-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:4000; display:none; flex-direction:column;">
     <header style="background:var(--glass); padding:15px; border-bottom:2px solid var(--accent);">
         <button onclick="window.closeRoom()" style="background:none; border:none; color:var(--primary); font-size:2.2rem; position:absolute; right:15px; cursor:pointer;">✕</button>
@@ -387,7 +381,7 @@
                 card.className = 'card';
                 card.innerHTML = `
                     <div class="room-title-text" style="font-weight:900; color:var(--primary); font-size:1.4rem; margin-bottom:10px;">💎 حلقة ${r.name}</div>
-                    <p style="font-size:0.95rem; opacity:0.8; margin-bottom:5px;">المشرف: الشيخ ${r.supervisor}</p>
+                    <p style="font-size:0.95rem; opacity:0.8; margin-bottom:5px;">المشرف: ${r.supervisor}</p>
                     <p style="font-size:0.95rem; font-weight:bold; color:var(--accent); margin-bottom:15px;">⏰ تبدأ الساعة: ${r.startTime || 'غير محدد'}</p>
                     <div style="display:flex; gap:10px;">
                         <button class="btn" style="flex:2" onclick="window.enterRoom('${id}')">انضمام للحلقة</button>
@@ -595,4 +589,3 @@
 <style> @keyframes spin { 100% { transform: rotate(360deg); } } </style>
 </body>
 </html>
-
