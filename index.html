@@ -63,7 +63,7 @@
 
         .screen {
             display: none; height: 100vh; overflow-y: auto;
-            padding: 100px 20px 180px 20px; /* تم زيادة الهامش السفلي هنا */
+            padding: 100px 20px 220px 20px;
             animation: fadeIn 0.4s ease-out;
         }
         .screen.active { display: block; }
@@ -176,14 +176,13 @@
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--accent);
         }
 
-        /* تعديلات التمرير والمساحة لضمان عدم اختفاء الرسائل خلف شريط الكتابة */
         #room-msgs {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            padding-bottom: 180px; /* مساحة كافية فوق الأزرار */
+            padding-bottom: 220px;
         }
     </style>
 </head>
@@ -225,7 +224,7 @@
 
     <div id="page-community" class="screen">
         <div id="community-msgs"></div>
-        <div style="height:180px;"></div>
+        <div style="height:220px;"></div>
     </div>
 
     <div id="page-profile" class="screen">
@@ -250,14 +249,14 @@
         <button class="btn" style="background:#ef4444; color:white; box-shadow:none;" onclick="window.logout()">خروج نهائي</button>
     </div>
 
-    <nav>
+    <nav id="bottom-nav">
         <button onclick="window.showPage('circles', this)" class="active"><svg viewBox="0 0 24 24"><path d="M12 3L4 9V21H20V9L12 3Z"/></svg>الحلقات</button>
         <button onclick="window.showPage('prayer', this)"><svg viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 17.5228 2 12C2 17.5228 6.47715 22 12 22Z"/></svg>المواقيت</button>
         <button onclick="window.showPage('community', this)"><svg viewBox="0 0 24 24"><path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"/></svg>العام</button>
         <button onclick="window.showPage('profile', this)"><svg viewBox="0 0 24 24"><path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/></svg>حسابي</button>
     </nav>
 
-    <div id="input-bar" style="position:fixed; bottom:0; width:100%; background:var(--glass); padding:15px 15px 25px 15px; display:none; gap:12px; border-top:1px solid rgba(212,175,55,0.2); z-index:2000; backdrop-filter:blur(20px);">
+    <div id="input-bar" style="position:fixed; bottom:85px; width:100%; background:var(--glass); padding:15px; display:none; gap:12px; border-top:1px solid rgba(212,175,55,0.2); z-index:1100; backdrop-filter:blur(20px);">
         <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:14px; border-radius:20px; border:1px solid #e2e8f0; background:var(--bg); color:var(--text);">
         <button id="rec-btn" class="btn" style="width:55px; border-radius:50%; font-size:1.4rem; padding:0;" onclick="window.handleRecording()">🎤</button>
         <button class="btn" style="width:80px; border-radius:20px;" onclick="window.sendMessage()">إرسال</button>
@@ -314,6 +313,8 @@
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
         document.getElementById('input-bar').style.display = (id === 'community') ? 'flex' : 'none';
+        // ضمان ظهور أزرار التنقل دائماً في العام
+        document.getElementById('bottom-nav').style.display = 'flex';
     };
 
     window.registerUser = () => {
@@ -422,6 +423,7 @@
             mCont.innerHTML = "";
             document.getElementById('room-overlay').appendChild(document.getElementById('input-bar'));
             document.getElementById('input-bar').style.display = 'flex';
+            document.getElementById('input-bar').style.bottom = '0px'; // شريط الإدخال في الأسفل تماماً داخل الغرفة
             onChildAdded(ref(db, `messages/${id}`), s => renderMsg(s.val(), mCont));
         } else { alert("عذراً، كلمة السر غير صحيحة!"); }
     };
@@ -438,6 +440,7 @@
         activeRoomId = null;
         document.getElementById('main-app').appendChild(document.getElementById('input-bar'));
         document.getElementById('input-bar').style.display = 'none';
+        document.getElementById('input-bar').style.bottom = '85px'; // إرجاع الوضع الافتراضي ليكون فوق أزرار التنقل
     };
 
     window.openWhatsapp = (num) => {
@@ -544,9 +547,10 @@
             </div>
         `;
         cont.appendChild(row);
-        // تم تعديل التمرير التلقائي ليكون أكثر دقة
+        // التمرير التلقائي الفوري لآخر رسالة
         setTimeout(() => {
             cont.scrollTo({ top: cont.scrollHeight, behavior: 'smooth' });
+            row.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }, 100);
     }
 
