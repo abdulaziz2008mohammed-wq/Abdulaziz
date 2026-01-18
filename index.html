@@ -284,7 +284,7 @@
     let mediaRecorder = null;
     let audioChunks = [];
     let isRecording = false;
-    let isSending = false; // متغير لمنع التكرار
+    let isSending = false; // لمنع التكرار
     let currentAudio = null;
     let roomsMap = {}; 
 
@@ -427,7 +427,7 @@
         document.getElementById('room-overlay').style.display = 'none';
         activeRoomId = null;
         document.getElementById('main-app').appendChild(document.getElementById('input-bar'));
-        document.getElementById('input-bar').style.none = 'none';
+        document.getElementById('input-bar').style.display = 'none'; // تم تصحيح الخطأ هنا
     };
 
     window.openWhatsapp = (num) => {
@@ -498,14 +498,13 @@
         currentAudio.onended = () => { btn.innerHTML = "▶"; currentAudio = null; };
     };
 
-    // هذا هو التعديل الوحيد لمنع تكرار الإرسال
     function sendToDB(obj) {
-        if (isSending) return; // منع الدخول إذا كانت هناك عملية جارية
+        if (isSending) return; 
         isSending = true;
         const msg = { sender: currentUser.name, photo: currentUser.photo || "", time: Date.now(), ...obj };
         push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), msg)
-            .then(() => { isSending = false; }) // فتح القفل بعد النجاح
-            .catch(() => { isSending = false; }); // فتح القفل في حال الخطأ
+            .then(() => { isSending = false; })
+            .catch(() => { isSending = false; });
     }
 
     window.sendMessage = () => {
