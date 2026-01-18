@@ -63,7 +63,7 @@
 
         .screen {
             display: none; height: 100vh; overflow-y: auto;
-            padding: 100px 20px 120px 20px;
+            padding: 100px 20px 150px 20px;
             animation: fadeIn 0.4s ease-out;
         }
         .screen.active { display: block; }
@@ -175,6 +175,16 @@
             position: fixed; inset: 0; background: #064e3b;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--accent);
         }
+
+        /* تعديلات التمرير والمساحة للغرف */
+        #room-msgs {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 100px;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -215,7 +225,7 @@
 
     <div id="page-community" class="screen">
         <div id="community-msgs"></div>
-        <div style="height:110px;"></div>
+        <div style="height:150px;"></div>
     </div>
 
     <div id="page-profile" class="screen">
@@ -247,7 +257,7 @@
         <button onclick="window.showPage('profile', this)"><svg viewBox="0 0 24 24"><path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/></svg>حسابي</button>
     </nav>
 
-    <div id="input-bar" style="position:fixed; bottom:85px; width:100%; background:var(--glass); padding:15px; display:none; gap:12px; border-top:1px solid rgba(212,175,55,0.2); z-index:900; backdrop-filter:blur(20px);">
+    <div id="input-bar" style="position:fixed; bottom:0; width:100%; background:var(--glass); padding:15px 15px 25px 15px; display:none; gap:12px; border-top:1px solid rgba(212,175,55,0.2); z-index:2000; backdrop-filter:blur(20px);">
         <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:14px; border-radius:20px; border:1px solid #e2e8f0; background:var(--bg); color:var(--text);">
         <button id="rec-btn" class="btn" style="width:55px; border-radius:50%; font-size:1.4rem; padding:0;" onclick="window.handleRecording()">🎤</button>
         <button class="btn" style="width:80px; border-radius:20px;" onclick="window.sendMessage()">إرسال</button>
@@ -255,8 +265,8 @@
 </div>
 
 <div id="room-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:4000; display:none; flex-direction:column;">
-    <header style="background:var(--glass); padding:15px; border-bottom:2px solid var(--accent);">
-        <button onclick="window.closeRoom()" style="background:none; border:none; color:var(--primary); font-size:2.2rem; position:absolute; right:15px; cursor:pointer;">✕</button>
+    <header style="background:var(--glass); padding:15px; border-bottom:2px solid var(--accent); position: relative; z-index: 4001;">
+        <button onclick="window.closeRoom()" style="background:none; border:none; color:var(--primary); font-size:2.2rem; position:absolute; right:15px; top:50%; transform:translateY(-50%); cursor:pointer;">✕</button>
         <span id="active-room-name" style="font-weight:800; font-size:1.4rem;">اسم الحلقة</span>
     </header>
     <div id="room-msgs"></div>
@@ -284,7 +294,7 @@
     let mediaRecorder = null;
     let audioChunks = [];
     let isRecording = false;
-    let isSending = false; // متغير لمنع التكرار
+    let isSending = false;
     let currentAudio = null;
     let roomsMap = {}; 
 
@@ -498,14 +508,13 @@
         currentAudio.onended = () => { btn.innerHTML = "▶"; currentAudio = null; };
     };
 
-    // هذا هو التعديل الوحيد لمنع تكرار الإرسال
     function sendToDB(obj) {
-        if (isSending) return; // منع الدخول إذا كانت هناك عملية جارية
+        if (isSending) return; 
         isSending = true;
         const msg = { sender: currentUser.name, photo: currentUser.photo || "", time: Date.now(), ...obj };
         push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), msg)
-            .then(() => { isSending = false; }) // فتح القفل بعد النجاح
-            .catch(() => { isSending = false; }); // فتح القفل في حال الخطأ
+            .then(() => { isSending = false; })
+            .catch(() => { isSending = false; });
     }
 
     window.sendMessage = () => {
@@ -535,6 +544,7 @@
             </div>
         `;
         cont.appendChild(row);
+        // التعديل المطلوب لتقليب المحادثات تلقائياً
         setTimeout(() => row.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
     }
 
