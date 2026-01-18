@@ -535,7 +535,7 @@
             </div>
         `;
         cont.appendChild(row);
-        cont.scrollTop = cont.scrollHeight;
+        setTimeout(() => row.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
     }
 
     async function loadPrayers() {
