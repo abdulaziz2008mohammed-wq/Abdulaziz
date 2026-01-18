@@ -119,7 +119,7 @@
             display: flex; justify-content: space-around;
             padding: 12px 0 25px 0;
             border-top: 1px solid rgba(212, 175, 55, 0.2);
-            z-index: 2001; /* فوق شريط الإدخال */
+            z-index: 2001; 
             transition: bottom 0.3s ease;
         }
 
@@ -281,7 +281,7 @@
 
 <div id="room-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:4000; display:none; flex-direction:column;">
     <header style="background:var(--glass); padding:15px; border-bottom:2px solid var(--accent); position: relative; z-index: 4001;">
-        <button onclick="window.closeRoom()" style="background:none; border:none; color:var(--primary); font-size:2.2rem; position:absolute; right:15px; top:50%; transform:translateY(-50%); cursor:pointer;">✕</button>
+        <button onclick="window.closeRoom()" style="background:none; border:none; color:#ff0000; font-size:3rem; font-weight:900; position:absolute; right:15px; top:50%; transform:translateY(-50%); cursor:pointer;">✕</button>
         <span id="active-room-name" style="font-weight:800; font-size:1.4rem;">اسم الحلقة</span>
     </header>
     <div id="room-msgs"></div>
@@ -331,7 +331,6 @@
         
         const isChat = (id === 'community');
         document.getElementById('input-bar').style.display = isChat ? 'flex' : 'none';
-        // رفع شريط التنقل (الأصفر) ليكون فوق شريط الإرسال (الأخضر)
         document.getElementById('bottom-nav').style.bottom = isChat ? '85px' : '0';
     };
 
@@ -555,7 +554,6 @@
     function renderMsg(m, cont) {
         if(!cont) return;
         const isMe = m.sender === currentUser.name;
-        // تعديل لعرض الوقت
         const d = new Date(m.time);
         const timeStr = format12h(d.getHours() + ":" + d.getMinutes().toString().padStart(2, '0'));
         
@@ -572,10 +570,12 @@
             </div>
         `;
         cont.appendChild(row);
+        
+        // التعديل هنا: التمرير لآخر رسالة تماماً وبشكل مؤكد
         setTimeout(() => {
-            cont.scrollTo({ top: cont.scrollHeight, behavior: 'smooth' });
             row.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }, 100);
+            cont.scrollTop = cont.scrollHeight + 500; // دفع السكرول للآخر تماماً لضمان ظهور الرسالة الأخيرة
+        }, 150);
     }
 
     async function loadPrayers() {
