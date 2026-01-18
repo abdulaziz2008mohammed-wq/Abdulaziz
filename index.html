@@ -8,154 +8,93 @@
     <style>
         :root {
             --primary: #064e3b;
-            --primary-light: #0d7a5d;
             --accent: #d4af37;
             --bg: #f0f2f5;
             --glass: rgba(255, 255, 255, 0.95);
             --text: #1e293b;
             --gold-grad: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #aa771c);
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         }
 
         [data-theme="dark"] {
             --primary: #0a2e24;
-            --primary-light: #134e3f;
             --bg: #0b1a15;
             --glass: rgba(18, 41, 34, 0.98);
             --text: #ffffff;
-            --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
 
-        [data-theme="dark"] .room-title-text, 
+        /* تنسيقات الوضع الداكن المطلوبة */
+        [data-theme="dark"] header, 
         [data-theme="dark"] h3, 
-        [data-theme="dark"] .dev-title,
+        [data-theme="dark"] .room-title-text,
         [data-theme="dark"] .prayer-title,
-        [data-theme="dark"] header {
-            color: var(--accent) !important;
-        }
+        [data-theme="dark"] .dev-title { color: var(--accent) !important; }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.3s; }
 
         body {
-            font-family: 'Tajawal', sans-serif;
-            background: var(--bg);
-            margin: 0;
-            color: var(--text);
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'Tajawal', sans-serif; background: var(--bg); margin: 0; color: var(--text);
+            height: 100vh; overflow: hidden;
             background-image: url('https://www.transparenttextures.com/patterns/islamic-exercise.png');
         }
 
         header {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            color: var(--primary);
-            padding: 15px 20px;
-            text-align: center;
-            font-family: 'Amiri', serif;
-            font-size: 1.8rem;
-            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: var(--glass); backdrop-filter: blur(15px); color: var(--primary);
+            padding: 15px 20px; text-align: center; font-family: 'Amiri', serif;
+            font-size: 1.8rem; position: fixed; top: 0; width: 100%; z-index: 3000;
             border-bottom: 2px solid var(--accent);
-            box-shadow: var(--shadow);
         }
 
         .screen {
             display: none; height: 100vh; overflow-y: auto;
-            padding: 100px 20px 250px 20px;
-            animation: fadeIn 0.4s ease-out;
+            padding: 100px 20px 250px 20px; animation: fadeIn 0.4s ease-out;
         }
         .screen.active { display: block; }
 
-        .card {
-            background: var(--glass);
-            border-radius: 24px;
-            padding: 22px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(212, 175, 55, 0.1);
-        }
+        .card { background: var(--glass); border-radius: 24px; padding: 22px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); }
 
-        .btn {
-            background: var(--gold-grad);
-            color: var(--primary);
-            border: none;
-            padding: 14px;
-            border-radius: 16px;
-            font-weight: 800;
-            cursor: pointer;
-            width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
+        .btn { background: var(--gold-grad); color: var(--primary); border: none; padding: 14px; border-radius: 16px; font-weight: 800; width: 100%; cursor: pointer; }
 
         nav {
-            position: fixed; bottom: 0; width: 100%;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            display: flex; justify-content: space-around;
-            padding: 12px 0 25px 0;
-            border-top: 1px solid rgba(212, 175, 55, 0.2);
-            z-index: 2001;
+            position: fixed; bottom: 0; width: 100%; background: var(--glass);
+            display: flex; justify-content: space-around; padding: 12px 0 25px 0;
+            border-top: 1px solid rgba(212, 175, 55, 0.2); z-index: 1000;
         }
-
-        nav button {
-            background: none; border: none; color: #94a3b8;
-            font-size: 0.75rem; display: flex; flex-direction: column;
-            align-items: center; gap: 5px; cursor: pointer;
-        }
+        nav button { background: none; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; }
         nav button.active { color: var(--accent); }
 
+        #input-bar {
+            position: fixed; bottom: 85px; width: 100%; background: var(--glass);
+            padding: 10px 15px; display: none; gap: 10px; z-index: 2000; border-top: 1px solid rgba(212,175,55,0.1);
+        }
+
         .fab {
-            position: fixed; bottom: 105px; left: 25px;
-            width: 65px; height: 65px;
-            background: var(--gold-grad);
-            border-radius: 22px;
-            display: none; align-items: center; justify-content: center;
-            font-size: 32px; color: var(--primary);
-            z-index: 999;
+            position: fixed; bottom: 150px; left: 25px; width: 60px; height: 60px;
+            background: var(--gold-grad); border-radius: 20px; display: none;
+            align-items: center; justify-content: center; font-size: 30px; z-index: 999;
         }
 
-        .avatar-frame {
-            position: relative; width: 110px; height: 110px; margin: 0 auto 15px;
-        }
-        .avatar-main {
-            width: 110px; height: 110px; border-radius: 50%;
-            border: 4px solid var(--accent); object-fit: cover;
-            background: #eee;
-        }
+        .avatar-main { width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--accent); object-fit: cover; }
+        .msg-row { display: flex; gap: 10px; margin: 10px 0; }
+        .msg-row.me { flex-direction: row-reverse; }
+        .bubble { padding: 10px 15px; border-radius: 15px; max-width: 75%; }
+        .bubble-me { background: var(--primary); color: white; }
+        .bubble-them { background: white; color: var(--text); border: 1px solid #ddd; }
 
-        .dev-name {
-            background: var(--gold-grad);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
-            font-size: 1.4rem;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        #splash {
-            position: fixed; inset: 0; background: #064e3b;
-            z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--accent);
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        #splash { position: fixed; inset: 0; background: #064e3b; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--accent); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
-<div id="splash">
-    <h1 style="font-family:'Amiri'; font-size: 3.5rem;">دُرُوب الْهِدَايَةِ</h1>
-    <div style="width:40px; height:40px; border:4px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite; margin-top:20px;"></div>
-</div>
+<div id="splash"> <h1 style="font-family:'Amiri'; font-size: 3rem;">دُرُوب الْهِدَايَةِ</h1> </div>
 
-<div id="auth-screen" class="screen active" style="padding-top:15vh;">
-    <div class="card" style="max-width:420px; margin:auto; text-align:center;">
-        <h2 style="font-family:'Amiri'; color:var(--primary); font-size:3rem; margin:0 0 20px;">دُرُوب الْهِدَايَةِ</h2>
-        <input type="text" id="reg-name" placeholder="الاسم الكريم..." style="width:100%; padding:16px; margin-bottom:12px; border-radius:15px; border:1px solid #ddd;">
-        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:16px; margin-bottom:12px; border-radius:15px; border:1px solid #ddd;">
-        <input type="text" id="reg-code" placeholder="كود المشرف (اختياري)..." style="width:100%; padding:16px; margin-bottom:25px; border-radius:15px; border:1px solid #ddd;">
-        <button class="btn" onclick="window.registerUser()">دخول آمن</button>
+<div id="auth-screen" class="screen active">
+    <div class="card" style="max-width:400px; margin:auto; text-align:center;">
+        <h2 style="font-family:'Amiri';">تسجيل الدخول</h2>
+        <input type="text" id="reg-name" placeholder="الاسم الكريم..." style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;">
+        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;">
+        <input type="text" id="reg-code" placeholder="كود المشرف (اختياري)..." style="width:100%; padding:14px; margin-bottom:20px; border-radius:12px; border:1px solid #ddd;">
+        <button class="btn" onclick="window.registerUser()">دخول</button>
     </div>
 </div>
 
@@ -170,36 +109,31 @@
 
     <div id="page-prayer" class="screen">
         <div class="card" style="text-align: center;">
-            <h3 class="prayer-title" style="font-family:'Amiri'; font-size:2.2rem;">🕌 مَواقيتُ الصَّلاةِ</h3>
-            <p id="hijri-date" style="color:var(--accent); font-weight:800; font-size:1.3rem;"></p>
+            <h3 class="prayer-title" style="font-family:'Amiri';">🕌 مَواقيتُ الصَّلاةِ</h3>
+            <p id="hijri-date" style="color:var(--accent); font-weight:bold;"></p>
             <div id="prayer-list"></div>
         </div>
     </div>
 
     <div id="page-community" class="screen">
-        <div id="community-msgs"></div>
+        <div id="community-msgs" style="padding-bottom: 50px;"></div>
     </div>
 
     <div id="page-profile" class="screen">
         <div class="card" style="text-align:center;">
-            <div class="avatar-frame">
+            <div style="position:relative; width:110px; margin:auto;">
                 <img id="profile-img-view" src="https://via.placeholder.com/110" class="avatar-main">
-                <label for="pfp-upload" style="position:absolute; bottom:5px; right:5px; background:var(--gold-grad); padding:8px; border-radius:50%; cursor:pointer;">📸</label>
-                <input type="file" id="pfp-upload" accept="image/*" style="display:none;" onchange="window.updateProfilePic(this)">
+                <label for="pfp-upload" style="position:absolute; bottom:0; right:0; background:var(--gold-grad); padding:5px; border-radius:50%; cursor:pointer;">📸</label>
+                <input type="file" id="pfp-upload" style="display:none;" onchange="window.updateProfilePic(this)">
             </div>
             <div id="profile-details"></div>
         </div>
-        
         <div class="card">
-            <h4 class="dev-title" style="margin-top:0; font-family:'Amiri'; font-size:1.6rem;">فَرِيقُ التَّطْوِيرِ</h4>
-            <div style="padding-top:10px;">
-                <span class="dev-name">عَبْدُ الْعَزِيزِ مُحَمَّد</span>
-                <span class="dev-name">سُلَيْمَانُ بْنُ عَبْدِ الْفَتَّاحِ</span>
-            </div>
+            <h4 class="dev-title">فَرِيقُ التَّطْوِيرِ</h4>
+            <div style="color:var(--accent); font-weight:bold;">عَبْدُ الْعَزِيزِ مُحَمَّد<br>سُلَيْمَانُ بْنُ عَبْدِ الْفَتَّاحِ</div>
         </div>
-
-        <button class="btn" style="margin-bottom:12px;" onclick="window.toggleTheme()">🌓 تبديل المظهر</button>
-        <button class="btn" style="background:#ef4444; color:white;" onclick="window.logout()">خروج نهائي</button>
+        <button class="btn" style="margin-bottom:10px;" onclick="window.toggleTheme()">🌓 تبديل المظهر</button>
+        <button class="btn" style="background:#ef4444; color:white;" onclick="window.logout()">خروج</button>
     </div>
 
     <nav id="bottom-nav">
@@ -208,11 +142,16 @@
         <button onclick="window.showPage('community', this)">العام</button>
         <button onclick="window.showPage('profile', this)">حسابي</button>
     </nav>
+
+    <div id="input-bar">
+        <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:10px; border-radius:10px; border:1px solid #ddd;">
+        <button onclick="window.sendMessage()" style="background:var(--primary); color:white; border:none; padding:10px 15px; border-radius:10px;">إرسال</button>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyB6aPF7qqqiiHMGXR5b3boCrRa7VcdDJwE", 
@@ -224,27 +163,16 @@
     
     const app = initializeApp(firebaseConfig); 
     const db = getDatabase(app);
-    const cloudName = "dlzaxwzmx"; 
-    const uploadPreset = "noor_app"; 
+    const cloudName = "dlzaxwzmx", uploadPreset = "noor_app";
 
     let currentUser = JSON.parse(localStorage.getItem('duroob_user')) || null;
-    let roomsMap = {}; 
-
-    const toArDigits = s => s.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
-    const format12h = (t24) => {
-        let [h, m] = t24.split(':'); h = parseInt(h);
-        const ampm = h >= 12 ? 'م' : 'ص';
-        h = h % 12 || 12;
-        return `${toArDigits(h)}:${toArDigits(m)} ${ampm}`;
-    };
 
     window.registerUser = () => {
         const name = document.getElementById('reg-name').value;
         const phone = document.getElementById('reg-phone').value;
         const code = document.getElementById('reg-code').value;
         if(name.length < 3) return alert("يرجى كتابة الاسم");
-        
-        currentUser = { name, phone, role: (code.trim() === "AM/SA_1") ? "supervisor" : "student", photo: "" };
+        currentUser = { name, phone, role: (code === "AM/SA_1" ? "supervisor" : "student"), photo: "" };
         localStorage.setItem('duroob_user', JSON.stringify(currentUser));
         initApp();
     };
@@ -253,116 +181,102 @@
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('splash').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
-        
-        document.getElementById('add-btn').style.display = (currentUser.role === 'supervisor') ? 'flex' : 'none';
+        document.getElementById('add-btn').style.display = (currentUser.role === 'supervisor' ? 'flex' : 'none');
         if(currentUser.photo) document.getElementById('profile-img-view').src = currentUser.photo;
-
-        document.getElementById('profile-details').innerHTML = `
-            <h3 style="margin:0; font-family:'Amiri'; font-size:1.8rem;">${currentUser.name}</h3>
-            <p style="margin:5px 0; font-weight:700; opacity:0.7;">${currentUser.role === 'supervisor' ? 'مُشرف حلقة' : 'طالب علم'}</p>
-        `;
-        
-        loadCircles();
-        loadPrayers();
+        document.getElementById('profile-details').innerHTML = `<h3>${currentUser.name}</h3><p>${currentUser.role === 'supervisor' ? 'مشرف' : 'طالب'}</p>`;
+        loadCircles(); loadPrayers(); listenGeneral();
     }
-
-    function loadCircles() {
-        onValue(ref(db, 'rooms'), snap => {
-            const list = document.getElementById('circles-list');
-            list.innerHTML = ""; roomsMap = {};
-            snap.forEach(child => {
-                const r = child.val();
-                const id = child.key;
-                roomsMap[id] = r;
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="room-title-text" style="font-weight:900; color:var(--primary); font-size:1.4rem; margin-bottom:10px;">💎 حلقة ${r.name}</div>
-                    <p style="margin-bottom:15px;">المشرف: ${r.supervisor}</p>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn" style="flex:2" onclick="window.enterRoom('${id}')">انضمام للحلقة</button>
-                        ${r.whatsapp ? `<button class="btn" style="width:55px; background:#25D366; color:white;" onclick="window.openWhatsapp('${r.whatsapp}')">📞</button>` : ''}
-                        ${(currentUser.role === 'supervisor' && r.supervisor === currentUser.name) ? `<button class="btn" style="width:55px; background:#ef4444; color:white;" onclick="window.deleteRoom('${id}')">🗑</button>` : ''}
-                    </div>
-                `;
-                list.appendChild(card);
-            });
-        });
-    }
-
-    window.openWhatsapp = (num) => {
-        const text = `السلام عليكم، أريد الانضمام إلى الحلقة للتسميع. اسمي: ${currentUser.name} رقمي: ${currentUser.phone}`;
-        window.open(`https://wa.me/${num}?text=${encodeURIComponent(text)}`, '_blank');
-    };
-
-    window.updateProfilePic = async (input) => {
-        if(!input.files[0]) return;
-        const fd = new FormData();
-        fd.append('file', input.files[0]);
-        fd.append('upload_preset', uploadPreset);
-        try {
-            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
-            const data = await res.json();
-            currentUser.photo = data.secure_url;
-            localStorage.setItem('duroob_user', JSON.stringify(currentUser));
-            document.getElementById('profile-img-view').src = data.secure_url;
-        } catch(e) { alert("فشل رفع الصورة"); }
-    };
-
-    window.enterRoom = (id) => {
-        const room = roomsMap[id];
-        const pass = prompt("أدخل كلمة سر الحلقة:");
-        if(pass === room.pass) {
-            alert("تم الدخول بنجاح");
-        } else {
-            alert("كلمة السر خاطئة!");
-        }
-    };
-
-    window.createCircle = () => {
-        const name = prompt("اسم الحلقة:");
-        const pass = prompt("كلمة السر:");
-        const wa = prompt("رقم واتساب المشرف (مثال: 2010...):");
-        if(name) push(ref(db, 'rooms'), { name, pass: pass || "", whatsapp: wa || "", supervisor: currentUser.name });
-    };
-
-    window.deleteRoom = (id) => {
-        if(confirm("حذف الحلقة؟")) remove(ref(db, 'rooms/'+id));
-    };
 
     window.showPage = (id, btn) => {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('page-' + id).classList.add('active');
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+        if(btn) btn.classList.add('active');
+        document.getElementById('input-bar').style.display = (id === 'community' ? 'flex' : 'none');
+    };
+
+    function loadCircles() {
+        onValue(ref(db, 'rooms'), snap => {
+            const list = document.getElementById('circles-list'); list.innerHTML = "";
+            snap.forEach(child => {
+                const r = child.val(); const id = child.key;
+                const card = document.createElement('div'); card.className = 'card';
+                card.innerHTML = `
+                    <div class="room-title-text" style="font-weight:bold;">💎 حلقة ${r.name}</div>
+                    <p>المشرف: ${r.supervisor}</p>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn" style="flex:2" onclick="window.enterRoom('${id}')">انضمام</button>
+                        <button class="btn" style="width:50px; background:#25D366; color:white;" onclick="window.openWa('${r.whatsapp}')">📞</button>
+                        ${(currentUser.role==='supervisor' && r.supervisor===currentUser.name) ? `<button class="btn" style="width:50px; background:#ef4444; color:white;" onclick="window.delRoom('${id}')">🗑</button>` : ''}
+                    </div>`;
+                list.appendChild(card);
+            });
+        });
+    }
+
+    window.openWa = (num) => {
+        const msg = `السلام عليكم، أريد الانضمام إلى الحلقة للتسميع. اسمي: ${currentUser.name} رقمي: ${currentUser.phone}`;
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+    };
+
+    window.enterRoom = (id) => {
+        onValue(ref(db, 'rooms/'+id), snap => {
+            if(prompt("كلمة السر:") === snap.val().pass) alert("تم الدخول (يمكنك الآن إكمال نظام الغرف)");
+            else alert("خطأ");
+        }, {onlyOnce: true});
+    };
+
+    window.createCircle = () => {
+        const name = prompt("اسم الحلقة:"), pass = prompt("كلمة السر:"), wa = prompt("واتساب المشرف:");
+        if(name) push(ref(db, 'rooms'), { name, pass, whatsapp: wa, supervisor: currentUser.name });
+    };
+
+    window.delRoom = (id) => { if(confirm("حذف؟")) remove(ref(db, 'rooms/'+id)); };
+
+    function listenGeneral() {
+        const cont = document.getElementById('community-msgs');
+        onChildAdded(ref(db, 'general'), snap => {
+            const m = snap.val(); const isMe = m.sender === currentUser.name;
+            const div = document.createElement('div'); div.className = `msg-row ${isMe?'me':''}`;
+            div.innerHTML = `<div class="bubble ${isMe?'bubble-me':'bubble-them'}"><b>${m.sender}:</b><br>${m.text}</div>`;
+            cont.appendChild(div); cont.parentElement.scrollTop = cont.parentElement.scrollHeight;
+        });
+    }
+
+    window.sendMessage = () => {
+        const inp = document.getElementById('msg-input');
+        if(inp.value) { push(ref(db, 'general'), { sender: currentUser.name, text: inp.value, time: Date.now() }); inp.value = ""; }
+    };
+
+    window.updateProfilePic = async (input) => {
+        if(!input.files[0]) return;
+        const fd = new FormData(); fd.append('file', input.files[0]); fd.append('upload_preset', uploadPreset);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
+        const data = await res.json();
+        currentUser.photo = data.secure_url; localStorage.setItem('duroob_user', JSON.stringify(currentUser));
+        document.getElementById('profile-img-view').src = currentUser.photo;
     };
 
     async function loadPrayers() {
-        try {
-            const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
-            const data = await res.json();
-            document.getElementById('hijri-date').innerText = toArDigits(data.data.date.hijri.date) + " " + data.data.date.hijri.month.ar;
-            const t = data.data.timings;
-            const ps = [['الفجر', t.Fajr], ['الظهر', t.Dhuhr], ['العصر', t.Asr], ['المغرب', t.Maghrib], ['العشاء', t.Isha]];
-            document.getElementById('prayer-list').innerHTML = ps.map(p => `
-                <div style="display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid #eee;">
-                    <span>${p[0]}</span><b style="color:var(--accent);">${format12h(p[1])}</b>
-                </div>`).join('');
-        } catch(e) {}
+        const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
+        const d = await res.json(); const t = d.data.timings;
+        document.getElementById('hijri-date').innerText = d.data.date.hijri.date + " " + d.data.date.hijri.month.ar;
+        const ps = [['الفجر', t.Fajr], ['الظهر', t.Dhuhr], ['العصر', t.Asr], ['المغرب', t.Maghrib], ['العشاء', t.Isha]];
+        document.getElementById('prayer-list').innerHTML = ps.map(p => {
+            let [h, m] = p[1].split(':'); let ampm = h >= 12 ? 'م' : 'ص'; h = h % 12 || 12;
+            return `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${p[0]}</span><b>${h}:${m} ${ampm}</b></div>`;
+        }).join('');
     }
 
     window.toggleTheme = () => {
         const t = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.body.setAttribute('data-theme', t);
-        localStorage.setItem('duroob_theme', t);
+        document.body.setAttribute('data-theme', t); localStorage.setItem('duroob_theme', t);
     };
 
     window.logout = () => { localStorage.clear(); location.reload(); };
 
-    const savedT = localStorage.getItem('duroob_theme');
-    if(savedT) document.body.setAttribute('data-theme', savedT);
-    if(currentUser) setTimeout(initApp, 1000);
-    else setTimeout(() => document.getElementById('splash').style.display = 'none', 1000);
+    if(localStorage.getItem('duroob_theme')) document.body.setAttribute('data-theme', localStorage.getItem('duroob_theme'));
+    if(currentUser) initApp(); else setTimeout(() => document.getElementById('splash').style.display = 'none', 1000);
 </script>
 </body>
 </html>
