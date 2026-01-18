@@ -26,7 +26,6 @@
             --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
 
-        /* تعديلات الوضع الداكن المطلوبة */
         [data-theme="dark"] .room-title-text, 
         [data-theme="dark"] h3, 
         [data-theme="dark"] .dev-title,
@@ -35,11 +34,7 @@
             color: var(--accent) !important;
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            transition: 0.3s;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.3s; }
 
         body {
             font-family: 'Tajawal', sans-serif;
@@ -119,6 +114,15 @@
             z-index: 999;
         }
 
+        .avatar-frame {
+            position: relative; width: 110px; height: 110px; margin: 0 auto 15px;
+        }
+        .avatar-main {
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 4px solid var(--accent); object-fit: cover;
+            background: #eee;
+        }
+
         .dev-name {
             background: var(--gold-grad);
             -webkit-background-clip: text;
@@ -135,12 +139,14 @@
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div id="splash">
     <h1 style="font-family:'Amiri'; font-size: 3.5rem;">دُرُوب الْهِدَايَةِ</h1>
+    <div style="width:40px; height:40px; border:4px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite; margin-top:20px;"></div>
 </div>
 
 <div id="auth-screen" class="screen active" style="padding-top:15vh;">
@@ -176,6 +182,11 @@
 
     <div id="page-profile" class="screen">
         <div class="card" style="text-align:center;">
+            <div class="avatar-frame">
+                <img id="profile-img-view" src="https://via.placeholder.com/110" class="avatar-main">
+                <label for="pfp-upload" style="position:absolute; bottom:5px; right:5px; background:var(--gold-grad); padding:8px; border-radius:50%; cursor:pointer;">📸</label>
+                <input type="file" id="pfp-upload" accept="image/*" style="display:none;" onchange="window.updateProfilePic(this)">
+            </div>
             <div id="profile-details"></div>
         </div>
         
@@ -213,9 +224,19 @@
     
     const app = initializeApp(firebaseConfig); 
     const db = getDatabase(app);
+    const cloudName = "dlzaxwzmx"; 
+    const uploadPreset = "noor_app"; 
 
     let currentUser = JSON.parse(localStorage.getItem('duroob_user')) || null;
     let roomsMap = {}; 
+
+    const toArDigits = s => s.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    const format12h = (t24) => {
+        let [h, m] = t24.split(':'); h = parseInt(h);
+        const ampm = h >= 12 ? 'م' : 'ص';
+        h = h % 12 || 12;
+        return `${toArDigits(h)}:${toArDigits(m)} ${ampm}`;
+    };
 
     window.registerUser = () => {
         const name = document.getElementById('reg-name').value;
@@ -223,7 +244,7 @@
         const code = document.getElementById('reg-code').value;
         if(name.length < 3) return alert("يرجى كتابة الاسم");
         
-        currentUser = { name, phone, role: (code.trim() === "AM/SA_1") ? "supervisor" : "student" };
+        currentUser = { name, phone, role: (code.trim() === "AM/SA_1") ? "supervisor" : "student", photo: "" };
         localStorage.setItem('duroob_user', JSON.stringify(currentUser));
         initApp();
     };
@@ -234,7 +255,8 @@
         document.getElementById('main-app').style.display = 'block';
         
         document.getElementById('add-btn').style.display = (currentUser.role === 'supervisor') ? 'flex' : 'none';
-        
+        if(currentUser.photo) document.getElementById('profile-img-view').src = currentUser.photo;
+
         document.getElementById('profile-details').innerHTML = `
             <h3 style="margin:0; font-family:'Amiri'; font-size:1.8rem;">${currentUser.name}</h3>
             <p style="margin:5px 0; font-weight:700; opacity:0.7;">${currentUser.role === 'supervisor' ? 'مُشرف حلقة' : 'طالب علم'}</p>
@@ -268,24 +290,39 @@
         });
     }
 
+    window.openWhatsapp = (num) => {
+        const text = `السلام عليكم، أريد الانضمام إلى الحلقة للتسميع. اسمي: ${currentUser.name} رقمي: ${currentUser.phone}`;
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(text)}`, '_blank');
+    };
+
+    window.updateProfilePic = async (input) => {
+        if(!input.files[0]) return;
+        const fd = new FormData();
+        fd.append('file', input.files[0]);
+        fd.append('upload_preset', uploadPreset);
+        try {
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
+            const data = await res.json();
+            currentUser.photo = data.secure_url;
+            localStorage.setItem('duroob_user', JSON.stringify(currentUser));
+            document.getElementById('profile-img-view').src = data.secure_url;
+        } catch(e) { alert("فشل رفع الصورة"); }
+    };
+
     window.enterRoom = (id) => {
         const room = roomsMap[id];
         const pass = prompt("أدخل كلمة سر الحلقة:");
         if(pass === room.pass) {
-            alert("تم الدخول بنجاح (سيتم فتح صفحة الرسائل)");
+            alert("تم الدخول بنجاح");
         } else {
             alert("كلمة السر خاطئة!");
         }
     };
 
-    window.openWhatsapp = (num) => {
-        window.open(`https://wa.me/${num}`, '_blank');
-    };
-
     window.createCircle = () => {
         const name = prompt("اسم الحلقة:");
         const pass = prompt("كلمة السر:");
-        const wa = prompt("رقم واتساب المشرف (بدون +):");
+        const wa = prompt("رقم واتساب المشرف (مثال: 2010...):");
         if(name) push(ref(db, 'rooms'), { name, pass: pass || "", whatsapp: wa || "", supervisor: currentUser.name });
     };
 
@@ -301,9 +338,17 @@
     };
 
     async function loadPrayers() {
-        const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
-        const data = await res.json();
-        document.getElementById('hijri-date').innerText = data.data.date.hijri.date + " " + data.data.date.hijri.month.ar;
+        try {
+            const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
+            const data = await res.json();
+            document.getElementById('hijri-date').innerText = toArDigits(data.data.date.hijri.date) + " " + data.data.date.hijri.month.ar;
+            const t = data.data.timings;
+            const ps = [['الفجر', t.Fajr], ['الظهر', t.Dhuhr], ['العصر', t.Asr], ['المغرب', t.Maghrib], ['العشاء', t.Isha]];
+            document.getElementById('prayer-list').innerHTML = ps.map(p => `
+                <div style="display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid #eee;">
+                    <span>${p[0]}</span><b style="color:var(--accent);">${format12h(p[1])}</b>
+                </div>`).join('');
+        } catch(e) {}
     }
 
     window.toggleTheme = () => {
