@@ -45,14 +45,27 @@
             border-bottom: 2px solid var(--accent);
         }
 
-        [data-theme="dark"] header, [data-theme="dark"] h3, [data-theme="dark"] .room-title-text,
-        [data-theme="dark"] .prayer-title, [data-theme="dark"] .dev-title { color: var(--accent) !important; }
+        /* تنسيق شاشة تسجيل الدخول الذهبية */
+        #auth-screen {
+            background: linear-gradient(rgba(6, 78, 59, 0.9), rgba(6, 78, 59, 0.8)), url('https://www.transparenttextures.com/patterns/islamic-exercise.png');
+            display: flex; align-items: center; justify-content: center;
+        }
+        .auth-card {
+            background: var(--glass); border: 3px solid var(--accent);
+            border-radius: 30px; padding: 40px 25px; width: 90%; max-width: 400px;
+            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .auth-card h2 { font-family: 'Amiri', serif; font-size: 2.8rem; color: var(--primary); margin-bottom: 30px; }
+        .auth-input { 
+            width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 15px; 
+            border: 2px solid #e2e8f0; font-family: 'Tajawal'; font-size: 1rem;
+        }
 
         .screen { display: none; height: 100vh; overflow-y: auto; padding: 100px 20px 250px 20px; animation: fadeIn 0.4s ease-out; }
         .screen.active { display: block; }
 
         .card { background: var(--glass); border-radius: 24px; padding: 22px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); }
-        .btn { background: var(--gold-grad); color: var(--primary); border: none; padding: 14px; border-radius: 16px; font-weight: 800; width: 100%; cursor: pointer; }
+        .btn { background: var(--gold-grad); color: var(--primary); border: none; padding: 16px; border-radius: 18px; font-weight: 800; width: 100%; cursor: pointer; font-size: 1.1rem; }
 
         nav { position: fixed; bottom: 0; width: 100%; background: var(--glass); display: flex; justify-content: space-around; padding: 12px 0 25px 0; border-top: 1px solid rgba(212, 175, 55, 0.2); z-index: 1000; }
         nav button { background: none; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; }
@@ -60,15 +73,21 @@
 
         #input-bar { position: fixed; bottom: 85px; width: 100%; background: var(--glass); padding: 10px 15px; display: none; gap: 10px; z-index: 5000; border-top: 1px solid rgba(212,175,55,0.1); }
 
+        /* الشات وفقاعات الذهب */
         .msg-row { display: flex; gap: 10px; margin: 15px 0; align-items: flex-end; }
         .msg-row.me { flex-direction: row-reverse; }
         .avatar-sm { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
         .bubble { padding: 12px 18px; border-radius: 22px; max-width: 75%; position: relative; }
-        .bubble-me { background: var(--primary); color: white; }
+        
+        /* تعديل: النص أسود في المربع الذهبي (me) خاصة في الوضع الداكن */
+        .bubble-me { background: var(--gold-grad); color: #000 !important; font-weight: 500; }
+        [data-theme="dark"] .bubble-me { color: #000 !important; }
+        
         .bubble-them { background: white; color: var(--text); border: 1px solid #ddd; }
+        [data-theme="dark"] .bubble-them { background: var(--primary); color: #fff; border: none; }
 
-        /* نبض الصوت */
-        .audio-btn.playing { animation: playingPulse 1s infinite alternate; background: var(--accent) !important; color: var(--primary) !important; }
+        /* تأثير تشغيل الصوت */
+        .audio-btn.playing { animation: playingPulse 1s infinite alternate; }
         @keyframes playingPulse { from { box-shadow: 0 0 5px var(--accent); } to { box-shadow: 0 0 15px var(--accent); } }
 
         .rec-active { background: #ef4444 !important; color: white !important; animation: pulse 0.8s infinite alternate; }
@@ -84,13 +103,15 @@
 
 <div id="splash"> <h1 style="font-family:'Amiri'; font-size: 3rem;">دُرُوب الْهِدَايَةِ</h1> </div>
 
-<div id="auth-screen" class="screen active">
-    <div class="card" style="max-width:400px; margin:auto; text-align:center;">
-        <h2 style="font-family:'Amiri';">تسجيل الدخول</h2>
-        <input type="text" id="reg-name" placeholder="الاسم الكريم...">
-        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="margin: 10px 0;">
-        <input type="text" id="reg-code" placeholder="كود المشرف (اختياري)..." style="margin-bottom: 20px;">
-        <button class="btn" onclick="window.registerUser()">دخول</button>
+<div id="auth-screen" class="screen active" style="padding:0;">
+    <div class="auth-card">
+        <div style="font-size: 4rem; margin-bottom: 10px;">🕌</div>
+        <h2>دُرُوب الْهِدَايَةِ</h2>
+        <input type="text" id="reg-name" class="auth-input" placeholder="الاسم الكريم...">
+        <input type="tel" id="reg-phone" class="auth-input" placeholder="رقم الهاتف...">
+        <input type="text" id="reg-code" class="auth-input" placeholder="كود المشرف (اختياري)...">
+        <button class="btn" onclick="window.registerUser()">دخول آمن 📖</button>
+        <p style="color: var(--primary); margin-top: 20px; font-weight: bold; font-size: 0.9rem; opacity: 0.8;">"خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ"</p>
     </div>
 </div>
 
@@ -119,15 +140,15 @@
             <div id="profile-details"></div>
         </div>
         
-        <div class="card">
-            <h4 class="dev-title" style="margin:0; font-family:'Amiri';">فَرِيقُ التَّطْوِيرِ</h4>
+        <div class="card" id="dev-section">
+            <h4 class="dev-title" style="margin:0; font-family:'Amiri'; font-size: 1.4rem;">فَرِيقُ التَّطْوِيرِ</h4>
             <div style="padding-top:10px; font-weight:bold; color:var(--accent);">
                 عَبْدُ الْعَزِيزِ مُحَمَّد<br>سُلَيْمَانُ بْنُ عَبْدِ الْفَتَّاحِ
             </div>
         </div>
 
         <button class="btn" style="margin-bottom:10px;" onclick="window.toggleTheme()">🌓 تبديل المظهر</button>
-        <button class="btn" style="background:#ef4444; color:white;" onclick="window.logout()">خروج</button>
+        <button class="btn" style="background:#ef4444; color:white;" onclick="window.logout()">خروج نهائي</button>
     </div>
     <nav id="bottom-nav">
         <button onclick="window.showPage('circles', this)" class="active">الحلقات</button>
@@ -144,7 +165,7 @@
 
 <div id="room-overlay">
     <header style="position:fixed; top:0; width:100%; z-index:4001; background:var(--glass); border-bottom:2px solid var(--accent);">
-        <button onclick="window.closeRoom()" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+        <button onclick="window.closeRoom()" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); background:none; border:none; font-size:1.5rem; color:var(--primary); cursor:pointer;">✕</button>
         <span id="active-room-name" style="font-weight:bold;">اسم الحلقة</span>
     </header>
     <div id="room-msgs"></div>
@@ -180,7 +201,7 @@
         const name = document.getElementById('reg-name').value;
         const phone = document.getElementById('reg-phone').value;
         const code = document.getElementById('reg-code').value;
-        if(name.length < 3) return alert("يرجى كتابة الاسم");
+        if(name.length < 3) return alert("يرجى كتابة الاسم الكريم");
         currentUser = { name, phone, role: (code === "AM/SA_1" ? "supervisor" : "student"), photo: "" };
         localStorage.setItem('duroob_user', JSON.stringify(currentUser));
         initApp();
@@ -192,7 +213,7 @@
         document.getElementById('main-app').style.display = 'block';
         document.getElementById('add-btn').style.display = (currentUser.role === 'supervisor' ? 'block' : 'none');
         if(currentUser.photo) document.getElementById('profile-img-view').src = currentUser.photo;
-        document.getElementById('profile-details').innerHTML = `<h3>${currentUser.name}</h3><p>${currentUser.role==='supervisor'?'مشرف':'طالب'}</p>`;
+        document.getElementById('profile-details').innerHTML = `<h3>${currentUser.name}</h3><p>${currentUser.role==='supervisor'?'مشرف حلقة':'طالب علم'}</p>`;
         loadCircles(); loadPrayers(); listenGeneral();
     }
 
@@ -210,9 +231,9 @@
             snap.forEach(child => {
                 const r = child.val(); const id = child.key; roomsMap[id] = r;
                 const card = document.createElement('div'); card.className = 'card';
-                card.innerHTML = `<div class="room-title-text">💎 حلقة ${r.name}</div><p>المشرف: ${r.supervisor}</p>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn" style="flex:2" onclick="window.enterRoom('${id}')">انضمام</button>
+                card.innerHTML = `<div class="room-title-text" style="font-weight:bold; font-size:1.4rem;">💎 حلقة ${r.name}</div><p>المشرف: ${r.supervisor}</p>
+                    <div style="display:flex; gap:10px; margin-top:15px;">
+                        <button class="btn" style="flex:2" onclick="window.enterRoom('${id}')">انضمام للحلقة</button>
                         <button class="btn" style="width:60px; background:#25D366; color:white;" onclick="window.openWa('${r.whatsapp}')">📞</button>
                         ${(currentUser.role==='supervisor' && r.supervisor===currentUser.name) ? `<button class="btn" style="width:60px; background:#ef4444; color:white;" onclick="window.delRoom('${id}')">🗑</button>` : ''}
                     </div>`;
@@ -224,7 +245,7 @@
     window.delRoom = (id) => { if(confirm("حذف الحلقة نهائياً؟")) remove(ref(db, 'rooms/'+id)); };
 
     window.enterRoom = (id) => {
-        const pass = prompt("كلمة السر:");
+        const pass = prompt("كلمة سر الحلقة:");
         if(pass === roomsMap[id].pass) {
             activeRoomId = id;
             document.getElementById('active-room-name').innerText = "حلقة " + roomsMap[id].name;
@@ -233,7 +254,7 @@
             document.getElementById('room-overlay').appendChild(document.getElementById('input-bar'));
             document.getElementById('input-bar').style.display = 'flex';
             onChildAdded(ref(db, `messages/${id}`), s => renderMsg(s.val(), document.getElementById('room-msgs')));
-        } else alert("خطأ");
+        } else alert("خطأ في كلمة السر");
     };
 
     window.closeRoom = () => {
@@ -252,17 +273,19 @@
     window.handleRecording = async () => {
         const btn = document.getElementById('rec-btn');
         if(!isRecording) {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream); audioChunks = []; mediaRecorder.start();
-            isRecording = true; btn.classList.add('rec-active'); btn.innerText = "⏹";
-            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-            mediaRecorder.onstop = async () => {
-                const blob = new Blob(audioChunks, { type: 'audio/mpeg' });
-                const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', uploadPreset);
-                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
-                const data = await res.json();
-                push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), { sender: currentUser.name, photo: currentUser.photo || "", audioUrl: data.secure_url, type: 'audio', time: Date.now() });
-            };
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream); audioChunks = []; mediaRecorder.start();
+                isRecording = true; btn.classList.add('rec-active'); btn.innerText = "⏹";
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = async () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/mpeg' });
+                    const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', uploadPreset);
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
+                    const data = await res.json();
+                    push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), { sender: currentUser.name, photo: currentUser.photo || "", audioUrl: data.secure_url, type: 'audio', time: Date.now() });
+                };
+            } catch(e) { alert("فعل الميكروفون أولاً"); }
         } else { mediaRecorder.stop(); isRecording = false; btn.classList.remove('rec-active'); btn.innerText = "🎤"; }
     };
 
@@ -299,7 +322,8 @@
     };
 
     function listenGeneral() { onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), document.getElementById('community-msgs'))); }
-    window.openWa = (num) => window.open(`https://wa.me/${num}?text=${encodeURIComponent("السلام عليكم، أريد الانضمام للتسميع. اسمي: "+currentUser.name+" رقمي: "+currentUser.phone)}`, '_blank');
+    window.openWa = (num) => window.open(`https://wa.me/${num}?text=${encodeURIComponent("السلام عليكم، أريد الانضمام للتسميع. اسمي: "+currentUser.name)}`, '_blank');
+    
     window.updateProfilePic = async (input) => {
         const fd = new FormData(); fd.append('file', input.files[0]); fd.append('upload_preset', uploadPreset);
         const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
@@ -307,6 +331,7 @@
         currentUser.photo = data.secure_url; localStorage.setItem('duroob_user', JSON.stringify(currentUser));
         document.getElementById('profile-img-view').src = currentUser.photo;
     };
+
     async function loadPrayers() {
         const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
         const d = await res.json();
@@ -314,10 +339,14 @@
         const ps = [['الفجر', d.data.timings.Fajr], ['الظهر', d.data.timings.Dhuhr], ['العصر', d.data.timings.Asr], ['المغرب', d.data.timings.Maghrib], ['العشاء', d.data.timings.Isha]];
         document.getElementById('prayer-list').innerHTML = ps.map(p => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #eee;"><span>${p[0]}</span><b>${format12h(p[1])}</b></div>`).join('');
     }
+
     window.toggleTheme = () => {
         const t = document.body.getAttribute('data-theme')==='dark'?'light':'dark';
         document.body.setAttribute('data-theme', t); localStorage.setItem('duroob_theme', t);
     };
+
+    window.logout = () => { localStorage.clear(); location.reload(); };
+
     if(localStorage.getItem('duroob_theme')) document.body.setAttribute('data-theme', localStorage.getItem('duroob_theme'));
     if(currentUser) initApp(); else setTimeout(() => document.getElementById('splash').style.display = 'none', 1000);
 </script>
