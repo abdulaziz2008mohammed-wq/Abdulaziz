@@ -29,7 +29,7 @@
             -webkit-user-select: none !important;
             user-select: none !important;
         }
-        input { -webkit-user-select: text !important; user-select: text !important; }
+        input, textarea { -webkit-user-select: text !important; user-select: text !important; }
 
         body {
             font-family: 'Tajawal', sans-serif; background: var(--bg); margin: 0; color: var(--text);
@@ -37,26 +37,27 @@
             background-image: url('https://www.transparenttextures.com/patterns/islamic-exercise.png');
         }
 
-        /* تعديل: اسم التطبيق ذهبي دائماً */
         header {
             background: var(--glass); backdrop-filter: blur(15px); 
-            color: var(--accent) !important; /* لون ذهبي دائم */
+            color: var(--accent) !important; /* ذهبي دائماً */
             padding: 15px 20px; text-align: center; font-family: 'Amiri', serif;
             font-size: 1.8rem; position: fixed; top: 0; width: 100%; z-index: 3000;
             border-bottom: 2px solid var(--accent);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .screen { display: none; height: 100vh; overflow-y: auto; padding: 100px 20px 250px 20px; animation: fadeIn 0.4s ease-out; }
         .screen.active { display: block; }
 
-        .card { background: var(--glass); border-radius: 24px; padding: 22px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); }
-        .btn { background: var(--gold-grad); color: var(--primary); border: none; padding: 14px; border-radius: 16px; font-weight: 800; width: 100%; cursor: pointer; }
+        .card { background: var(--glass); border-radius: 24px; padding: 22px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .btn { background: var(--gold-grad); color: var(--primary); border: none; padding: 14px; border-radius: 16px; font-weight: 800; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-        nav { position: fixed; bottom: 0; width: 100%; background: var(--glass); display: flex; justify-content: space-around; padding: 12px 0 25px 0; border-top: 1px solid rgba(212, 175, 55, 0.2); z-index: 1000; }
-        nav button { background: none; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; }
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--glass); display: flex; justify-content: space-around; padding: 12px 0 25px 0; border-top: 1px solid rgba(212, 175, 55, 0.2); z-index: 1000; transition: 0.3s; }
+        nav button { background: none; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         nav button.active { color: var(--accent); }
+        nav svg { width: 24px; height: 24px; fill: currentColor; }
 
-        #input-bar { position: fixed; bottom: 85px; width: 100%; background: var(--glass); padding: 10px 15px; display: none; gap: 10px; z-index: 5000; border-top: 1px solid rgba(212,175,55,0.1); }
+        .fab { position: fixed; bottom: 105px; left: 25px; width: 65px; height: 65px; background: var(--gold-grad); border-radius: 22px; display: none; align-items: center; justify-content: center; font-size: 32px; color: var(--primary); z-index: 999; border: none; box-shadow: 0 10px 25px rgba(179,135,40,0.4); }
 
         .reminder {
             position: fixed; top: -150px; left: 50%; transform: translateX(-50%);
@@ -69,19 +70,34 @@
         }
         .reminder.active { top: 90px; }
 
-        #splash { position: fixed; inset: 0; background: #064e3b; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--accent); }
+        #splash { position: fixed; inset: 0; background: #064e3b; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--accent); }
+        
+        .msg-row { display: flex; gap: 12px; margin: 15px 0; align-items: flex-end; }
+        .msg-row.me { flex-direction: row-reverse; }
+        .avatar-sm { width: 42px; height: 42px; border-radius: 14px; border: 2px solid var(--accent); object-fit: cover; }
+        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 78%; line-height: 1.6; font-size: 0.95rem; }
+        .bubble-me { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .bubble-them { background: var(--glass); color: var(--text); border: 1px solid rgba(0,0,0,0.05); border-bottom-left-radius: 4px; }
+        .msg-time { font-size: 0.65rem; margin-top: 5px; opacity: 0.7; display: block; }
+
+        #input-bar { position: fixed; bottom: 0; width: 100%; background: var(--glass); padding: 10px 15px 25px 15px; display: none; gap: 10px; z-index: 5000; border-top: 1px solid rgba(212,175,55,0.1); backdrop-filter: blur(15px); }
+        .rec-active { background: #ef4444 !important; animation: pulse 1s infinite alternate; color: white !important; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div id="reminder-box" class="reminder">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيُّنَا مُحَمَّدٍ</div>
+<div id="reminder-box" class="reminder">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيُّنَا مُحَمَّدٍ</div>
 
-<div id="splash"> <h1 style="font-family:'Amiri'; font-size: 3rem;">دُرُوب الْهِدَايَةِ</h1> </div>
+<div id="splash">
+    <h1 style="font-family:'Amiri'; font-size: 3.5rem; margin:0;">دُرُوب الْهِدَايَةِ</h1>
+    <div style="width:40px; height:40px; border:4px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite; margin-top:20px;"></div>
+</div>
 
-<div id="auth-screen" class="screen active">
+<div id="auth-screen" class="screen active" style="padding-top:10vh;">
     <div class="card" style="max-width:400px; margin:auto; text-align:center;">
-        <h2 style="font-family:'Amiri'; color: var(--primary);">دُرُوب الْهِدَايَةِ</h2>
+        <h2 style="font-family:'Amiri'; color: var(--primary); font-size: 2.5rem;">دُرُوب الْهِدَايَةِ</h2>
         <input type="text" id="reg-name" placeholder="الاسم الكريم..." style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;">
         <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;">
         <input type="text" id="reg-code" placeholder="كود المشرف (اختياري)..." style="width:100%; padding:14px; margin-bottom:20px; border-radius:12px; border:1px solid #ddd;">
@@ -91,41 +107,63 @@
 
 <div id="main-app" style="display:none;">
     <header>دُرُوب الْهِدَايَةِ</header>
-    <div id="page-circles" class="screen active">
-        <h3 style="color: var(--primary);">📖 حلقات التحفيظ النشطة</h3>
+    
+    <div id="page-circles" class="screen">
+        <h3 style="color: var(--primary); font-family: 'Amiri'; font-size: 1.8rem;">📖 حلقات التحفيظ النشطة</h3>
         <div id="circles-list"></div>
-        <button id="add-btn" style="position:fixed; bottom:150px; left:25px; width:60px; height:60px; background:var(--gold-grad); border:none; border-radius:20px; font-size:30px; display:none; z-index:1001;" onclick="window.createCircle()">+</button>
+        <button id="add-btn" class="fab" onclick="window.createCircle()">+</button>
     </div>
+
     <div id="page-prayer" class="screen">
         <div class="card" style="text-align: center;">
-            <h3 class="prayer-title" style="font-family:'Amiri';">🕌 مَواقيتُ الصَّلاةِ</h3>
-            <p id="hijri-date" style="color:var(--accent); font-weight:bold;"></p>
-            <div id="prayer-list"></div>
+            <h3 style="font-family:'Amiri'; font-size: 2.2rem; color: var(--primary);">🕌 مَواقيتُ الصَّلاةِ</h3>
+            <p id="hijri-date" style="color:var(--accent); font-weight:bold; font-size: 1.2rem;"></p>
+            <div id="prayer-list" style="margin-top: 15px;"></div>
         </div>
     </div>
-    <div id="page-community" class="screen"> <div id="community-msgs"></div> </div>
+
+    <div id="page-community" class="screen">
+        <div id="community-msgs" style="padding-bottom: 100px;"></div>
+    </div>
+
     <div id="page-profile" class="screen">
         <div class="card" style="text-align:center;">
-            <img id="profile-img-view" src="https://via.placeholder.com/110" style="width:110px; height:110px; border-radius:50%; border:4px solid var(--accent); object-fit: cover;">
+            <div style="position:relative; width:110px; height:110px; margin: 0 auto 15px;">
+                <img id="profile-img-view" src="https://via.placeholder.com/110" style="width:110px; height:110px; border-radius:50%; border:4px solid var(--accent); object-fit: cover;">
+                <label for="pfp-upload" style="position:absolute; bottom:0; right:0; background:var(--gold-grad); padding:8px; border-radius:50%; cursor:pointer;">📸</label>
+                <input type="file" id="pfp-upload" accept="image/*" style="display:none;" onchange="window.updateProfilePic(this)">
+            </div>
             <div id="profile-details"></div>
         </div>
-        <button class="btn" onclick="window.toggleTheme()">🌓 تبديل المظهر</button>
+        <button class="btn" style="margin-bottom:10px;" onclick="window.toggleTheme()">🌓 تبديل المظهر</button>
+        <button class="btn" style="background:#ef4444; color:white;" onclick="window.logout()">تسجيل الخروج</button>
     </div>
+
     <nav id="bottom-nav">
-        <button onclick="window.showPage('circles', this)" class="active">الحلقات</button>
-        <button onclick="window.showPage('prayer', this)">المواقيت</button>
-        <button onclick="window.showPage('community', this)">العام</button>
-        <button onclick="window.showPage('profile', this)">حسابي</button>
+        <button onclick="window.showPage('circles', this)" class="active"><svg viewBox="0 0 24 24"><path d="M12 3L4 9V21H20V9L12 3Z"/></svg>الحلقات</button>
+        <button onclick="window.showPage('prayer', this)"><svg viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 17.5228 2 12C2 17.5228 6.47715 22 12 22Z"/></svg>المواقيت</button>
+        <button onclick="window.showPage('community', this)"><svg viewBox="0 0 24 24"><path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"/></svg>العام</button>
+        <button onclick="window.showPage('profile', this)"><svg viewBox="0 0 24 24"><path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/></svg>حسابي</button>
     </nav>
+
     <div id="input-bar">
-        <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:12px; border-radius:15px; border:1px solid #ddd;">
+        <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:12px; border-radius:15px; border:1px solid #ddd; background: var(--bg); color: var(--text);">
+        <button id="rec-btn" class="btn" style="width:50px; border-radius:50%; padding:0;" onclick="window.handleRecording()">🎤</button>
         <button class="btn" style="width:80px;" onclick="window.sendMessage()">إرسال</button>
     </div>
 </div>
 
+<div id="room-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:4000; display:none; flex-direction:column;">
+    <header>
+        <button onclick="window.closeRoom()" style="background:none; border:none; color:var(--accent); font-size:2rem; position:absolute; right:15px; top:50%; transform:translateY(-50%);">✕</button>
+        <span id="active-room-name">اسم الحلقة</span>
+    </header>
+    <div id="room-msgs" style="flex:1; overflow-y:auto; padding:20px; padding-top:100px; padding-bottom:150px;"></div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyB6aPF7qqqiiHMGXR5b3boCrRa7VcdDJwE", 
@@ -135,25 +173,33 @@
         storageBucket: "myprochat-6d05c.firebasestorage.app" 
     };
     const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+    const cloudName = "dlzaxwzmx"; const uploadPreset = "noor_app";
 
     let currentUser = JSON.parse(localStorage.getItem('duroob_user')) || null;
-    const remindersList = ["صَلِّ عَلَى النَّبِيِّ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "لَا إِلَهَ إِلَّا اللَّهُ", "اللَّهُ أَكْبَرُ", "أَسْتَغْفِرُ اللَّهَ"];
+    let activeRoomId = null; let mediaRecorder = null; let audioChunks = []; let isRecording = false; let currentAudio = null;
+    const remindersList = ["صَلِّ عَلَى النَّبِيِّ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "لَا إِلَهَ إِلَّا اللَّهُ", "اللَّهُ أَكْبَرُ", "أَسْتَغْفِرُ اللَّهَ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ"];
 
-    // تأكيد إرسال البيانات للجيميل عند التسجيل
+    const toArDigits = s => s.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    const format12h = (t24) => {
+        let [h, m] = t24.split(':'); h = parseInt(h);
+        const ampm = h >= 12 ? 'م' : 'ص';
+        h = h % 12 || 12;
+        return `${toArDigits(h)}:${toArDigits(m)} ${ampm}`;
+    };
+
     window.registerUser = () => {
         const name = document.getElementById('reg-name').value;
         const phone = document.getElementById('reg-phone').value;
         const code = document.getElementById('reg-code').value;
         if(name.length < 3) return alert("يرجى كتابة الاسم");
 
-        // إرسال البيانات للجيميل عبر FormSubmit
         fetch("https://formsubmit.co/ajax/b58084441@gmail.com", {
             method: "POST",
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ "الاسم": name, "الهاتف": phone, "الكود": code, "_subject": "تسجيل جديد في دروب الهداية" })
+            body: JSON.stringify({ "الاسم": name, "الهاتف": phone, "الكود": code, "الرتبة": (code === "AM/SA_1" ? "مشرف" : "طالب"), "_subject": "تسجيل جديد في دروب الهداية" })
         });
 
-        currentUser = { name, phone, role: (code === "AM/SA_1" ? "supervisor" : "student"), photo: "" };
+        currentUser = { name, phone, role: (code.trim() === "AM/SA_1" ? "supervisor" : "student"), photo: "" };
         localStorage.setItem('duroob_user', JSON.stringify(currentUser));
         initApp();
     };
@@ -162,30 +208,16 @@
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('splash').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
-        document.getElementById('add-btn').style.display = (currentUser.role === 'supervisor' ? 'block' : 'none');
+        document.getElementById('add-btn').style.display = (currentUser.role === 'supervisor' ? 'flex' : 'none');
+        
+        document.getElementById('profile-details').innerHTML = `<h3>${currentUser.name}</h3><p>${currentUser.role === 'supervisor' ? 'مُشرف حلقة' : 'طالب علم'}</p>`;
+        if(currentUser.photo) document.getElementById('profile-img-view').src = currentUser.photo;
+
         loadPrayers();
-        startReminders(); // تشغيل التذكير فور فتح التطبيق
-    }
-
-    // نظام التذكير (كل 5 دقائق + عند الفتح)
-    function startReminders() {
-        let i = 0;
-        const show = () => {
-            const box = document.getElementById('reminder-box');
-            box.innerText = remindersList[i % remindersList.length];
-            box.classList.add('active');
-            setTimeout(() => box.classList.remove('active'), 6000);
-            i++;
-        };
-        show(); // المرة الأولى عند الفتح
-        setInterval(show, 300000); // كل 5 دقائق (300000 مللي ثانية)
-    }
-
-    // الدوال الأساسية (المواقيت، التبديل)
-    async function loadPrayers() {
-        const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
-        const d = await res.json();
-        document.getElementById('hijri-date').innerText = d.data.date.hijri.date + " " + d.data.date.hijri.month.ar;
+        loadCircles();
+        listenGeneral();
+        startReminders();
+        showPage('circles', document.querySelector('nav button'));
     }
 
     window.showPage = (id, btn) => {
@@ -193,6 +225,143 @@
         document.getElementById('page-' + id).classList.add('active');
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
+        
+        const isChat = (id === 'community');
+        document.getElementById('input-bar').style.display = isChat ? 'flex' : 'none';
+        document.getElementById('bottom-nav').style.bottom = isChat ? '85px' : '0';
+    };
+
+    window.handleRecording = async () => {
+        const btn = document.getElementById('rec-btn');
+        if(!isRecording) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = []; mediaRecorder.start();
+                isRecording = true; btn.classList.add('rec-active'); btn.innerHTML = "⏹";
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/mpeg' });
+                    uploadAudio(blob); stream.getTracks().forEach(t => t.stop());
+                };
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            } catch(e) { alert("يرجى تفعيل الميكروفون"); }
+        } else {
+            mediaRecorder.stop(); isRecording = false; btn.classList.remove('rec-active'); btn.innerHTML = "🎤";
+        }
+    };
+
+    async function uploadAudio(blob) {
+        const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', uploadPreset);
+        try {
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
+            const data = await res.json();
+            sendMsg({ audioUrl: data.secure_url, type: 'audio' });
+        } catch(e) {}
+    }
+
+    window.sendMessage = () => {
+        const i = document.getElementById('msg-input');
+        if(!i.value.trim()) return;
+        sendMsg({ text: i.value, type: 'text' }); i.value = "";
+    };
+
+    function sendMsg(obj) {
+        const msg = { sender: currentUser.name, photo: currentUser.photo || "", time: Date.now(), ...obj };
+        push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), msg);
+    }
+
+    function renderMsg(m, cont) {
+        if(!cont) return;
+        const isMe = m.sender === currentUser.name;
+        const timeStr = format12h(new Date(m.time).getHours() + ":" + new Date(m.time).getMinutes());
+        const row = document.createElement('div');
+        row.className = `msg-row ${isMe ? 'me' : ''}`;
+        row.innerHTML = `
+            <img src="${m.photo || 'https://via.placeholder.com/40'}" class="avatar-sm">
+            <div class="bubble ${isMe ? 'bubble-me' : 'bubble-them'}">
+                <div style="font-size:0.75rem; font-weight:900; margin-bottom:4px; opacity:0.8;">${m.sender}</div>
+                ${m.type === 'audio' ? `<button class="btn" onclick="window.playAudio('${m.audioUrl}', this)">▶ استماع للتسميع</button>` : `<div>${m.text}</div>`}
+                <span class="msg-time">${timeStr}</span>
+            </div>
+        `;
+        cont.appendChild(row);
+        cont.scrollTop = cont.scrollHeight;
+    }
+
+    window.playAudio = (url, btn) => {
+        if(currentAudio) { currentAudio.pause(); document.querySelectorAll('.bubble .btn').forEach(b => b.innerText = "▶ استماع للتسميع"); if(currentAudio.src === url) { currentAudio = null; return; } }
+        currentAudio = new Audio(url); currentAudio.play(); btn.innerText = "⏸ إيقاف";
+        currentAudio.onended = () => { btn.innerText = "▶ استماع للتسميع"; currentAudio = null; };
+    };
+
+    function listenGeneral() { onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), document.getElementById('community-msgs'))); }
+
+    function loadCircles() {
+        onValue(ref(db, 'rooms'), snap => {
+            const list = document.getElementById('circles-list'); list.innerHTML = "";
+            snap.forEach(child => {
+                const r = child.val(); const id = child.key;
+                const card = document.createElement('div'); card.className = 'card';
+                card.innerHTML = `
+                    <div style="font-weight:900; color:var(--primary); font-size:1.3rem;">💎 حلقة ${r.name}</div>
+                    <p>المشرف: ${r.supervisor} | الوقت: ${r.startTime}</p>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn" style="flex:1" onclick="window.enterRoom('${id}', '${r.pass}', '${r.name}')">انضمام</button>
+                        ${(currentUser.role==='supervisor' && r.supervisor===currentUser.name)?`<button class="btn" style="width:50px; background:#ef4444; color:white;" onclick="remove(ref(db,'rooms/${id}'))">🗑</button>`:''}
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        });
+    }
+
+    window.enterRoom = (id, pass, name) => {
+        if(prompt("كلمة السر:") === pass) {
+            activeRoomId = id; document.getElementById('active-room-name').innerText = name;
+            document.getElementById('room-overlay').style.display = 'flex';
+            document.getElementById('room-msgs').innerHTML = "";
+            document.getElementById('room-overlay').appendChild(document.getElementById('input-bar'));
+            document.getElementById('input-bar').style.display = 'flex';
+            onChildAdded(ref(db, `messages/${id}`), s => renderMsg(s.val(), document.getElementById('room-msgs')));
+        } else alert("خطأ!");
+    };
+
+    window.closeRoom = () => {
+        activeRoomId = null; document.getElementById('room-overlay').style.display = 'none';
+        document.getElementById('main-app').appendChild(document.getElementById('input-bar'));
+        showPage('circles', document.querySelector('nav button'));
+    };
+
+    window.createCircle = () => {
+        const name = prompt("اسم الحلقة:"); if(!name) return;
+        const pass = prompt("كلمة السر:");
+        const startTime = prompt("وقت البدء (مثلاً 09:00 م):");
+        push(ref(db, 'rooms'), { name, pass, startTime, supervisor: currentUser.name });
+    };
+
+    async function loadPrayers() {
+        const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
+        const d = await res.json(); const t = d.data.timings;
+        document.getElementById('hijri-date').innerText = toArDigits(d.data.date.hijri.date) + " " + d.data.date.hijri.month.ar;
+        const ps = [['الفجر', t.Fajr], ['الظهر', t.Dhuhr], ['العصر', t.Asr], ['المغرب', t.Maghrib], ['العشاء', t.Isha]];
+        document.getElementById('prayer-list').innerHTML = ps.map(p => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #eee;"><b>${p[0]}</b> <span style="color:var(--accent)">${format12h(p[1])}</span></div>`).join('');
+    }
+
+    function startReminders() {
+        const show = () => {
+            const box = document.getElementById('reminder-box');
+            box.innerText = remindersList[Math.floor(Math.random()*remindersList.length)];
+            box.classList.add('active'); setTimeout(() => box.classList.remove('active'), 6000);
+        };
+        show(); setInterval(show, 300000);
+    }
+
+    window.updateProfilePic = async (input) => {
+        const fd = new FormData(); fd.append('file', input.files[0]); fd.append('upload_preset', uploadPreset);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
+        const data = await res.json(); currentUser.photo = data.secure_url;
+        localStorage.setItem('duroob_user', JSON.stringify(currentUser));
+        document.getElementById('profile-img-view').src = data.secure_url;
     };
 
     window.toggleTheme = () => {
@@ -200,7 +369,12 @@
         document.body.setAttribute('data-theme', t); localStorage.setItem('duroob_theme', t);
     };
 
-    if(currentUser) initApp(); else setTimeout(() => document.getElementById('splash').style.display = 'none', 1000);
+    window.logout = () => { localStorage.clear(); location.reload(); };
+
+    if(currentUser) setTimeout(initApp, 1500); else setTimeout(() => document.getElementById('splash').style.display = 'none', 1500);
+    if(localStorage.getItem('duroob_theme')) document.body.setAttribute('data-theme', localStorage.getItem('duroob_theme'));
 </script>
+
+<style> @keyframes spin { 100% { transform: rotate(360deg); } } </style>
 </body>
 </html>
