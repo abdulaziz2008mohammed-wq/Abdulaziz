@@ -22,7 +22,7 @@
             --text: #ffffff;
         }
 
-        /* منع تحديد النص بشكل نهائي */
+        /* منع تحديد النص نهائياً */
         * { 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
@@ -67,9 +67,9 @@
         .bubble-me { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
         .bubble-them { background: white; color: var(--text); border: 1px solid #ddd; border-bottom-left-radius: 4px; }
 
-        /* مؤثر التشغيل الصوتي */
-        .audio-btn.playing { animation: playingPulse 1s infinite alternate; background: var(--accent) !important; color: white !important; }
-        @keyframes playingPulse { from { box-shadow: 0 0 5px var(--accent); } to { box-shadow: 0 0 20px var(--accent); } }
+        /* تأثير تشغيل الصوت */
+        .audio-btn.playing { animation: playingPulse 1s infinite alternate; background: var(--accent) !important; color: var(--primary) !important; }
+        @keyframes playingPulse { from { box-shadow: 0 0 5px var(--accent); } to { box-shadow: 0 0 15px var(--accent); } }
 
         .rec-active { background: #ef4444 !important; color: white !important; animation: pulse 0.8s infinite alternate; }
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
@@ -99,7 +99,7 @@
     <div id="page-circles" class="screen active">
         <h3 class="room-title-text">📖 حلقات التحفيظ النشطة</h3>
         <div id="circles-list"></div>
-        <button id="add-btn" style="position:fixed; bottom:150px; left:25px; width:60px; height:60px; background:var(--gold-grad); border:none; border-radius:20px; font-size:30px; display:none;" onclick="window.createCircle()">+</button>
+        <button id="add-btn" style="position:fixed; bottom:150px; left:25px; width:60px; height:60px; background:var(--gold-grad); border:none; border-radius:20px; font-size:30px; display:none; z-index:1001;" onclick="window.createCircle()">+</button>
     </div>
     <div id="page-prayer" class="screen">
         <div class="card" style="text-align: center;">
@@ -119,6 +119,7 @@
             <div id="profile-details"></div>
         </div>
         <button class="btn" onclick="window.toggleTheme()">🌓 تبديل المظهر</button>
+        <button class="btn" style="background:#ef4444; color:white; margin-top:10px;" onclick="window.logout()">خروج</button>
     </div>
     <nav id="bottom-nav">
         <button onclick="window.showPage('circles', this)" class="active">الحلقات</button>
@@ -136,7 +137,7 @@
 <div id="room-overlay">
     <header style="position:fixed; top:0; width:100%; z-index:4001; background:var(--glass); border-bottom:2px solid var(--accent);">
         <button onclick="window.closeRoom()" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
-        <span id="active-room-name">اسم الحلقة</span>
+        <span id="active-room-name" style="font-weight:bold;">اسم الحلقة</span>
     </header>
     <div id="room-msgs"></div>
 </div>
@@ -157,7 +158,7 @@
 
     let currentUser = JSON.parse(localStorage.getItem('duroob_user')) || null;
     let activeRoomId = null, mediaRecorder = null, audioChunks = [], isRecording = false, roomsMap = {};
-    let globalAudio = null; // لمنع تداخل الأصوات
+    let globalAudio = null; 
 
     const toArDigits = s => s.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
     const format12h = (t24) => {
@@ -202,7 +203,10 @@
                 const r = child.val(); const id = child.key; roomsMap[id] = r;
                 const card = document.createElement('div'); card.className = 'card';
                 card.innerHTML = `<div class="room-title-text">💎 حلقة ${r.name}</div><p>المشرف: ${r.supervisor}</p>
-                    <button class="btn" onclick="window.enterRoom('${id}')">انضمام</button>`;
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn" style="flex:1" onclick="window.enterRoom('${id}')">انضمام</button>
+                        <button class="btn" style="width:60px; background:#25D366; color:white;" onclick="window.openWa('${r.whatsapp}')">📞</button>
+                    </div>`;
                 list.appendChild(card);
             });
         });
@@ -222,11 +226,23 @@
     };
 
     window.closeRoom = () => {
-        if(globalAudio) globalAudio.pause();
+        if(globalAudio) { globalAudio.pause(); globalAudio = null; }
         document.getElementById('room-overlay').style.display = 'none';
         activeRoomId = null;
         document.getElementById('main-app').appendChild(document.getElementById('input-bar'));
         document.getElementById('input-bar').style.display = 'none';
+    };
+
+    window.createCircle = () => {
+        const name = prompt("اسم الحلقة:");
+        const pass = prompt("كلمة السر:");
+        const wa = prompt("رقم واتساب المشرف (بدون +):");
+        if(name && pass) {
+            push(ref(db, 'rooms'), { name, pass, whatsapp: wa || "", supervisor: currentUser.name })
+            .then(() => alert("تم إنشاء الحلقة بنجاح"));
+        } else {
+            alert("يرجى ملء الاسم وكلمة السر");
+        }
     };
 
     window.handleRecording = async () => {
@@ -261,7 +277,7 @@
         div.innerHTML = `
             <img src="${m.photo || 'https://via.placeholder.com/40'}" class="avatar-sm">
             <div class="bubble ${isMe?'bubble-me':'bubble-them'}">
-                <b style="font-size:0.75rem; display:block; margin-bottom:4px;">${m.sender}</b>
+                <b style="font-size:0.75rem; display:block; margin-bottom:4px; opacity:0.8;">${m.sender}</b>
                 ${m.type==='audio' ? `<button class="audio-btn" onclick="window.playVoice('${m.audioUrl}', this)" style="background:none; border:none; cursor:pointer; font-weight:bold; color:inherit;">▶ تشغيل التسميع</button>` : m.text}
             </div>`;
         cont.appendChild(div); cont.scrollTo({ top: cont.scrollHeight, behavior: 'smooth' });
@@ -274,13 +290,22 @@
         }
         globalAudio = new Audio(url);
         globalAudio.play();
-        btn.classList.add('playing');
-        btn.innerText = "⏸ جاري الاستماع...";
-        globalAudio.onended = () => { btn.classList.remove('playing'); btn.innerText = "▶ تشغيل التسميع"; };
+        btn.classList.add('playing'); btn.innerText = "⏸ جاري الاستماع...";
+        globalAudio.onended = () => { btn.classList.remove('playing'); btn.innerText = "▶ تشغيل التسميع"; globalAudio = null; };
     };
 
     function listenGeneral() { onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), document.getElementById('community-msgs'))); }
     
+    window.openWa = (num) => window.open(`https://wa.me/${num}?text=${encodeURIComponent("السلام عليكم، أريد الانضمام للتسميع. اسمي: "+currentUser.name)}`, '_blank');
+
+    window.updateProfilePic = async (input) => {
+        const fd = new FormData(); fd.append('file', input.files[0]); fd.append('upload_preset', uploadPreset);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
+        const data = await res.json();
+        currentUser.photo = data.secure_url; localStorage.setItem('duroob_user', JSON.stringify(currentUser));
+        document.getElementById('profile-img-view').src = currentUser.photo;
+    };
+
     async function loadPrayers() {
         const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
         const d = await res.json();
@@ -293,6 +318,8 @@
         const t = document.body.getAttribute('data-theme')==='dark'?'light':'dark';
         document.body.setAttribute('data-theme', t); localStorage.setItem('duroob_theme', t);
     };
+
+    window.logout = () => { localStorage.clear(); location.reload(); };
 
     if(localStorage.getItem('duroob_theme')) document.body.setAttribute('data-theme', localStorage.getItem('duroob_theme'));
     if(currentUser) initApp(); else setTimeout(() => document.getElementById('splash').style.display = 'none', 1000);
