@@ -59,23 +59,26 @@
 
         #input-bar {
             position: fixed; bottom: 85px; width: 100%; background: var(--glass);
-            padding: 10px 15px; display: none; gap: 10px; z-index: 2000; border-top: 1px solid rgba(212,175,55,0.1);
+            padding: 10px 15px; display: none; gap: 10px; z-index: 5000; border-top: 1px solid rgba(212,175,55,0.1);
         }
 
         .fab { position: fixed; bottom: 150px; left: 25px; width: 60px; height: 60px; background: var(--gold-grad); border-radius: 20px; display: none; align-items: center; justify-content: center; font-size: 30px; z-index: 999; }
-        .avatar-main { width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--accent); object-fit: cover; }
         
+        /* الرسائل والصور */
         .msg-row { display: flex; gap: 10px; margin: 15px 0; align-items: flex-end; }
         .msg-row.me { flex-direction: row-reverse; }
-        .avatar-sm { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
-        .bubble { padding: 12px 18px; border-radius: 20px; max-width: 75%; position: relative; }
+        .avatar-sm { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; background: #ddd; }
+        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 75%; position: relative; }
         .bubble-me { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
         .bubble-them { background: white; color: var(--text); border: 1px solid #ddd; border-bottom-left-radius: 4px; }
 
-        .rec-active { background: #ef4444 !important; color: white !important; animation: pulse 1s infinite alternate; }
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+        /* تأثير المايك */
+        .rec-active { background: #ef4444 !important; color: white !important; animation: pulse 0.8s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); box-shadow: 0 0 0px red; } to { transform: scale(1.1); box-shadow: 0 0 15px red; } }
+
         #room-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 4000; display: none; flex-direction: column; }
         #room-msgs { flex: 1; overflow-y: auto; padding: 100px 20px 250px 20px; }
+
         #splash { position: fixed; inset: 0; background: #064e3b; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--accent); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -95,7 +98,7 @@
 </div>
 
 <div id="main-app" style="display:none;">
-    <header id="app-header">دُرُوب الْهِدَايَةِ</header>
+    <header>دُرُوب الْهِدَايَةِ</header>
 
     <div id="page-circles" class="screen active">
         <h3 class="room-title-text">📖 حلقات التحفيظ النشطة</h3>
@@ -118,7 +121,7 @@
     <div id="page-profile" class="screen">
         <div class="card" style="text-align:center;">
             <div style="position:relative; width:110px; margin:auto;">
-                <img id="profile-img-view" src="https://via.placeholder.com/110" class="avatar-main">
+                <img id="profile-img-view" src="https://via.placeholder.com/110" style="width:110px; height:110px; border-radius:50%; border:4px solid var(--accent); object-fit: cover;">
                 <label for="pfp-upload" style="position:absolute; bottom:0; right:0; background:var(--gold-grad); padding:5px; border-radius:50%; cursor:pointer;">📸</label>
                 <input type="file" id="pfp-upload" style="display:none;" onchange="window.updateProfilePic(this)">
             </div>
@@ -147,9 +150,9 @@
 </div>
 
 <div id="room-overlay">
-    <header style="position:fixed; top:0; width:100%; z-index:4001;">
+    <header style="position:fixed; top:0; width:100%; z-index:4001; background:var(--glass); border-bottom:2px solid var(--accent);">
         <button onclick="window.closeRoom()" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); background:none; border:none; font-size:1.5rem; color:var(--primary); cursor:pointer;">✕</button>
-        <span id="active-room-name">اسم الحلقة</span>
+        <span id="active-room-name" style="font-weight:bold;">اسم الحلقة</span>
     </header>
     <div id="room-msgs"></div>
 </div>
@@ -207,7 +210,7 @@
             snap.forEach(child => {
                 const r = child.val(); const id = child.key; roomsMap[id] = r;
                 const card = document.createElement('div'); card.className = 'card';
-                card.innerHTML = `<div class="room-title-text">💎 حلقة ${r.name}</div><p>المشرف: ${r.supervisor}</p>
+                card.innerHTML = `<div class="room-title-text" style="font-weight:bold;">💎 حلقة ${r.name}</div><p>المشرف: ${r.supervisor}</p>
                     <div style="display:flex; gap:10px; margin-top:10px;">
                         <button class="btn" style="flex:2" onclick="window.enterRoom('${id}')">انضمام</button>
                         <button class="btn" style="width:50px; background:#25D366; color:white;" onclick="window.openWa('${r.whatsapp}')">📞</button>
@@ -228,7 +231,7 @@
             document.getElementById('input-bar').style.display = 'flex';
             document.getElementById('input-bar').style.bottom = '10px';
             onChildAdded(ref(db, `messages/${id}`), s => renderMsg(s.val(), document.getElementById('room-msgs')));
-        } else alert("خطأ");
+        } else alert("كلمة السر خاطئة!");
     };
 
     window.closeRoom = () => {
@@ -242,27 +245,29 @@
     window.handleRecording = async () => {
         const btn = document.getElementById('rec-btn');
         if(!isRecording) {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-            mediaRecorder.start();
-            isRecording = true;
-            btn.classList.add('rec-active'); btn.innerText = "⏹";
-            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-            mediaRecorder.onstop = async () => {
-                const blob = new Blob(audioChunks, { type: 'audio/mpeg' });
-                const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', uploadPreset);
-                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
-                const data = await res.json();
-                push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), { sender: currentUser.name, photo: currentUser.photo, audioUrl: data.secure_url, type: 'audio', time: Date.now() });
-            };
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                mediaRecorder.start();
+                isRecording = true;
+                btn.classList.add('rec-active'); btn.innerText = "⏹";
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = async () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/mpeg' });
+                    const fd = new FormData(); fd.append('file', blob); fd.append('upload_preset', uploadPreset);
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
+                    const data = await res.json();
+                    push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), { sender: currentUser.name, photo: currentUser.photo || "", audioUrl: data.secure_url, type: 'audio', time: Date.now() });
+                };
+            } catch(e) { alert("يرجى تفعيل الميكروفون"); }
         } else { mediaRecorder.stop(); isRecording = false; btn.classList.remove('rec-active'); btn.innerText = "🎤"; }
     };
 
     window.sendMessage = () => {
         const inp = document.getElementById('msg-input');
-        if(inp.value) { 
-            push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), { sender: currentUser.name, photo: currentUser.photo, text: inp.value, type: 'text', time: Date.now() }); 
+        if(inp.value.trim()) { 
+            push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), { sender: currentUser.name, photo: currentUser.photo || "", text: inp.value, type: 'text', time: Date.now() }); 
             inp.value = ""; 
         }
     };
@@ -274,8 +279,8 @@
         div.innerHTML = `
             <img src="${m.photo || 'https://via.placeholder.com/40'}" class="avatar-sm">
             <div class="bubble ${isMe?'bubble-me':'bubble-them'}">
-                <b style="font-size:0.8rem; display:block; margin-bottom:5px;">${m.sender}</b>
-                ${m.type==='audio' ? `<button onclick="new Audio('${m.audioUrl}').play()" style="background:none; border:none; cursor:pointer;">▶ تشغيل التسميع</button>` : m.text}
+                <b style="font-size:0.75rem; display:block; margin-bottom:4px; opacity:0.8;">${m.sender}</b>
+                ${m.type==='audio' ? `<button onclick="new Audio('${m.audioUrl}').play()" style="background:none; border:none; cursor:pointer; font-weight:bold; color:inherit;">▶ تشغيل الصوت</button>` : m.text}
             </div>`;
         cont.appendChild(div); cont.scrollTo({ top: cont.scrollHeight, behavior: 'smooth' });
     }
