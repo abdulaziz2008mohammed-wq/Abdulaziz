@@ -63,24 +63,23 @@
 
         .screen {
             display: none; height: 100vh; overflow-y: auto;
-            padding: 100px 20px 220px 20px;
+            padding: 100px 20px 250px 20px;
             animation: fadeIn 0.4s ease-out;
         }
         .screen.active { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* التعديل الخاص بالشات العام فقط ليصبح مثل المربع الأصفر في الصورة */
         #page-community.active { 
             display: flex; 
             flex-direction: column; 
-            padding: 100px 0 0 0; /* إزالة البادينج الجانبي من الشاشة */
+            padding: 100px 0 0 0;
         }
         #community-msgs {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            padding-bottom: 250px; /* المساحة السفلية لضمان ظهور الرسائل فوق الأزرار */
+            padding-bottom: 280px; 
         }
 
         .card {
@@ -120,7 +119,8 @@
             display: flex; justify-content: space-around;
             padding: 12px 0 25px 0;
             border-top: 1px solid rgba(212, 175, 55, 0.2);
-            z-index: 1000;
+            z-index: 2001; /* فوق شريط الإدخال */
+            transition: bottom 0.3s ease;
         }
 
         nav button {
@@ -155,9 +155,13 @@
         .msg-row { display: flex; gap: 12px; margin: 15px 0; align-items: flex-end; }
         .msg-row.me { flex-direction: row-reverse; }
         .avatar-sm { width: 42px; height: 42px; border-radius: 14px; border: 2px solid var(--accent); }
-        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 78%; line-height: 1.6; font-size: 0.95rem; }
+        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 78%; line-height: 1.6; font-size: 0.95rem; position: relative; }
         .bubble-me { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
         .bubble-them { background: var(--glass); color: var(--text); border: 1px solid rgba(0,0,0,0.05); border-bottom-left-radius: 4px; }
+
+        .msg-time { font-size: 0.65rem; margin-top: 5px; opacity: 0.7; display: block; }
+        .bubble-me .msg-time { text-align: left; color: #d1d5db; }
+        .bubble-them .msg-time { text-align: right; color: #64748b; }
 
         .dev-name {
             background: var(--gold-grad);
@@ -195,7 +199,7 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            padding-bottom: 120px;
+            padding-bottom: 280px; 
         }
     </style>
 </head>
@@ -268,7 +272,7 @@
         <button onclick="window.showPage('profile', this)"><svg viewBox="0 0 24 24"><path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/></svg>حسابي</button>
     </nav>
 
-    <div id="input-bar" style="position:fixed; bottom:85px; width:100%; background:var(--glass); padding:15px; display:none; gap:12px; border-top:1px solid rgba(212,175,55,0.2); z-index:1100; backdrop-filter:blur(20px);">
+    <div id="input-bar" style="position:fixed; bottom:0; width:100%; background:var(--glass); padding:10px 15px 25px 15px; display:none; gap:12px; border-top:1px solid rgba(212,175,55,0.2); z-index:2000; backdrop-filter:blur(20px);">
         <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:14px; border-radius:20px; border:1px solid #e2e8f0; background:var(--bg); color:var(--text);">
         <button id="rec-btn" class="btn" style="width:55px; border-radius:50%; font-size:1.4rem; padding:0;" onclick="window.handleRecording()">🎤</button>
         <button class="btn" style="width:80px; border-radius:20px;" onclick="window.sendMessage()">إرسال</button>
@@ -324,8 +328,11 @@
         if(target) target.classList.add('active');
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
-        document.getElementById('input-bar').style.display = (id === 'community') ? 'flex' : 'none';
-        document.getElementById('bottom-nav').style.display = 'flex';
+        
+        const isChat = (id === 'community');
+        document.getElementById('input-bar').style.display = isChat ? 'flex' : 'none';
+        // رفع شريط التنقل (الأصفر) ليكون فوق شريط الإرسال (الأخضر)
+        document.getElementById('bottom-nav').style.bottom = isChat ? '85px' : '0';
     };
 
     window.registerUser = () => {
@@ -435,6 +442,7 @@
             document.getElementById('room-overlay').appendChild(document.getElementById('input-bar'));
             document.getElementById('input-bar').style.display = 'flex';
             document.getElementById('input-bar').style.bottom = '0px'; 
+            document.getElementById('bottom-nav').style.bottom = '85px';
             onChildAdded(ref(db, `messages/${id}`), s => renderMsg(s.val(), mCont));
         } else { alert("عذراً، كلمة السر غير صحيحة!"); }
     };
@@ -451,7 +459,8 @@
         activeRoomId = null;
         document.getElementById('main-app').appendChild(document.getElementById('input-bar'));
         document.getElementById('input-bar').style.display = 'none';
-        document.getElementById('input-bar').style.bottom = '85px'; 
+        document.getElementById('input-bar').style.bottom = '85px';
+        document.getElementById('bottom-nav').style.bottom = '0px';
     };
 
     window.openWhatsapp = (num) => {
@@ -546,6 +555,10 @@
     function renderMsg(m, cont) {
         if(!cont) return;
         const isMe = m.sender === currentUser.name;
+        // تعديل لعرض الوقت
+        const d = new Date(m.time);
+        const timeStr = format12h(d.getHours() + ":" + d.getMinutes().toString().padStart(2, '0'));
+        
         const row = document.createElement('div');
         row.className = `msg-row ${isMe ? 'me' : ''}`;
         row.innerHTML = `
@@ -555,6 +568,7 @@
                 ${m.type === 'audio' ? 
                     `<div style="display:flex; align-items:center; gap:12px;"><button class="btn p-btn" style="width:38px; height:38px; border-radius:50%; box-shadow:none; padding:0;" onclick="window.playAudio('${m.audioUrl}', this)">▶</button> <span>تسميع صَوْتي</span></div>` 
                     : `<div>${m.text}</div>`}
+                <span class="msg-time">${timeStr}</span>
             </div>
         `;
         cont.appendChild(row);
