@@ -22,7 +22,7 @@
             --text: #ffffff;
         }
 
-        /* منع تحديد النص نهائياً */
+        /* منع التحديد والنسخ */
         * { 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
@@ -46,7 +46,7 @@
         }
 
         [data-theme="dark"] header, [data-theme="dark"] h3, [data-theme="dark"] .room-title-text,
-        [data-theme="dark"] .prayer-title { color: var(--accent) !important; }
+        [data-theme="dark"] .prayer-title, [data-theme="dark"] .dev-title { color: var(--accent) !important; }
 
         .screen { display: none; height: 100vh; overflow-y: auto; padding: 100px 20px 250px 20px; animation: fadeIn 0.4s ease-out; }
         .screen.active { display: block; }
@@ -58,16 +58,16 @@
         nav button { background: none; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; }
         nav button.active { color: var(--accent); }
 
-        #input-bar { position: fixed; bottom: 85px; width: 100%; background: var(--glass); padding: 10px 15px; display: none; gap: 10px; z-index: 5000; border-top: 1px solid rgba(212,175,55,0.1); backdrop-filter: blur(20px); }
+        #input-bar { position: fixed; bottom: 85px; width: 100%; background: var(--glass); padding: 10px 15px; display: none; gap: 10px; z-index: 5000; border-top: 1px solid rgba(212,175,55,0.1); }
 
         .msg-row { display: flex; gap: 10px; margin: 15px 0; align-items: flex-end; }
         .msg-row.me { flex-direction: row-reverse; }
         .avatar-sm { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
         .bubble { padding: 12px 18px; border-radius: 22px; max-width: 75%; position: relative; }
-        .bubble-me { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
-        .bubble-them { background: white; color: var(--text); border: 1px solid #ddd; border-bottom-left-radius: 4px; }
+        .bubble-me { background: var(--primary); color: white; }
+        .bubble-them { background: white; color: var(--text); border: 1px solid #ddd; }
 
-        /* تأثير تشغيل الصوت */
+        /* نبض الصوت */
         .audio-btn.playing { animation: playingPulse 1s infinite alternate; background: var(--accent) !important; color: var(--primary) !important; }
         @keyframes playingPulse { from { box-shadow: 0 0 5px var(--accent); } to { box-shadow: 0 0 15px var(--accent); } }
 
@@ -118,8 +118,16 @@
             </div>
             <div id="profile-details"></div>
         </div>
-        <button class="btn" onclick="window.toggleTheme()">🌓 تبديل المظهر</button>
-        <button class="btn" style="background:#ef4444; color:white; margin-top:10px;" onclick="window.logout()">خروج</button>
+        
+        <div class="card">
+            <h4 class="dev-title" style="margin:0; font-family:'Amiri';">فَرِيقُ التَّطْوِيرِ</h4>
+            <div style="padding-top:10px; font-weight:bold; color:var(--accent);">
+                عَبْدُ الْعَزِيزِ مُحَمَّد<br>سُلَيْمَانُ بْنُ عَبْدِ الْفَتَّاحِ
+            </div>
+        </div>
+
+        <button class="btn" style="margin-bottom:10px;" onclick="window.toggleTheme()">🌓 تبديل المظهر</button>
+        <button class="btn" style="background:#ef4444; color:white;" onclick="window.logout()">خروج</button>
     </div>
     <nav id="bottom-nav">
         <button onclick="window.showPage('circles', this)" class="active">الحلقات</button>
@@ -144,7 +152,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyB6aPF7qqqiiHMGXR5b3boCrRa7VcdDJwE", 
@@ -204,13 +212,16 @@
                 const card = document.createElement('div'); card.className = 'card';
                 card.innerHTML = `<div class="room-title-text">💎 حلقة ${r.name}</div><p>المشرف: ${r.supervisor}</p>
                     <div style="display:flex; gap:10px;">
-                        <button class="btn" style="flex:1" onclick="window.enterRoom('${id}')">انضمام</button>
+                        <button class="btn" style="flex:2" onclick="window.enterRoom('${id}')">انضمام</button>
                         <button class="btn" style="width:60px; background:#25D366; color:white;" onclick="window.openWa('${r.whatsapp}')">📞</button>
+                        ${(currentUser.role==='supervisor' && r.supervisor===currentUser.name) ? `<button class="btn" style="width:60px; background:#ef4444; color:white;" onclick="window.delRoom('${id}')">🗑</button>` : ''}
                     </div>`;
                 list.appendChild(card);
             });
         });
     }
+
+    window.delRoom = (id) => { if(confirm("حذف الحلقة نهائياً؟")) remove(ref(db, 'rooms/'+id)); };
 
     window.enterRoom = (id) => {
         const pass = prompt("كلمة السر:");
@@ -234,15 +245,8 @@
     };
 
     window.createCircle = () => {
-        const name = prompt("اسم الحلقة:");
-        const pass = prompt("كلمة السر:");
-        const wa = prompt("رقم واتساب المشرف (بدون +):");
-        if(name && pass) {
-            push(ref(db, 'rooms'), { name, pass, whatsapp: wa || "", supervisor: currentUser.name })
-            .then(() => alert("تم إنشاء الحلقة بنجاح"));
-        } else {
-            alert("يرجى ملء الاسم وكلمة السر");
-        }
+        const name = prompt("اسم الحلقة:"), pass = prompt("كلمة السر:"), wa = prompt("واتساب المشرف:");
+        if(name && pass) push(ref(db, 'rooms'), { name, pass, whatsapp: wa || "", supervisor: currentUser.name });
     };
 
     window.handleRecording = async () => {
@@ -295,9 +299,7 @@
     };
 
     function listenGeneral() { onChildAdded(ref(db, 'general'), s => renderMsg(s.val(), document.getElementById('community-msgs'))); }
-    
-    window.openWa = (num) => window.open(`https://wa.me/${num}?text=${encodeURIComponent("السلام عليكم، أريد الانضمام للتسميع. اسمي: "+currentUser.name)}`, '_blank');
-
+    window.openWa = (num) => window.open(`https://wa.me/${num}?text=${encodeURIComponent("السلام عليكم، أريد الانضمام للتسميع. اسمي: "+currentUser.name+" رقمي: "+currentUser.phone)}`, '_blank');
     window.updateProfilePic = async (input) => {
         const fd = new FormData(); fd.append('file', input.files[0]); fd.append('upload_preset', uploadPreset);
         const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, { method: 'POST', body: fd });
@@ -305,7 +307,6 @@
         currentUser.photo = data.secure_url; localStorage.setItem('duroob_user', JSON.stringify(currentUser));
         document.getElementById('profile-img-view').src = currentUser.photo;
     };
-
     async function loadPrayers() {
         const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
         const d = await res.json();
@@ -313,14 +314,10 @@
         const ps = [['الفجر', d.data.timings.Fajr], ['الظهر', d.data.timings.Dhuhr], ['العصر', d.data.timings.Asr], ['المغرب', d.data.timings.Maghrib], ['العشاء', d.data.timings.Isha]];
         document.getElementById('prayer-list').innerHTML = ps.map(p => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #eee;"><span>${p[0]}</span><b>${format12h(p[1])}</b></div>`).join('');
     }
-
     window.toggleTheme = () => {
         const t = document.body.getAttribute('data-theme')==='dark'?'light':'dark';
         document.body.setAttribute('data-theme', t); localStorage.setItem('duroob_theme', t);
     };
-
-    window.logout = () => { localStorage.clear(); location.reload(); };
-
     if(localStorage.getItem('duroob_theme')) document.body.setAttribute('data-theme', localStorage.getItem('duroob_theme'));
     if(currentUser) initApp(); else setTimeout(() => document.getElementById('splash').style.display = 'none', 1000);
 </script>
