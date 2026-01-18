@@ -26,109 +26,78 @@
             --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            transition: 0.3s;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.3s; }
 
         body {
-            font-family: 'Tajawal', sans-serif;
-            background: var(--bg);
-            margin: 0;
-            color: var(--text);
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'Tajawal', sans-serif; background: var(--bg); margin: 0; color: var(--text);
+            height: 100vh; overflow: hidden;
             background-image: url('https://www.transparenttextures.com/patterns/islamic-exercise.png');
         }
 
         header {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            color: var(--primary);
-            padding: 15px 20px;
-            text-align: center;
-            font-family: 'Amiri', serif;
-            font-size: 1.8rem;
-            position: fixed; top: 0; width: 100%; z-index: 3000;
-            border-bottom: 2px solid var(--accent);
-            box-shadow: var(--shadow);
-        }
-
-        /* تعديل الترتيب: جعل الشريط الأصفر (nav) تحت الشريط الأخضر (input-bar) */
-        nav {
-            position: fixed; bottom: 0; width: 100%;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            display: flex; justify-content: space-around;
-            padding: 12px 0 25px 0;
-            border-top: 1px solid rgba(212, 175, 55, 0.2);
-            z-index: 1000; /* قللنا الرقم ليكون تحت */
-            transition: bottom 0.3s ease;
-        }
-
-        #input-bar {
-            position: fixed; bottom: 0; width: 100%; 
-            background: var(--glass); 
-            padding: 10px 15px 25px 15px; 
-            display: none; gap: 12px; 
-            border-top: 1px solid rgba(212, 175, 55, 0.2); 
-            z-index: 2000; /* أعلى من الـ nav */
-            backdrop-filter: blur(20px);
+            background: var(--glass); backdrop-filter: blur(15px); color: var(--primary);
+            padding: 15px 20px; text-align: center; font-family: 'Amiri', serif;
+            font-size: 1.8rem; position: fixed; top: 0; width: 100%; z-index: 3000;
+            border-bottom: 2px solid var(--accent); box-shadow: var(--shadow);
         }
 
         .screen {
             display: none; height: 100vh; overflow-y: auto;
-            padding: 100px 20px 250px 20px;
-            animation: fadeIn 0.4s ease-out;
+            padding: 100px 20px 250px 20px; animation: fadeIn 0.4s ease-out;
         }
         .screen.active { display: block; }
 
-        .card {
-            background: var(--glass);
-            border-radius: 24px; padding: 22px;
-            margin-bottom: 20px; box-shadow: var(--shadow);
-            border: 1px solid rgba(212, 175, 55, 0.1);
+        /* شريط التنقل الأصفر (الأسفل) */
+        nav {
+            position: fixed; bottom: 0; width: 100%;
+            background: var(--glass); backdrop-filter: blur(20px);
+            display: flex; justify-content: space-around;
+            padding: 12px 0 25px 0; border-top: 1px solid rgba(212, 175, 55, 0.2);
+            z-index: 1000; /* تحت شريط الإدخال */
+        }
+        nav button { background: none; border: none; color: #94a3b8; cursor: pointer; font-family: 'Tajawal'; font-weight: bold; }
+        nav button.active { color: var(--accent); }
+
+        /* شريط الإدخال الأخضر/الأحمر (فوق الأصفر) */
+        #input-bar {
+            position: fixed; bottom: 80px; width: 100%; 
+            background: var(--glass); padding: 10px 15px;
+            display: none; gap: 12px; border-top: 1px solid rgba(212, 175, 55, 0.1);
+            z-index: 2000; backdrop-filter: blur(20px);
         }
 
-        .btn {
-            background: var(--gold-grad); color: var(--primary);
-            border: none; padding: 14px; border-radius: 16px;
-            font-weight: 800; cursor: pointer; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-
-        .fab {
-            position: fixed; bottom: 105px; left: 25px;
-            width: 65px; height: 65px; background: var(--gold-grad);
-            border-radius: 22px; display: flex; align-items: center;
-            justify-content: center; font-size: 32px; color: var(--primary);
-            z-index: 999; cursor: pointer; display: none;
-        }
-
-        #splash {
-            position: fixed; inset: 0; background: #064e3b;
-            z-index: 9999; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; color: var(--accent);
-        }
+        .card { background: var(--glass); border-radius: 24px; padding: 22px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid rgba(212, 175, 55, 0.1); }
+        .btn { background: var(--gold-grad); color: var(--primary); border: none; padding: 14px; border-radius: 16px; font-weight: 800; width: 100%; cursor: pointer; }
         
+        .fab {
+            position: fixed; bottom: 170px; left: 25px;
+            width: 65px; height: 65px; background: var(--gold-grad);
+            border-radius: 22px; display: none; align-items: center; justify-content: center;
+            font-size: 32px; color: var(--primary); z-index: 999; box-shadow: var(--shadow);
+        }
+
+        #splash { position: fixed; inset: 0; background: #064e3b; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--accent); }
+        .msg-row { display: flex; gap: 12px; margin: 15px 0; }
+        .msg-row.me { flex-direction: row-reverse; }
+        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 78%; }
+        .bubble-me { background: var(--primary); color: white; }
+        .bubble-them { background: white; color: var(--text); }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
 <div id="splash">
-    <h1 style="font-family:'Amiri'; font-size: 3.5rem; margin:0;">دُرُوب الْهِدَايَةِ</h1>
-    <div style="width:40px; height:40px; border:4px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite; margin-top:20px;"></div>
+    <h1 style="font-family:'Amiri'; font-size: 3.5rem;">دُرُوب الْهِدَايَةِ</h1>
 </div>
 
 <div id="auth-screen" class="screen active" style="padding-top:15vh;">
     <div class="card" style="max-width:420px; margin:auto; text-align:center;">
-        <h2 style="font-family:'Amiri'; color:var(--primary); font-size:3rem; margin:0 0 20px;">دُرُوب الْهِدَايَةِ</h2>
-        <input type="text" id="reg-name" placeholder="الاسم الكريم..." style="width:100%; padding:16px; margin-bottom:12px; border-radius:15px; border:1px solid #e2e8f0;">
-        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:16px; margin-bottom:12px; border-radius:15px; border:1px solid #e2e8f0;">
-        <input type="text" id="reg-code" placeholder="كود المشرف (اختياري)..." style="width:100%; padding:16px; margin-bottom:25px; border-radius:15px; border:1px solid #e2e8f0;">
+        <h2 style="font-family:'Amiri'; font-size:2.5rem;">تسجيل الدخول</h2>
+        <input type="text" id="reg-name" placeholder="الاسم الكريم..." style="width:100%; padding:15px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;">
+        <input type="tel" id="reg-phone" placeholder="رقم الهاتف..." style="width:100%; padding:15px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;">
+        <input type="text" id="reg-code" placeholder="كود المشرف (اختياري)..." style="width:100%; padding:15px; margin-bottom:20px; border-radius:12px; border:1px solid #ddd;">
         <button class="btn" onclick="window.registerUser()">دخول آمن</button>
     </div>
 </div>
@@ -136,31 +105,30 @@
 <div id="main-app" style="display:none;">
     <header>دُرُوب الْهِدَايَةِ</header>
 
-    <div id="page-circles" class="screen">
-        <h3>📖 حلقات التحفيظ النشطة</h3>
+    <div id="page-circles" class="screen active">
+        <h3 style="margin-bottom:20px;">📖 حلقات التحفيظ النشطة</h3>
         <div id="circles-list"></div>
         <button id="add-btn" class="fab" onclick="window.createCircle()">+</button>
     </div>
 
     <div id="page-prayer" class="screen">
         <div class="card" style="text-align: center;">
-            <h3 style="font-family:'Amiri'; color:var(--primary); font-size:2.2rem;">🕌 مَواقيتُ الصَّلاةِ</h3>
-            <p id="hijri-date" style="color:var(--accent); font-weight:800; font-size:1.3rem;"></p>
+            <h3 style="font-family:'Amiri'; font-size:2.2rem;">🕌 مَواقيتُ الصَّلاةِ</h3>
+            <p id="hijri-date" style="color:var(--accent); font-weight:800;"></p>
             <div id="prayer-list"></div>
         </div>
     </div>
 
     <div id="page-community" class="screen">
-        <div id="community-msgs"></div>
+        <div id="community-msgs" style="padding-bottom: 100px;"></div>
     </div>
 
     <div id="page-profile" class="screen">
         <div class="card" style="text-align:center;">
-            <img id="profile-img-view" src="https://via.placeholder.com/110" style="width:110px; height:110px; border-radius:50%; border:4px solid var(--accent);">
-            <div id="profile-details"></div>
+            <h3 id="user-display-name"></h3>
+            <p id="user-display-role"></p>
         </div>
-        <button class="btn" onclick="window.toggleTheme()">🌓 تبديل المظهر</button>
-        <button class="btn" style="background:#ef4444; color:white; margin-top:10px;" onclick="window.logout()">خروج</button>
+        <button class="btn" style="background:#ef4444; color:white;" onclick="window.logout()">خروج</button>
     </div>
 
     <nav id="bottom-nav">
@@ -171,9 +139,8 @@
     </nav>
 
     <div id="input-bar">
-        <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:14px; border-radius:20px; border:1px solid #e2e8f0;">
-        <button id="rec-btn" onclick="window.handleRecording()" style="background:none; border:none; font-size:1.5rem;">🎤</button>
-        <button onclick="window.sendMessage()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:15px;">إرسال</button>
+        <input type="text" id="msg-input" placeholder="اكتب رسالة..." style="flex:1; padding:12px; border-radius:15px; border:1px solid #ddd;">
+        <button class="btn" style="width:80px;" onclick="window.sendMessage()">إرسال</button>
     </div>
 </div>
 
@@ -194,29 +161,27 @@
 
     let currentUser = JSON.parse(localStorage.getItem('duroob_user')) || null;
 
-    // دالة إظهار الصفحات والتحكم في مكان الـ nav
     window.showPage = (id, btn) => {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('page-' + id).classList.add('active');
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
         
-        const isChat = (id === 'community');
-        document.getElementById('input-bar').style.display = isChat ? 'flex' : 'none';
-        
-        // إذا كنا في الشات، نرفع الـ nav ليكون فوق شريط الكتابة (أو حسب رغبتك في الترتيب)
-        // المستخدم طلب "الأصفر تحت الأخضر"، لذا الـ nav (الأصفر) سيبقى bottom:0 والشات يرتفع فوقه
-        if(isChat) {
-            document.getElementById('bottom-nav').style.bottom = "80px"; 
-        } else {
-            document.getElementById('bottom-nav').style.bottom = "0";
-        }
+        // إظهار شريط الإدخال فقط في صفحة العام (Community)
+        document.getElementById('input-bar').style.display = (id === 'community') ? 'flex' : 'none';
     };
 
     window.registerUser = () => {
         const name = document.getElementById('reg-name').value;
         const phone = document.getElementById('reg-phone').value;
-        if(name.length < 3 || phone.length < 10) return alert("أكمل البيانات");
+        const code = document.getElementById('reg-code').value;
+        if(name.length < 3) return alert("ادخل اسمك");
         
-        currentUser = { name, phone, role: (document.getElementById('reg-code').value === "AM/SA_1" ? 'supervisor' : 'student') };
+        currentUser = { 
+            name: name, 
+            phone: phone, 
+            role: (code === "AM/SA_1") ? "supervisor" : "student" 
+        };
         localStorage.setItem('duroob_user', JSON.stringify(currentUser));
         initApp();
     };
@@ -226,26 +191,91 @@
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('splash').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
-        document.getElementById('add-btn').style.display = (currentUser.role === 'supervisor') ? 'flex' : 'none';
+        
+        // ضبط معلومات الملف الشخصي
+        document.getElementById('user-display-name').innerText = currentUser.name;
+        document.getElementById('user-display-role').innerText = currentUser.role === "supervisor" ? "مشرف" : "طالب";
+
+        // التحكم في ظهور زر الزائد (فقط للمشرف)
+        const addBtn = document.getElementById('add-btn');
+        if(addBtn) addBtn.style.display = (currentUser.role === 'supervisor') ? 'flex' : 'none';
+
+        // تحميل البيانات للجميع (طالب ومشرف)
+        loadCircles();
         loadPrayers();
+        listenGeneral();
     }
+
+    function loadCircles() {
+        onValue(ref(db, 'rooms'), snap => {
+            const list = document.getElementById('circles-list');
+            list.innerHTML = "";
+            snap.forEach(child => {
+                const r = child.val();
+                const id = child.key;
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div style="font-weight:bold; font-size:1.2rem; color:var(--primary);">💎 حلقة ${r.name}</div>
+                    <p>المشرف: ${r.supervisor}</p>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn" style="flex:1">انضمام</button>
+                        ${(currentUser.role === 'supervisor') ? `<button onclick="window.deleteRoom('${id}')" style="background:#ff4d4d; color:white; border:none; border-radius:10px; padding:0 15px;">حذف</button>` : ''}
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        });
+    }
+
+    window.createCircle = () => {
+        const name = prompt("اسم الحلقة:");
+        if(name) push(ref(db, 'rooms'), { name: name, supervisor: currentUser.name });
+    };
+
+    window.deleteRoom = (id) => {
+        if(confirm("هل تريد الحذف؟")) remove(ref(db, 'rooms/' + id));
+    };
+
+    function listenGeneral() {
+        const cont = document.getElementById('community-msgs');
+        onChildAdded(ref(db, 'general'), snap => {
+            const m = snap.val();
+            const isMe = m.sender === currentUser.name;
+            const div = document.createElement('div');
+            div.className = `msg-row ${isMe ? 'me' : ''}`;
+            div.innerHTML = `<div class="bubble ${isMe ? 'bubble-me' : 'bubble-them'}"><strong>${m.sender}:</strong><br>${m.text}</div>`;
+            cont.appendChild(div);
+            cont.parentElement.scrollTop = cont.parentElement.scrollHeight;
+        });
+    }
+
+    window.sendMessage = () => {
+        const inp = document.getElementById('msg-input');
+        if(inp.value) {
+            push(ref(db, 'general'), { sender: currentUser.name, text: inp.value, time: Date.now() });
+            inp.value = "";
+        }
+    };
 
     async function loadPrayers() {
         try {
             const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
             const data = await res.json();
-            document.getElementById('hijri-date').innerText = data.data.date.hijri.date;
-        } catch(e) { console.log("Prayer API error"); }
+            document.getElementById('hijri-date').innerText = data.data.date.hijri.date + " " + data.data.date.hijri.month.ar;
+            const t = data.data.timings;
+            const ps = [['الفجر', t.Fajr], ['الظهر', t.Dhuhr], ['العصر', t.Asr], ['المغرب', t.Maghrib], ['العشاء', t.Isha]];
+            document.getElementById('prayer-list').innerHTML = ps.map(p => `
+                <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
+                    <span>${p[0]}</span><b>${p[1]}</b>
+                </div>`).join('');
+        } catch(e) {}
     }
 
     window.logout = () => { localStorage.clear(); location.reload(); };
 
-    // تشغيل التطبيق إذا كان المستخدم مسجلاً
-    if(currentUser) {
-        setTimeout(initApp, 1000);
-    } else {
-        setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 1000);
-    }
+    if(currentUser) initApp();
+    else setTimeout(() => document.getElementById('splash').style.display = 'none', 1000);
 </script>
 </body>
 </html>
