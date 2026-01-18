@@ -284,6 +284,7 @@
     let mediaRecorder = null;
     let audioChunks = [];
     let isRecording = false;
+    let isSending = false; // متغير لمنع التكرار
     let currentAudio = null;
     let roomsMap = {}; 
 
@@ -305,7 +306,6 @@
         document.getElementById('input-bar').style.display = (id === 'community') ? 'flex' : 'none';
     };
 
-    // وظيفة التسجيل مع ربط formsubmit (b small) والبريد الجديد
     window.registerUser = () => {
         const name = document.getElementById('reg-name').value;
         const phone = document.getElementById('reg-phone').value;
@@ -317,7 +317,6 @@
         const role = (code.trim() === "AM/SA_1") ? "supervisor" : "student";
         const roleText = (role === "supervisor") ? "مُشرف (استخدم الكود)" : "طالب عادي";
 
-        // إرسال البيانات إلى بريدك الإلكتروني المحدث
         fetch("https://formsubmit.co/ajax/b58084441@gmail.com", {
             method: "POST",
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -499,9 +498,14 @@
         currentAudio.onended = () => { btn.innerHTML = "▶"; currentAudio = null; };
     };
 
+    // هذا هو التعديل الوحيد لمنع تكرار الإرسال
     function sendToDB(obj) {
+        if (isSending) return; // منع الدخول إذا كانت هناك عملية جارية
+        isSending = true;
         const msg = { sender: currentUser.name, photo: currentUser.photo || "", time: Date.now(), ...obj };
-        push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), msg);
+        push(ref(db, activeRoomId ? `messages/${activeRoomId}` : 'general'), msg)
+            .then(() => { isSending = false; }) // فتح القفل بعد النجاح
+            .catch(() => { isSending = false; }); // فتح القفل في حال الخطأ
     }
 
     window.sendMessage = () => {
