@@ -63,7 +63,7 @@
 
         .screen {
             display: none; height: 100vh; overflow-y: auto;
-            padding: 100px 20px 150px 20px;
+            padding: 100px 20px 180px 20px; /* تم زيادة الهامش السفلي هنا */
             animation: fadeIn 0.4s ease-out;
         }
         .screen.active { display: block; }
@@ -176,14 +176,14 @@
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--accent);
         }
 
-        /* تعديلات التمرير والمساحة للغرف */
+        /* تعديلات التمرير والمساحة لضمان عدم اختفاء الرسائل خلف شريط الكتابة */
         #room-msgs {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            padding-bottom: 100px;
+            padding-bottom: 180px; /* مساحة كافية فوق الأزرار */
         }
     </style>
 </head>
@@ -225,7 +225,7 @@
 
     <div id="page-community" class="screen">
         <div id="community-msgs"></div>
-        <div style="height:150px;"></div>
+        <div style="height:180px;"></div>
     </div>
 
     <div id="page-profile" class="screen">
@@ -544,8 +544,10 @@
             </div>
         `;
         cont.appendChild(row);
-        // التعديل المطلوب لتقليب المحادثات تلقائياً
-        setTimeout(() => row.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
+        // تم تعديل التمرير التلقائي ليكون أكثر دقة
+        setTimeout(() => {
+            cont.scrollTo({ top: cont.scrollHeight, behavior: 'smooth' });
+        }, 100);
     }
 
     async function loadPrayers() {
